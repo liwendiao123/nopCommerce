@@ -37,7 +37,7 @@ namespace Nop.Services.TableOfContent
         /// <remarks>
         /// {0} : store ID
         /// </remarks>
-        public static string BookDIrsByIdCacheKey => "Nop.BookDir.id-{0}";
+        public static string BookDirsByIdCacheKey => "Nop.BookDir.id-{0}";
 
         /// <summary>
         /// Gets a key pattern to clear cache

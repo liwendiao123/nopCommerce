@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nop.Core;
@@ -213,7 +213,9 @@ namespace Nop.Services.Logging
                 Customer = customer,
                 PageUrl = _webHelper.GetThisPageUrl(true),
                 ReferrerUrl = _webHelper.GetUrlReferrer(),
-                CreatedOnUtc = DateTime.UtcNow
+                CreatedOnUtc = DateTime.UtcNow,
+                 CustomerId = customer == null ?-1:customer.Id,
+               
             };
 
             _logRepository.Insert(log);
