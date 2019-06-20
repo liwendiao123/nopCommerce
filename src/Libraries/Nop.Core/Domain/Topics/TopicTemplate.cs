@@ -1,4 +1,4 @@
-namespace Nop.Core.Domain.Topics
+﻿namespace Nop.Core.Domain.Topics
 {
     /// <summary>
     /// Represents a topic template

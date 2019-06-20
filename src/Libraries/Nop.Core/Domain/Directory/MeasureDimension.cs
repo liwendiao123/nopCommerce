@@ -1,4 +1,4 @@
-namespace Nop.Core.Domain.Directory
+﻿namespace Nop.Core.Domain.Directory
 {
     /// <summary>
     /// Represents a measure dimension

@@ -1,4 +1,4 @@
-namespace Nop.Core.Domain.Common
+﻿namespace Nop.Core.Domain.Common
 {
     /// <summary>
     /// Represents a generic attribute

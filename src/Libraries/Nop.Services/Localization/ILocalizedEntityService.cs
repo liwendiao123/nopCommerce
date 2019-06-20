@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq.Expressions;
 using Nop.Core;
 using Nop.Core.Domain.Localization;

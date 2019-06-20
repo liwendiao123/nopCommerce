@@ -1,4 +1,4 @@
-namespace Nop.Core.Domain.Seo
+﻿namespace Nop.Core.Domain.Seo
 {
     /// <summary>
     /// Represents an URL record

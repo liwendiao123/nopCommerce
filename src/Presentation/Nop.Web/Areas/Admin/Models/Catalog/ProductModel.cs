@@ -19,39 +19,32 @@ namespace Nop.Web.Areas.Admin.Models.Catalog
         public ProductModel()
         {
             ProductPictureModels = new List<ProductPictureModel>();
-            Locales = new List<ProductLocalizedModel>();
-            CopyProductModel = new CopyProductModel();
-            AddPictureModel = new ProductPictureModel();
-            ProductWarehouseInventoryModels = new List<ProductWarehouseInventoryModel>();
-            ProductEditorSettingsModel = new ProductEditorSettingsModel();
-            StockQuantityHistory = new StockQuantityHistoryModel();
-
-            AvailableBasepriceUnits = new List<SelectListItem>();
-            AvailableBasepriceBaseUnits = new List<SelectListItem>();
-            AvailableProductTemplates = new List<SelectListItem>();
-            AvailableTaxCategories = new List<SelectListItem>();
-            AvailableDeliveryDates = new List<SelectListItem>();
-            AvailableProductAvailabilityRanges = new List<SelectListItem>();
-            AvailableWarehouses = new List<SelectListItem>();
+                         Locales = new List<ProductLocalizedModel>();
+                CopyProductModel = new CopyProductModel();
+                 AddPictureModel = new ProductPictureModel();
+ ProductWarehouseInventoryModels = new List<ProductWarehouseInventoryModel>();
+      ProductEditorSettingsModel = new ProductEditorSettingsModel();
+            StockQuantityHistory = new StockQuantityHistoryModel();   
+         AvailableBasepriceUnits = new List<SelectListItem>();
+     AvailableBasepriceBaseUnits = new List<SelectListItem>();
+       AvailableProductTemplates = new List<SelectListItem>();
+          AvailableTaxCategories = new List<SelectListItem>();
+          AvailableDeliveryDates = new List<SelectListItem>();
+AvailableProductAvailabilityRanges = new List<SelectListItem>();
+             AvailableWarehouses = new List<SelectListItem>();
             ProductsTypesSupportedByProductTemplates = new Dictionary<int, IList<SelectListItem>>();
 
             AvailableVendors = new List<SelectListItem>();
-
             SelectedStoreIds = new List<int>();
             AvailableStores = new List<SelectListItem>();
-
             SelectedManufacturerIds = new List<int>();
             AvailableManufacturers = new List<SelectListItem>();
-
             SelectedCategoryIds = new List<int>();
             AvailableCategories = new List<SelectListItem>();
-
             SelectedCustomerRoleIds = new List<int>();
             AvailableCustomerRoles = new List<SelectListItem>();
-
             SelectedDiscountIds = new List<int>();
             AvailableDiscounts = new List<SelectListItem>();
-
             RelatedProductSearchModel = new RelatedProductSearchModel();
             CrossSellProductSearchModel = new CrossSellProductSearchModel();
             AssociatedProductSearchModel = new AssociatedProductSearchModel();

@@ -1,4 +1,4 @@
-using Nop.Core;
+﻿using Nop.Core;
 
 namespace Nop.Plugin.Shipping.FixedByWeightByTotal.Domain
 {

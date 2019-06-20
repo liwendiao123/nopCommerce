@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using System.Linq.Dynamic.Core;
 using FluentValidation;
 using Nop.Core;

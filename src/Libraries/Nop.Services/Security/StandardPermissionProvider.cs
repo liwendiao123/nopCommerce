@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Nop.Core.Domain.Customers;
 using Nop.Core.Domain.Security;
 
@@ -63,6 +63,13 @@ namespace Nop.Services.Security
         public static readonly PermissionRecord PublicStoreAllowNavigation = new PermissionRecord { Name = "Public store. Allow navigation", SystemName = "PublicStoreAllowNavigation", Category = "PublicStore" };
         public static readonly PermissionRecord AccessClosedStore = new PermissionRecord { Name = "Public store. Access a closed store", SystemName = "AccessClosedStore", Category = "PublicStore" };
 
+
+
+        //public bookstore permissions 智慧课堂权限
+        public static readonly PermissionRecord ManagerBook = new PermissionRecord { Name = "Admin area. Manager Book", SystemName = "ManagerBook",Category="AiBook" };
+        public static readonly PermissionRecord ManagerWebModel = new PermissionRecord {Name= "Admin area. Manager BookWebModel", SystemName="ManagerWebModel", Category = "AiBook" };
+        public static readonly PermissionRecord ManagerAppModel = new PermissionRecord { Name = "Admin area. ManagerAppModel", SystemName = "ManagerAppModel", Category = "AiBook" };
+       
         /// <summary>
         /// Get permissions
         /// </summary>
@@ -120,7 +127,11 @@ namespace Nop.Services.Security
                 EnableShoppingCart,
                 EnableWishlist,
                 PublicStoreAllowNavigation,
-                AccessClosedStore
+                AccessClosedStore,
+                ManagerBook ,
+                ManagerWebModel,
+                ManagerAppModel,
+
             };
         }
 
@@ -186,7 +197,10 @@ namespace Nop.Services.Security
                         EnableShoppingCart,
                         EnableWishlist,
                         PublicStoreAllowNavigation,
-                        AccessClosedStore
+                        AccessClosedStore,
+                        ManagerBook ,
+                        ManagerWebModel,
+                        ManagerAppModel,
                     }
                 },
                 new DefaultPermissionRecord 

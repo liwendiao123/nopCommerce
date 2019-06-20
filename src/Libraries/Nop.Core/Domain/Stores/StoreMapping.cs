@@ -1,4 +1,4 @@
-namespace Nop.Core.Domain.Stores
+﻿namespace Nop.Core.Domain.Stores
 {
     /// <summary>
     /// Represents a store mapping record

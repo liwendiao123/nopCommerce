@@ -1,4 +1,4 @@
-using Nop.Core.Domain.Media;
+﻿using Nop.Core.Domain.Media;
 
 namespace Nop.Core.Domain.Catalog
 {

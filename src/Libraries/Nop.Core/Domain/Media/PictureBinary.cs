@@ -1,4 +1,4 @@
-namespace Nop.Core.Domain.Media
+﻿namespace Nop.Core.Domain.Media
 {
     /// <summary>
     /// Represents a picture binary data

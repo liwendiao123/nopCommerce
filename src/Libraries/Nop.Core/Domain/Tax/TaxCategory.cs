@@ -1,4 +1,4 @@
-namespace Nop.Core.Domain.Tax
+﻿namespace Nop.Core.Domain.Tax
 {
     /// <summary>
     /// Represents a tax category

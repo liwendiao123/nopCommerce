@@ -1,0 +1,143 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Nop.Core.Domain.Discounts;
+using Nop.Web.Framework.Models;
+using Nop.Web.Framework.Mvc.ModelBinding;
+
+namespace Nop.Web.Areas.Admin.Models.TableOfContent
+{
+    public partial class BookDirModel : BaseNopEntityModel, ILocalizedModel<BookDirLocalizedModel>
+    {
+        public IList<BookDirLocalizedModel> Locales { get; set; }
+
+        #region Ctor 构造器
+
+        public BookDirModel()
+        {
+
+            Locales = new List<BookDirLocalizedModel>();
+           // AvailableMessages = new List<SelectListItem>();
+            //AvailablePhoneTypes = new List<SelectListItem>();
+        }
+
+        #endregion
+
+
+        #region Properties
+
+
+        /// <summary>
+        /// 课本目录名称
+        /// </summary>
+        [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.Name")]
+        public string Name { get; set; }
+
+        /// <summary>
+        /// 描述
+        /// </summary>
+        [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.Description")]
+        public string Description { get; set; }
+
+
+        /// <summary>
+        /// 设置媒体关键字
+        /// </summary>
+        [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.MetaKeywords")]
+        public string MetaKeywords { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets the meta description
+        /// </summary>
+        [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.MetaDescription")]
+        public string MetaDescription { get; set; }
+
+        /// <summary>
+        /// Gets or sets the meta title
+        /// </summary>
+        [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.MetaTitle")]
+        public string MetaTitle { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets the meta title
+        /// </summary>
+        [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.ParentBookDirId")]
+        public string ParentBookDirId { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets the picture identifier
+        /// </summary>
+        public int PictureId { get; set; }
+
+        /// <summary>
+        /// 获取、设置页面大小
+        /// </summary>
+        public int PageSize { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether customers can select the page size
+        /// </summary>
+        public bool AllowCustomersToSelectPageSize { get; set; }
+
+        #endregion
+
+
+        /// <summary>
+        /// Gets or sets the available customer selectable page size options
+        /// </summary>
+        public string PageSizeOptions { get; set; }
+
+        /// <summary>
+        ///获取或设置一个值，该值指示实体是否受权限设置控制
+        /// </summary>
+        public bool SubjectToAcl { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether the entity is limited/restricted to certain stores
+        /// </summary>
+        public bool LimitedToStores { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the entity is published
+        /// </summary>
+        public bool Published { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the entity has been deleted
+        /// </summary>
+        public bool Deleted { get; set; }
+
+        /// <summary>
+        /// Gets or sets the display order
+        /// </summary>
+        public int DisplayOrder { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date and time of instance creation
+        /// </summary>
+        public DateTime CreatedOnUtc { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date and time of instance update
+        /// </summary>
+        public DateTime UpdatedOnUtc { get; set; }
+
+        /// <summary>
+       /// Gets or sets the collection of applied discounts
+      /// </summary>
+     ///  public virtual IList<Discount> AppliedDiscounts => DiscountBookDirMappings.Select(mapping => mapping.Discount).ToList();
+    }
+
+
+    public partial class BookDirLocalizedModel: ILocalizedModel
+    {
+        public int LanguageId { get; set; }
+
+        [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.Name")]
+        public string Name { get; set; }
+    }
+}

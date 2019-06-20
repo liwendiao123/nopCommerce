@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Nop.Core.Domain.Security;
 
@@ -10,7 +10,6 @@ namespace Nop.Data.Mapping.Security
     public partial class PermissionRecordMap : NopEntityTypeConfiguration<PermissionRecord>
     {
         #region Methods
-
         /// <summary>
         /// Configures the entity
         /// </summary>
@@ -19,14 +18,11 @@ namespace Nop.Data.Mapping.Security
         {
             builder.ToTable(nameof(PermissionRecord));
             builder.HasKey(record => record.Id);
-
             builder.Property(record => record.Name).IsRequired();
             builder.Property(record => record.SystemName).HasMaxLength(255).IsRequired();
             builder.Property(record => record.Category).HasMaxLength(255).IsRequired();
-
             base.Configure(builder);
         }
-
         #endregion
     }
 }

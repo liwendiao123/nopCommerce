@@ -1,4 +1,4 @@
-using Nop.Core.Domain.Common;
+﻿using Nop.Core.Domain.Common;
 
 namespace Nop.Core.Domain.Customers
 {

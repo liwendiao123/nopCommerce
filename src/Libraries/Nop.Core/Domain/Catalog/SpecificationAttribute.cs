@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Nop.Core.Domain.Localization;
 
 namespace Nop.Core.Domain.Catalog

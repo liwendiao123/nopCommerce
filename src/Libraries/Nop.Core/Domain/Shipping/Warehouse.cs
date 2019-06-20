@@ -1,4 +1,4 @@
-namespace Nop.Core.Domain.Shipping
+﻿namespace Nop.Core.Domain.Shipping
 {
     /// <summary>
     /// Represents a shipment

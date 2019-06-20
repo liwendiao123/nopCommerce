@@ -1,4 +1,4 @@
-using Nop.Core.Domain.Directory;
+﻿using Nop.Core.Domain.Directory;
 
 namespace Nop.Core.Domain.Shipping
 {
