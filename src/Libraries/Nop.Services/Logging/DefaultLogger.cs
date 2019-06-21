@@ -214,10 +214,13 @@ namespace Nop.Services.Logging
                 PageUrl = _webHelper.GetThisPageUrl(true),
                 ReferrerUrl = _webHelper.GetUrlReferrer(),
                 CreatedOnUtc = DateTime.UtcNow,
-                 CustomerId = customer == null ?-1:customer.Id,
+               
                
             };
-
+            if (customer != null)
+            {
+                log.CustomerId = customer.Id;
+            }
             _logRepository.Insert(log);
 
             return log;

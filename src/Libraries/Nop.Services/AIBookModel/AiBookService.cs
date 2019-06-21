@@ -34,7 +34,7 @@ namespace Nop.Services.AIBookModel
             throw new NotImplementedException();
         }
 
-        public IPagedList<AiBookModel> SearchProducts(int pageIndex = 0, int pageSize = int.MaxValue, IList<int> categoryIds = null, int manufacturerId = 0, int storeId = 0, int vendorId = 0, bool visibleIndividuallyOnly = false, bool markedAsNewOnly = false, bool? featuredProducts = null, string keywords = null, bool searchDescriptions = false, bool searchManufacturerPartNumber = true, bool searchSku = true, bool searchProductTags = false, int languageId = 0, IList<int> filteredSpecs = null, ProductSortingEnum orderBy = ProductSortingEnum.Position, bool showHidden = false, bool? overridePublished = null)
+        public IPagedList<AiBookModel> SearchAiBookModels(int pageIndex = 0, int pageSize = int.MaxValue, IList<int> categoryIds = null, int manufacturerId = 0, int storeId = 0, int vendorId = 0, bool visibleIndividuallyOnly = false, bool markedAsNewOnly = false, bool? featuredProducts = null, string keywords = null, bool searchDescriptions = false, bool searchManufacturerPartNumber = true, bool searchSku = true, bool searchProductTags = false, int languageId = 0, IList<int> filteredSpecs = null, ProductSortingEnum orderBy = ProductSortingEnum.Position, bool showHidden = false, bool? overridePublished = null)
         {
             throw new NotImplementedException();
         }

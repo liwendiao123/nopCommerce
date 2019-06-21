@@ -7,5 +7,7 @@ namespace Nop.Web.Areas.Admin.Models.Stores
     /// </summary>
     public partial class StoreSearchModel : BaseSearchModel
     {
+
+
     }
 }

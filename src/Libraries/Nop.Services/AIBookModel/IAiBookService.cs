@@ -87,7 +87,7 @@ namespace Nop.Services.AIBookModel
         /// false - load only "Unpublished" products
         /// </param>
         /// <returns>Products</returns>
-        IPagedList<AiBookModel> SearchProducts(
+        IPagedList<AiBookModel> SearchAiBookModels(
             int pageIndex = 0,
             int pageSize = int.MaxValue,
             IList<int> categoryIds = null,

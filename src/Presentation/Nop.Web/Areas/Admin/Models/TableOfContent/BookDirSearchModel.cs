@@ -19,17 +19,32 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
         }
         #endregion
         #region Properties
+
+        /// <summary>
+        ///
+        /// </summary>
         [NopResourceDisplayName("Admin.AiBook.BookDir.List.SearchCategoryName")]
         public string SearchDirName { get; set; }
-        [NopResourceDisplayName("Admin.AiBook.BookDir.List.SearchStore")]
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [NopResourceDisplayName("Admin.AiBook.BookDir.List.SearchStore")]        
         public int SearchStoreId { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public IList<SelectListItem> AvailableStores { get; set; }
+
         /// <summary>
         /// 
         /// </summary>
         [NopResourceDisplayName("Admin.AiBook.BookDir.List.AvailableBooks")]
         public IList<SelectListItem> AvailableBooks { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool HideStoresList { get; set; }
         #endregion
     }

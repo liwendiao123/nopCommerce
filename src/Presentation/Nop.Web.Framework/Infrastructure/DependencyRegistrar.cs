@@ -49,6 +49,7 @@ using Nop.Services.Shipping;
 using Nop.Services.Shipping.Date;
 using Nop.Services.Shipping.Pickup;
 using Nop.Services.Stores;
+using Nop.Services.TableOfContent;
 using Nop.Services.Tasks;
 using Nop.Services.Tax;
 using Nop.Services.Themes;
@@ -232,7 +233,8 @@ namespace Nop.Web.Framework.Infrastructure
             builder.RegisterType<ReviewTypeService>().As<IReviewTypeService>().SingleInstance();
             builder.RegisterType<EventPublisher>().As<IEventPublisher>().SingleInstance();
             builder.RegisterType<SettingService>().As<ISettingService>().InstancePerLifetimeScope();
-
+            // builder.RegisterType<BookDirFactory>().As<IBookDirFactory>()
+            builder.RegisterType<BookDirService>().As<IBookDirService>().InstancePerLifetimeScope();
             //plugin managers
             builder.RegisterGeneric(typeof(PluginManager<>)).As(typeof(IPluginManager<>)).InstancePerLifetimeScope();
             builder.RegisterType<AuthenticationPluginManager>().As<IAuthenticationPluginManager>().InstancePerLifetimeScope();

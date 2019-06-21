@@ -19,10 +19,10 @@ namespace Nop.Data.Extensions
     {
         #region Fields
 
-        private static string databaseName;
-        private static readonly ConcurrentDictionary<string, string> tableNames = new ConcurrentDictionary<string, string>();
-        private static readonly ConcurrentDictionary<string, IEnumerable<(string, int?)>> columnsMaxLength = new ConcurrentDictionary<string, IEnumerable<(string, int?)>>();
-        private static readonly ConcurrentDictionary<string, IEnumerable<(string, decimal?)>> decimalColumnsMaxValue = new ConcurrentDictionary<string, IEnumerable<(string, decimal?)>>();
+        private static string _databaseName;
+        private static readonly ConcurrentDictionary<string, string> _tableNames = new ConcurrentDictionary<string, string>();
+        private static readonly ConcurrentDictionary<string, IEnumerable<(string, int?)>> _columnsMaxLength = new ConcurrentDictionary<string, IEnumerable<(string, int?)>>();
+        private static readonly ConcurrentDictionary<string, IEnumerable<(string, decimal?)>> _decimalColumnsMaxValue = new ConcurrentDictionary<string, IEnumerable<(string, decimal?)>>();
 
         #endregion
 
@@ -160,16 +160,16 @@ namespace Nop.Data.Extensions
                 throw new InvalidOperationException("Context does not support operation");
             
             var entityTypeFullName = typeof(TEntity).FullName;
-            if (!tableNames.ContainsKey(entityTypeFullName))
+            if (!_tableNames.ContainsKey(entityTypeFullName))
             {
                 //get entity type
                 var entityType = dbContext.Model.FindRuntimeEntityType(typeof(TEntity));
 
                 //get the name of the table to which the entity type is mapped
-                tableNames.TryAdd(entityTypeFullName, entityType.Relational().TableName);
+                _tableNames.TryAdd(entityTypeFullName, entityType.Relational().TableName);
             }
 
-            tableNames.TryGetValue(entityTypeFullName, out var tableName);
+            _tableNames.TryGetValue(entityTypeFullName, out var tableName);
 
             return tableName;
         }
@@ -190,17 +190,17 @@ namespace Nop.Data.Extensions
                 throw new InvalidOperationException("Context does not support operation");
 
             var entityTypeFullName = typeof(TEntity).FullName;
-            if (!columnsMaxLength.ContainsKey(entityTypeFullName))
+            if (!_columnsMaxLength.ContainsKey(entityTypeFullName))
             {
                 //get entity type
                 var entityType = dbContext.Model.FindEntityType(typeof(TEntity));
 
                 //get property name - max length pairs
-                columnsMaxLength.TryAdd(entityTypeFullName, 
+                _columnsMaxLength.TryAdd(entityTypeFullName, 
                     entityType.GetProperties().Select(property => (property.Name, property.GetMaxLength())));
             }
 
-            columnsMaxLength.TryGetValue(entityTypeFullName, out var result);
+            _columnsMaxLength.TryGetValue(entityTypeFullName, out var result);
 
             return result;
         }
@@ -222,7 +222,7 @@ namespace Nop.Data.Extensions
                 throw new InvalidOperationException("Context does not support operation");
 
             var entityTypeFullName = typeof(TEntity).FullName;
-            if (!decimalColumnsMaxValue.ContainsKey(entityTypeFullName))
+            if (!_decimalColumnsMaxValue.ContainsKey(entityTypeFullName))
             {
                 //get entity type
                 var entityType = dbContext.Model.FindEntityType(typeof(TEntity));
@@ -231,7 +231,7 @@ namespace Nop.Data.Extensions
                 var properties = entityType.GetProperties().Where(property => property.ClrType == typeof(decimal));
 
                 //return property name - max decimal value pairs
-                decimalColumnsMaxValue.TryAdd(entityTypeFullName, properties.Select(property =>
+                _decimalColumnsMaxValue.TryAdd(entityTypeFullName, properties.Select(property =>
                 {
                     var mapping = new RelationalTypeMappingInfo(property);
                     if (!mapping.Precision.HasValue || !mapping.Scale.HasValue)
@@ -241,7 +241,7 @@ namespace Nop.Data.Extensions
                 }));
             }
 
-            decimalColumnsMaxValue.TryGetValue(entityTypeFullName, out var result);
+            _decimalColumnsMaxValue.TryGetValue(entityTypeFullName, out var result);
 
             return result;
         }
@@ -260,16 +260,16 @@ namespace Nop.Data.Extensions
             if (!(context is DbContext dbContext))
                 throw new InvalidOperationException("Context does not support operation");
 
-            if (!string.IsNullOrEmpty(databaseName)) 
-                return databaseName;
+            if (!string.IsNullOrEmpty(_databaseName)) 
+                return _databaseName;
 
             //get database connection
             var dbConnection = dbContext.Database.GetDbConnection();
 
             //return the database name
-            databaseName = dbConnection.Database;
+            _databaseName = dbConnection.Database;
 
-            return databaseName;
+            return _databaseName;
         }
 
         /// <summary>

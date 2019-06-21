@@ -7,6 +7,7 @@ using Nop.Core.Domain.TableOfContent;
 using Nop.Services.Events;
 using System.Linq;
 using Nop.Services.Logging;
+using Nop.Core;
 
 namespace Nop.Services.TableOfContent
 {
@@ -19,6 +20,8 @@ namespace Nop.Services.TableOfContent
         private readonly IRepository<BookDir> _bookdirRepository;
         private readonly IStaticCacheManager _cacheManager;
         private readonly ILogger _logger;
+
+        private readonly IWorkContext _workContext;
         //private readonly ICacheManager
 
         #endregion
@@ -28,12 +31,13 @@ namespace Nop.Services.TableOfContent
 
         public BookDirService(IEventPublisher eventPublisher,
             IRepository<BookDir> bookdirRepository,
-            IStaticCacheManager cacheManager, ILogger logger)
+            IStaticCacheManager cacheManager, ILogger logger, IWorkContext workContext)
         {
             _eventPublisher = eventPublisher;
             _bookdirRepository = bookdirRepository;
             _cacheManager = cacheManager;
             _logger = logger;
+            _workContext = workContext;
         }
         #endregion
 
@@ -64,7 +68,7 @@ namespace Nop.Services.TableOfContent
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                _logger.Error(ex.Message,ex, _workContext.CurrentCustomer);
 
 
                 return 0;
@@ -169,7 +173,7 @@ namespace Nop.Services.TableOfContent
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message, ex);
+                _logger.Error(ex.Message, ex,_workContext.CurrentCustomer);
 
                 return 0;
             }
@@ -199,11 +203,16 @@ namespace Nop.Services.TableOfContent
                 _eventPublisher.EntityUpdated(bookdir);
 
 
-                return 1;
+                return 1
+                    
+                    
+                    
+                    
+                    ;
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message, ex);
+                _logger.Error(ex.Message, ex,_workContext.CurrentCustomer);
 
 
                 return 0;
