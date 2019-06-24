@@ -34,7 +34,7 @@ namespace Nop.Web.Areas.Admin.Controllers
             ILocalizationService localizationService,
             INotificationService notificationService, 
             IBookDirService bookDirService,
-            IBookDirFactory _bookDirFactory
+            IBookDirFactory bookDirFactory
             )
         {
             _urlRecordService = urlRecordService;
@@ -44,6 +44,7 @@ namespace Nop.Web.Areas.Admin.Controllers
             _localizationService = localizationService;
             _notificationService = notificationService;
             _bookDirService = bookDirService;
+            _bookDirFactory = bookDirFactory;
 
         }
         public IActionResult Index()
@@ -58,5 +59,38 @@ namespace Nop.Web.Areas.Admin.Controllers
 
             return View(model);
         }
+
+
+
+        #region Create / Edit / Delete
+
+        /// <summary>
+        /// 创建目录
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Create()
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.BookDirManage))
+                return AccessDeniedView();
+
+            //prepare model
+            //var model = _categoryModelFactory.PrepareCategoryModel(new CategoryModel(), null);
+            var model = _bookDirFactory.PrepareBookDirModel();
+            return View(model);
+        }
+
+
+        public IActionResult Edit()
+        {
+            return View();
+            
+        }
+
+        public IActionResult Delete()
+        {
+            return View();
+        }
+
+        #endregion
     }
 }

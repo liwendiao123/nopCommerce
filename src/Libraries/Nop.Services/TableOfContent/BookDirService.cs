@@ -8,6 +8,10 @@ using Nop.Services.Events;
 using System.Linq;
 using Nop.Services.Logging;
 using Nop.Core;
+using Nop.Core.Domain.Common;
+using Nop.Services.Security;
+using Nop.Data;
+using Nop.Services.Localization;
 
 namespace Nop.Services.TableOfContent
 {
@@ -15,23 +19,32 @@ namespace Nop.Services.TableOfContent
     {
 
         #region Fields
-
         private readonly IEventPublisher _eventPublisher;
         private readonly IRepository<BookDir> _bookdirRepository;
         private readonly IStaticCacheManager _cacheManager;
         private readonly ILogger _logger;
-
         private readonly IWorkContext _workContext;
-        //private readonly ICacheManager
+        private readonly CommonSettings _commonSettings;
+        private readonly IAclService _aclService;     
+        private readonly IDataProvider _dataProvider;
+        private readonly IDbContext _dbContext;
+        private readonly ILocalizationService _localizationService;
+        private readonly IStaticCacheManager _staticCacheManager;
+        private readonly IStoreContext _storeContext;
 
         #endregion
 
 
         #region  Ctor
 
-        public BookDirService(IEventPublisher eventPublisher,
+        public BookDirService(
+            IEventPublisher eventPublisher,
             IRepository<BookDir> bookdirRepository,
-            IStaticCacheManager cacheManager, ILogger logger, IWorkContext workContext)
+            IStaticCacheManager cacheManager, 
+            ILogger logger, 
+            IWorkContext workContext,
+            CommonSettings _commonSettings
+            )
         {
             _eventPublisher = eventPublisher;
             _bookdirRepository = bookdirRepository;
@@ -203,21 +216,38 @@ namespace Nop.Services.TableOfContent
                 _eventPublisher.EntityUpdated(bookdir);
 
 
-                return 1
-                    
-                    
-                    
-                    
-                    ;
+                return 1;
             }
             catch (Exception ex)
             {
                 _logger.Error(ex.Message, ex,_workContext.CurrentCustomer);
-
-
                 return 0;
             }
            
+        }
+
+
+        public string GetFormattedBreadCrumb(BookDir bookDir, IList<BookDir> allBookDirs = null,
+            string separator = ">>", int languageId = 0)
+        {
+            var result = string.Empty;
+
+            var breadcrumb = GetBookDirBreadCrumb(bookDir, allBookDirs, true);
+            for (var i = 0; i <= breadcrumb.Count - 1; i++)
+            {
+                var categoryName = _localizationService.GetLocalized(breadcrumb[i], x => x.Name, languageId);
+                result = string.IsNullOrEmpty(result) ? categoryName : $"{result} {separator} {categoryName}";
+            }
+
+            return result;
+        }
+
+        IList<BookDir> GetBookDirBreadCrumb(BookDir bookDir, IList<BookDir> allBookDirs = null, bool showHidden = false)
+        {
+
+
+
+            return new List<BookDir>();
         }
     }
 }

@@ -66,9 +66,9 @@ namespace Nop.Services.Security
 
 
         //public bookstore permissions 智慧课堂权限
-        public static readonly PermissionRecord ManagerBook = new PermissionRecord { Name = "Admin area. Manager Book", SystemName = "ManagerBook",Category="AiBook" };
-        public static readonly PermissionRecord ManagerWebModel = new PermissionRecord {Name= "Admin area. Manager BookWebModel", SystemName="ManagerWebModel", Category = "AiBook" };
-        public static readonly PermissionRecord ManagerAppModel = new PermissionRecord { Name = "Admin area. ManagerAppModel", SystemName = "ManagerAppModel", Category = "AiBook" };
+        public static readonly PermissionRecord ManagerBook = new PermissionRecord { Name = "Admin area. Manager Book", SystemName = "AiBookManage", Category="AiBook" };
+        public static readonly PermissionRecord BookDirManage = new PermissionRecord {Name= "Admin area. Manager BookWebModel", SystemName= "AiBookDirManage", Category = "AiBook" };
+        public static readonly PermissionRecord BookModelManage = new PermissionRecord { Name = "Admin area. ManagerAppModel", SystemName = "AiBookModelManage", Category = "AiBook" };
        
         /// <summary>
         /// Get permissions
@@ -129,8 +129,8 @@ namespace Nop.Services.Security
                 PublicStoreAllowNavigation,
                 AccessClosedStore,
                 ManagerBook ,
-                ManagerWebModel,
-                ManagerAppModel,
+                BookDirManage,
+                BookModelManage,
 
             };
         }
@@ -199,8 +199,8 @@ namespace Nop.Services.Security
                         PublicStoreAllowNavigation,
                         AccessClosedStore,
                         ManagerBook ,
-                        ManagerWebModel,
-                        ManagerAppModel,
+                        BookDirManage,
+                        BookModelManage,
                     }
                 },
                 new DefaultPermissionRecord 

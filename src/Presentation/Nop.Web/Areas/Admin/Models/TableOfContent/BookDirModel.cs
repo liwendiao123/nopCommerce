@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Nop.Core.Domain.Discounts;
 using Nop.Web.Framework.Models;
 using Nop.Web.Framework.Mvc.ModelBinding;
@@ -12,13 +13,20 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
     {
         public IList<BookDirLocalizedModel> Locales { get; set; }
 
+
+        public IList<SelectListItem> BookList { get; set; }
+
+        public IList<SelectListItem> ParentBookDir { get; set; }
+
         #region Ctor 构造器
 
         public BookDirModel()
         {
 
             Locales = new List<BookDirLocalizedModel>();
-           // AvailableMessages = new List<SelectListItem>();
+            BookList =new List<SelectListItem>();
+            ParentBookDir = new List<SelectListItem>();
+            // AvailableMessages = new List<SelectListItem>();
             //AvailablePhoneTypes = new List<SelectListItem>();
         }
 
