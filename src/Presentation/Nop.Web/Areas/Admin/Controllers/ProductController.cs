@@ -729,18 +729,14 @@ namespace Nop.Web.Areas.Admin.Controllers
         {
             return RedirectToAction("List");
         }
-
         public virtual IActionResult List()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageProducts))
-                return AccessDeniedView();
-
-            //prepare model
-            var model = _productModelFactory.PrepareProductSearchModel(new ProductSearchModel());
-
+                return AccessDeniedView();           
+           //prepare model
+            var model = _productModelFactory.PrepareProductSearchModel(new ProductSearchModel());            
             return View(model);
         }
-
         [HttpPost]
         public virtual IActionResult ProductList(ProductSearchModel searchModel)
         {

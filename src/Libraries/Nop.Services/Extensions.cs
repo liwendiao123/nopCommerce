@@ -32,7 +32,7 @@ namespace Nop.Services
             var values = from TEnum enumValue in Enum.GetValues(typeof(TEnum))
                          where valuesToExclude == null || !valuesToExclude.Contains(Convert.ToInt32(enumValue))
                          select new { ID = Convert.ToInt32(enumValue), Name = useLocalization ? localizationService.GetLocalizedEnum(enumValue) : CommonHelper.ConvertEnum(enumValue.ToString()) };
-            object selectedValue = null;
+            object selectedValue                  = null;
             if (markCurrentAsSelected)
                 selectedValue = Convert.ToInt32(enumObj);
             return new SelectList(values, "ID", "Name", selectedValue);

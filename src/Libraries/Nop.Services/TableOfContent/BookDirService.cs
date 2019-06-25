@@ -12,6 +12,7 @@ using Nop.Core.Domain.Common;
 using Nop.Services.Security;
 using Nop.Data;
 using Nop.Services.Localization;
+using Nop.Core.Domain.Stores;
 
 namespace Nop.Services.TableOfContent
 {
@@ -21,6 +22,7 @@ namespace Nop.Services.TableOfContent
         #region Fields
         private readonly IEventPublisher _eventPublisher;
         private readonly IRepository<BookDir> _bookdirRepository;
+        private readonly IRepository<StoreMapping> _storeMappingRepository;
         private readonly IStaticCacheManager _cacheManager;
         private readonly ILogger _logger;
         private readonly IWorkContext _workContext;
@@ -43,7 +45,7 @@ namespace Nop.Services.TableOfContent
             IStaticCacheManager cacheManager, 
             ILogger logger, 
             IWorkContext workContext,
-            CommonSettings _commonSettings
+            CommonSettings commonSettings
             )
         {
             _eventPublisher = eventPublisher;
@@ -115,6 +117,124 @@ namespace Nop.Services.TableOfContent
             }
 
             return loadBookDirsFunc();
+        }
+
+
+        /// <summary>
+        /// Gets all categories
+        /// </summary>
+        /// <param name="categoryName">Category name</param>
+        /// <param name="storeId">Store identifier; 0 if you want to get all records</param>
+        /// <param name="pageIndex">Page index</param>
+        /// <param name="pageSize">Page size</param>
+        /// <param name="showHidden">A value indicating whether to show hidden records</param>
+        /// <returns>Categories</returns>
+        public virtual IPagedList<BookDir> GetAllCategories(string categoryName, int storeId = 0,
+            int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false)
+        {
+            //if (_commonSettings.UseStoredProcedureForLoadingCategories)
+            //{
+            //    //stored procedures are enabled for loading categories and supported by the database. 
+            //    //It's much faster with a large number of categories than the LINQ implementation below 
+
+            //    //prepare parameters
+            //    var showHiddenParameter = _dataProvider.GetBooleanParameter("ShowHidden", showHidden);
+            //    var nameParameter = _dataProvider.GetStringParameter("Name", categoryName ?? string.Empty);
+            //    var storeIdParameter = _dataProvider.GetInt32Parameter("StoreId", !_catalogSettings.IgnoreStoreLimitations ? storeId : 0);
+            //    var pageIndexParameter = _dataProvider.GetInt32Parameter("PageIndex", pageIndex);
+            //    var pageSizeParameter = _dataProvider.GetInt32Parameter("PageSize", pageSize);
+            //    //pass allowed customer role identifiers as comma-delimited string
+            //    var customerRoleIdsParameter = _dataProvider.GetStringParameter("CustomerRoleIds", !_catalogSettings.IgnoreAcl ? string.Join(",", _workContext.CurrentCustomer.GetCustomerRoleIds()) : string.Empty);
+
+            //    var totalRecordsParameter = _dataProvider.GetOutputInt32Parameter("TotalRecords");
+
+            //    //invoke stored procedure
+            //    var categories = _dbContext.EntityFromSql<Category>("CategoryLoadAllPaged",
+            //        showHiddenParameter, nameParameter, storeIdParameter, customerRoleIdsParameter,
+            //        pageIndexParameter, pageSizeParameter, totalRecordsParameter).ToList();
+            //    var totalRecords = totalRecordsParameter.Value != DBNull.Value ? Convert.ToInt32(totalRecordsParameter.Value) : 0;
+
+            //    //paging
+            //    return new PagedList<Category>(categories, pageIndex, pageSize, totalRecords);
+            //}
+
+            //don't use a stored procedure. Use LINQ
+            var query = _bookdirRepository.Table;
+            if (!showHidden)
+                query = query.Where(c => c.Published);
+            if (!string.IsNullOrWhiteSpace(categoryName))
+                query = query.Where(c => c.Name.Contains(categoryName));
+            query = query.Where(c => !c.Deleted);
+            query = query.OrderBy(c => c.ParentBookDirId).ThenBy(c => c.DisplayOrder).ThenBy(c => c.Id);
+
+            //if ((storeId > 0 && !_catalogSettings.IgnoreStoreLimitations) || (!showHidden && !_catalogSettings.IgnoreAcl))
+            //{
+            //    //if (!showHidden && !_catalogSettings.IgnoreAcl)
+            //    //{
+            //    //    //ACL (access control list)
+            //    //    var allowedCustomerRolesIds = _workContext.CurrentCustomer.GetCustomerRoleIds();
+            //    //    query = from c in query
+            //    //            join acl in _aclRepository.Table
+            //    //                on new { c1 = c.Id, c2 = nameof(Category) } equals new { c1 = acl.EntityId, c2 = acl.EntityName } into c_acl
+            //    //            from acl in c_acl.DefaultIfEmpty()
+            //    //            where !c.SubjectToAcl || allowedCustomerRolesIds.Contains(acl.CustomerRoleId)
+            //    //            select c;
+            //    //}
+
+            //    //if (storeId > 0 && !_catalogSettings.IgnoreStoreLimitations)
+            //    //{
+            //    //    //Store mapping
+            //    //    query = from c in query
+            //    //            join sm in _storeMappingRepository.Table
+            //    //                on new { c1 = c.Id, c2 = nameof(Category) } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into c_sm
+            //    //            from sm in c_sm.DefaultIfEmpty()
+            //    //            where !c.LimitedToStores || storeId == sm.StoreId
+            //    //            select c;
+            //    //}
+
+            //    query = query.Distinct().OrderBy(c => c.ParentBookDirId).ThenBy(c => c.DisplayOrder).ThenBy(c => c.Id);
+            //}
+
+            var unsortedCategories = query.ToList();
+
+            //sort categories
+            var sortedCategories = SortBookDirsForTree(unsortedCategories);
+
+            //paging
+            return new PagedList<BookDir>(sortedCategories, pageIndex, pageSize);
+        }
+
+
+        /// <summary>
+        /// Sort categories for tree representation
+        /// </summary>
+        /// <param name="source">Source</param>
+        /// <param name="parentId">Parent category identifier</param>
+        /// <param name="ignoreCategoriesWithoutExistingParent">A value indicating whether categories without parent category in provided category list (source) should be ignored</param>
+        /// <returns>Sorted categories</returns>
+        public virtual IList<BookDir> SortBookDirsForTree(IList<BookDir> source, int parentId = 0,
+            bool ignoreCategoriesWithoutExistingParent = false)
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
+            var result = new List<BookDir>();
+
+            foreach (var cat in source.Where(c => c.ParentBookDirId == parentId).ToList())
+            {
+                result.Add(cat);
+                result.AddRange(SortBookDirsForTree(source, cat.Id, true));
+            }
+
+            if (ignoreCategoriesWithoutExistingParent || result.Count == source.Count)
+                return result;
+
+            //find categories without parent in provided category source and insert them into result
+            foreach (var cat in source)
+                if (result.FirstOrDefault(x => x.Id == cat.Id) == null)
+                    result.Add(cat);
+
+            return result;
         }
 
         public BookDir GetBookDirById(int storeId, bool loadCacheableCopy = true)
@@ -226,7 +346,6 @@ namespace Nop.Services.TableOfContent
            
         }
 
-
         public string GetFormattedBreadCrumb(BookDir bookDir, IList<BookDir> allBookDirs = null,
             string separator = ">>", int languageId = 0)
         {
@@ -242,12 +361,33 @@ namespace Nop.Services.TableOfContent
             return result;
         }
 
-        IList<BookDir> GetBookDirBreadCrumb(BookDir bookDir, IList<BookDir> allBookDirs = null, bool showHidden = false)
+      public  IList<BookDir> GetBookDirBreadCrumb(BookDir bookDir, IList<BookDir> allBookDirs = null, bool showHidden = false)
         {
+            if (bookDir == null)
+                throw new ArgumentNullException(nameof(bookDir));
 
+            var result = new List<BookDir>();
 
+            //used to prevent circular references
+            var alreadyProcessedCategoryIds = new List<int>();
 
-            return new List<BookDir>();
+            while (bookDir != null && //not null
+                !bookDir.Deleted && //not deleted
+                (showHidden || bookDir.Published) && //published
+                (showHidden || _aclService.Authorize(bookDir)) && //ACL
+               // (showHidden || _storeMappingService.Authorize(bookDir)) && //Store mapping
+                !alreadyProcessedCategoryIds.Contains(bookDir.Id)) //prevent circular references
+            {
+                result.Add(bookDir);
+                alreadyProcessedCategoryIds.Add(bookDir.Id);
+                bookDir = allBookDirs != null ? allBookDirs.FirstOrDefault(c => c.Id == bookDir.ParentBookDirId)
+                    : GetBookDirById( bookDir.ParentBookDirId );
+            }
+            result.Reverse();
+            return result;
+           // return new List<BookDir>();
         }
+
+       // IList<BookDir> GetBookDirBreadCrumb(BookDir bookDir, IList<BookDir> allBookDirs = null, bool showHidden = false)
     }
 }

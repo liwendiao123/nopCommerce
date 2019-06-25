@@ -721,17 +721,14 @@ namespace Nop.Services.Catalog
             string separator = ">>", int languageId = 0)
         {
             var result = string.Empty;
-
             var breadcrumb = GetCategoryBreadCrumb(category, allCategories, true);
             for (var i = 0; i <= breadcrumb.Count - 1; i++)
             {
                 var categoryName = _localizationService.GetLocalized(breadcrumb[i], x => x.Name, languageId);
                 result = string.IsNullOrEmpty(result) ? categoryName : $"{result} {separator} {categoryName}";
             }
-
             return result;
         }
-
         /// <summary>
         /// Get category breadcrumb 
         /// </summary>
@@ -767,7 +764,6 @@ namespace Nop.Services.Catalog
             result.Reverse();
             return result;
         }
-
         #endregion
     }
 }

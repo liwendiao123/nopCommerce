@@ -102,15 +102,11 @@ namespace Nop.Web.Areas.Admin.Factories
         {
             if (searchModel == null)
                 throw new ArgumentNullException(nameof(searchModel));
-
             //prepare available stores
             _baseAdminModelFactory.PrepareStores(searchModel.AvailableStores);
-
-            searchModel.HideStoresList = _catalogSettings.IgnoreStoreLimitations || searchModel.AvailableStores.SelectionIsNotPossible();
-
+            searchModel.HideStoresList = _catalogSettings.IgnoreStoreLimitations || searchModel.AvailableStores.SelectionIsNotPossible();       
             //prepare page parameters
             searchModel.SetGridPageSize();
-
             return searchModel;
         }
 
@@ -123,13 +119,14 @@ namespace Nop.Web.Areas.Admin.Factories
         {
             if (searchModel == null)
                 throw new ArgumentNullException(nameof(searchModel));
-
             //get categories
-            var categories = _categoryService.GetAllCategories(categoryName: searchModel.SearchCategoryName,
+            var categories = _categoryService.GetAllCategories(
+                categoryName: searchModel.SearchCategoryName,
                 showHidden: true,
                 storeId: searchModel.SearchStoreId,
-                pageIndex: searchModel.Page - 1, pageSize: searchModel.PageSize);
-
+                pageIndex: searchModel.Page - 1,
+                pageSize: searchModel.PageSize
+                );
             //prepare grid model
             var model = new CategoryListModel().PrepareToGrid(searchModel, categories, () =>
             {
@@ -137,11 +134,9 @@ namespace Nop.Web.Areas.Admin.Factories
                 {
                     //fill in model values from the entity
                     var categoryModel = category.ToModel<CategoryModel>();
-
                     //fill in additional values (not existing in the entity)
                     categoryModel.Breadcrumb = _categoryService.GetFormattedBreadCrumb(category);
                     categoryModel.SeName = _urlRecordService.GetSeName(category, 0, true, false);
-
                     return categoryModel;
                 });
             });

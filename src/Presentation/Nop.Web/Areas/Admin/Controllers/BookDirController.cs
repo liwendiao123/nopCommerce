@@ -61,6 +61,39 @@ namespace Nop.Web.Areas.Admin.Controllers
         }
 
 
+        #region List
+
+        //public virtual IActionResult Index()
+        //{
+        //    return RedirectToAction("List");
+        //}
+
+        public virtual IActionResult List()
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCategories))
+                return AccessDeniedView();
+
+            //prepare model
+            var model = _bookDirFactory.PrepareBookDirSearchModel(new BookDirSearchModel(),new BookDirModel());
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public virtual IActionResult List(CategorySearchModel searchModel)
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCategories))
+                return AccessDeniedDataTablesJson();
+
+            //prepare model
+            var model = _categoryModelFactory.PrepareCategoryListModel(searchModel);
+
+            return Json(model);
+        }
+
+        #endregion
+
+
 
         #region Create / Edit / Delete
 

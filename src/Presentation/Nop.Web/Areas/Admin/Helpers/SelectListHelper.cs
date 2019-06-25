@@ -6,6 +6,8 @@ using Nop.Web.Areas.Admin.Infrastructure.Cache;
 using Nop.Core.Caching;
 using Nop.Services.Catalog;
 using Nop.Services.Vendors;
+using Nop.Services.TableOfContent;
+using Nop.Core.Domain.Customers;
 
 namespace Nop.Web.Areas.Admin.Helpers
 {
@@ -133,5 +135,41 @@ namespace Nop.Web.Areas.Admin.Helpers
 
             return result;
         }
+
+        public static List<SelectListItem> GetBookDirList(IBookDirService bookDirService,Customer customer = null, ICacheManager cacheManager = null, bool showHidden = false)
+        {
+            if (bookDirService == null)
+                throw new ArgumentNullException(nameof(bookDirService));
+
+            if (cacheManager == null)
+                throw new ArgumentNullException(nameof(cacheManager));
+
+            var cacheKey = string.Format(NopModelCacheDefaults.VendorsListKey, showHidden);
+            var listItems = cacheManager.Get(cacheKey, () =>
+            {
+                //   var vendors = bookDirService.GetAllVendors(showHidden: showHidden);
+                var vendors = bookDirService.GetAllBookDirs();
+                return vendors.Select(v => new SelectListItem
+                {
+                    Text = v.Name,
+                    Value = v.Id.ToString()
+                });
+            });
+
+            var result = new List<SelectListItem>();
+            //clone the list to ensure that "selected" property is not set
+            foreach (var item in listItems)
+            {
+                result.Add(new SelectListItem
+                {
+                    Text = item.Text,
+                    Value = item.Value
+                });
+            }
+
+            return result;
+        }
+
+            
     }
 }

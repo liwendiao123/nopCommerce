@@ -45,7 +45,14 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
         /// <summary>
         /// 
         /// </summary>
+
+        [NopResourceDisplayName("Admin.AiBook.BookDir.List.Category")]
+        public IList<SelectListItem> AvailableCategories { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public bool HideStoresList { get; set; }
         #endregion
     }
 }
+ 

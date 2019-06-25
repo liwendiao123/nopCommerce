@@ -117,8 +117,19 @@ namespace Nop.Web.Areas.Admin.Factories
                 throw new ArgumentNullException(nameof(searchModel));
             searchModel.SearchDirName = bdm.Name;
 
+
+
+
+          ///  searchModel.AvailableBooks = 
+
             //prepare available stores
             _baseAdminModelFactory.PrepareStores(searchModel.AvailableStores);
+
+
+            _baseAdminModelFactory.PrepareCategories(searchModel.AvailableCategories);
+
+           //searchModel.AvailableBooks = _productService.ge
+
 
             //prepare page parameters
             searchModel.SetGridPageSize();

@@ -7,6 +7,7 @@ using Nop.Core.Domain.Seo;
 using Nop.Core.Domain.Stores;
 using System.Linq;
 using Nop.Core.Domain.AIBookModel;
+using Nop.Core.Domain.Localization;
 
 namespace Nop.Core.Domain.TableOfContent
 {
@@ -14,7 +15,7 @@ namespace Nop.Core.Domain.TableOfContent
     /// <summary>
     /// 书籍目录
     /// </summary>
-    public partial class BookDir : BaseEntity, ISlugSupported, IAclSupported, IStoreMappingSupported//, IDiscountSupported
+    public partial class BookDir : BaseEntity, ISlugSupported, IAclSupported, IStoreMappingSupported, ILocalizedEntity
     {
 
 
@@ -58,7 +59,7 @@ namespace Nop.Core.Domain.TableOfContent
         /// <summary>
         /// Gets or sets the parent category identifier
         /// </summary>
-        public string ParentBookDirId { get; set; }
+        public int ParentBookDirId { get; set; }
 
         /// <summary>
         /// Gets or sets the picture identifier

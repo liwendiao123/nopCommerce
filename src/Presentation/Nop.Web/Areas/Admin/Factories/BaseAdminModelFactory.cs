@@ -58,6 +58,7 @@ namespace Nop.Web.Areas.Admin.Factories
         private readonly IStoreService _storeService;
         private readonly ITaxCategoryService _taxCategoryService;
         private readonly ITopicTemplateService _topicTemplateService;
+        //private readonly 
         private readonly IVendorService _vendorService;
 
         #endregion
@@ -862,6 +863,54 @@ namespace Nop.Web.Areas.Admin.Factories
             //insert special item for the default value
             PrepareDefaultItem(items, withSpecialDefaultItem, defaultItemText);
         }
+
+        /// <summary>
+        /// 获取书籍集合
+        /// </summary>
+        /// <param name="items"></param>
+        /// <param name="withSpecialDefaultItem"></param>
+        /// <param name="defaultItemText"></param>
+        public virtual void PrepareBookItems(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null)
+        {
+            if (items == null)
+                throw new ArgumentNullException(nameof(items));
+
+            //prepare available request types
+            var gdprRequestTypeItems = GdprRequestType.ConsentAgree.ToSelectList(false);
+            foreach (var gdprRequestTypeItem in gdprRequestTypeItems)
+            {
+                items.Add(gdprRequestTypeItem);
+            }
+
+            //insert special item for the default value
+            PrepareDefaultItem(items, withSpecialDefaultItem, defaultItemText);
+        }
+
+        /// <summary>
+        /// 获取书籍
+        /// </summary>
+        /// <param name="items"></param>
+        /// <param name="withSpecialDefaultItem"></param>
+        /// <param name="defaultText"></param>
+        public virtual void PrepareBookDirItem(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultText = null)
+        {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+        }
+
+        
         #endregion
     }
 }
