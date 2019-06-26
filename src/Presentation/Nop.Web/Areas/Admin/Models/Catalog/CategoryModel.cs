@@ -20,19 +20,15 @@ namespace Nop.Web.Areas.Admin.Models.Catalog
             {
                 PageSize = 5;
             }
-
             Locales = new List<CategoryLocalizedModel>();
             AvailableCategoryTemplates = new List<SelectListItem>();
             AvailableCategories = new List<SelectListItem>();
             AvailableDiscounts = new List<SelectListItem>();
             SelectedDiscountIds = new List<int>();
-
             SelectedCustomerRoleIds = new List<int>();
             AvailableCustomerRoles = new List<SelectListItem>();
-
             SelectedStoreIds = new List<int>();
             AvailableStores = new List<SelectListItem>();
-
             CategoryProductSearchModel = new CategoryProductSearchModel();
         }
 

@@ -9,7 +9,8 @@ using Nop.Web.Framework.Mvc.ModelBinding;
 
 namespace Nop.Web.Areas.Admin.Models.TableOfContent
 {
-    public partial class BookDirModel : BaseNopEntityModel, ILocalizedModel<BookDirLocalizedModel>
+    public partial class BookDirModel : BaseNopEntityModel, ILocalizedModel<BookDirLocalizedModel>, IStoreMappingSupportedModel, IAclSupportedModel, IDiscountSupportedModel
+        
     {
         public IList<BookDirLocalizedModel> Locales { get; set; }
 
@@ -26,8 +27,14 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
             Locales = new List<BookDirLocalizedModel>();
             BookList =new List<SelectListItem>();
             ParentBookDir = new List<SelectListItem>();
-            // AvailableMessages = new List<SelectListItem>();
-            //AvailablePhoneTypes = new List<SelectListItem>();
+            SelectedCustomerRoleIds = new List<int>();
+            AvailableCustomerRoles = new List<SelectListItem>();
+            AvailableCategories = new List<SelectListItem>();
+            AvailableDiscounts = new List<SelectListItem>();
+            AvailableStores = new List<SelectListItem>();
+            SelectedStoreIds = new List<int>();
+
+
         }
 
         #endregion
@@ -133,11 +140,34 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
         /// Gets or sets the date and time of instance update
         /// </summary>
         public DateTime UpdatedOnUtc { get; set; }
+        public string Breadcrumb { get; internal set; }
+        public string SeName { get; internal set; }
+
+
+
+        //ACL (customer roles)
+        [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.AclCustomerRoles")]
+        public IList<int> SelectedCustomerRoleIds { get; set; }
+        public IList<SelectListItem> AvailableCustomerRoles { get; set; }
+
+        //store mapping
+        [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.LimitedToStores")]
+        public IList<int> SelectedStoreIds { get; set; }
+        public IList<SelectListItem> AvailableStores { get; set; }
+
+        public IList<SelectListItem> AvailableCategories { get; set; }
+
+        //discounts
+        [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.Discounts")]
+        public IList<int> SelectedDiscountIds { get; set; }
+        public IList<SelectListItem> AvailableDiscounts { get; set; }
+
+        public BookDirSearchModel CategoryProductSearchModel { get; set; }
 
         /// <summary>
-       /// Gets or sets the collection of applied discounts
-      /// </summary>
-     ///  public virtual IList<Discount> AppliedDiscounts => DiscountBookDirMappings.Select(mapping => mapping.Discount).ToList();
+        /// Gets or sets the collection of applied discounts
+        /// </summary>
+        ///  public virtual IList<Discount> AppliedDiscounts => DiscountBookDirMappings.Select(mapping => mapping.Discount).ToList();
     }
 
 

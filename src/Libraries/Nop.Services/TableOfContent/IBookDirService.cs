@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Nop.Core;
 using Nop.Core.Domain.TableOfContent;
 
 namespace Nop.Services.TableOfContent
@@ -32,6 +33,10 @@ namespace Nop.Services.TableOfContent
         /// <param name="loadCacheableCopy">A value indicating whether to load a copy that could be cached (workaround until Entity Framework supports 2-level caching)</param>
         /// <returns>Stores</returns>
         IList<BookDir> GetAllBookDirs(bool loadCacheableCopy = true);
+
+        IPagedList<BookDir> GetAllBookDirsData(string categoryName, int storeId = 0,
+            int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false);
+
         /// <summary>
         /// Gets a store 
         /// </summary>

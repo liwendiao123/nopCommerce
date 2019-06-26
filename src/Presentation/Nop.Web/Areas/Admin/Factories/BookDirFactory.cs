@@ -16,6 +16,9 @@ using Nop.Services.Stores;
 using Nop.Services.TableOfContent;
 using Nop.Web.Areas.Admin.Models.TableOfContent;
 using Nop.Web.Framework.Factories;
+using Nop.Web.Framework.Models.Extensions;
+using Nop.Web.Areas.Admin.Infrastructure.Mapper.Extensions;
+using Nop.Core.Domain.TableOfContent;
 
 namespace Nop.Web.Areas.Admin.Factories
 {
@@ -25,7 +28,7 @@ namespace Nop.Web.Areas.Admin.Factories
         #region Fields
         private readonly IAclSupportedModelFactory _aclSupportedModelFactory;
         private readonly IBaseAdminModelFactory _baseAdminModelFactory;
-        private readonly IBookDirFactory _bookDirFactory;
+      //  private readonly IBookDirFactory _bookDirFactory;
         private readonly IBookDirService _bookDirService;
         private readonly ICategoryService _categoryService;
         private readonly ICurrencyService _currencyService;
@@ -68,7 +71,7 @@ namespace Nop.Web.Areas.Admin.Factories
             ,IStoreMappingSupportedModelFactory storeMappingSupportedModelFactory
             ,IWorkContext workContext      
             ,IBookDirService bookDirService
-            ,IBookDirFactory bookDirFactory
+          
             ,IUrlRecordService urlRecordService)
         {
             _baseAdminModelFactory = baseAdminModelFactory;
@@ -87,24 +90,102 @@ namespace Nop.Web.Areas.Admin.Factories
             _workContext = workContext;
             _bookDirService = bookDirService;
             _urlRecordService = urlRecordService;
-            _bookDirFactory = bookDirFactory;
+           // _bookDirFactory = bookDirFactory;
         }
-        public BookDirListModel PrepareBookDirListModel()
+        public BookDirListModel PrepareBookDirListModel(BookDirSearchModel searchModel)
         {
 
-            try
+            if (searchModel == null)
             {
-
+                throw new ArgumentNullException(nameof(searchModel));
             }
-            catch (Exception ex)
+
+           var result =   _bookDirService.GetAllBookDirsData(searchModel.SearchDirName,0, searchModel.Page, searchModel.PageSize);
+
+
+            var model = new BookDirListModel().PrepareToGrid(searchModel, result, () =>
             {
+                return result.Select(category =>
+                {
+                    //fill in model values from the entity
+                    var categoryModel = category.ToModel<BookDirModel>();
+                    //fill in additional values (not existing in the entity)
+                    categoryModel.Breadcrumb = _bookDirService.GetFormattedBreadCrumb(category);
+                    categoryModel.SeName = _urlRecordService.GetSeName(category, 0, true, false);
+                    return categoryModel;
+                });
+            });
 
-            }
-            throw new NotImplementedException();
+
+            return model;
         }
+        public BookDirModel PrepareBookDirModel(BookDirModel model, BookDir category = null, bool excludeProperties = false)
+        {
+            Action<BookDirLocalizedModel, int> localizedModelConfiguration = null;
+
+            if (category != null)
+            {
+                //fill in model values from the entity
+                if (model == null)
+                {
+                    model = category.ToModel<BookDirModel>();
+                    model.SeName = _urlRecordService.GetSeName(category, 0, true, false);
+                }
+
+                //prepare nested search model
+
+               // PrepareBookDirSearchModel()
+
+              //  PrepareCategoryProductSearchModel(model.CategoryProductSearchModel, category);
+
+                //define localized model configuration action
+                localizedModelConfiguration = (locale, languageId) =>
+                {
+                    locale.Name = _localizationService.GetLocalized(category, entity => entity.Name, languageId, false, false);
+                    //locale.Description = _localizationService.GetLocalized(category, entity => entity.Description, languageId, false, false);
+                    //locale.MetaKeywords = _localizationService.GetLocalized(category, entity => entity.MetaKeywords, languageId, false, false);
+                    //locale.MetaDescription = _localizationService.GetLocalized(category, entity => entity.MetaDescription, languageId, false, false);
+                    //locale.MetaTitle = _localizationService.GetLocalized(category, entity => entity.MetaTitle, languageId, false, false);
+                    //locale.SeName = _urlRecordService.GetSeName(category, languageId, false, false);
+                };
+            }
+
+            //set default values for the new model
+            if (category == null)
+            {
+              //  model.PageSize = _catalogSettings.DefaultCategoryPageSize;
+               // model.PageSizeOptions = _catalogSettings.DefaultCategoryPageSizeOptions;
+                model.Published = true;
+              //  model.IncludeInTopMenu = true;
+                model.AllowCustomersToSelectPageSize = true;
+            }
+
+            //prepare localized models
+           // if (!excludeProperties)
+               //model.Locales = _localizedModelFactory.PrepareLocalizedModels(localizedModelConfiguration);
+
+            //prepare available category templates
+           // _baseAdminModelFactory.PrepareCategoryTemplates(model.AvailableCategoryTemplates, false);
+            //prepare available parent categories
+          //  _baseAdminModelFactory.PrepareCategories(model.a,
+            //    defaultItemText: _localizationService.GetResource("Admin.Catalog.Categories.Fields.Parent.None"));
+            //prepare model discounts
+           // var availableDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToCategories, showHidden: true);
+            //_discountSupportedModelFactory.PrepareModelDiscounts(model, category, availableDiscounts, excludeProperties);
+            //prepare model customer roles
+            _aclSupportedModelFactory.PrepareModelCustomerRoles(model, category, excludeProperties);
+            //prepare model stores
+           _storeMappingSupportedModelFactory.PrepareModelStores(model, category, excludeProperties);
+            return model;
+        }
+
         public BookDirModel PrepareBookDirModel()
         {
-            throw new NotImplementedException();
+
+
+          return  PrepareBookDirModel(new BookDirModel());
+
+            ///throw new NotImplementedException();
         }
 
         public BookDirSearchModel PrepareBookDirSearchModel(BookDirSearchModel searchModel, BookDirModel bdm)
@@ -116,12 +197,7 @@ namespace Nop.Web.Areas.Admin.Factories
             if (searchModel == null)
                 throw new ArgumentNullException(nameof(searchModel));
             searchModel.SearchDirName = bdm.Name;
-
-
-
-
           ///  searchModel.AvailableBooks = 
-
             //prepare available stores
             _baseAdminModelFactory.PrepareStores(searchModel.AvailableStores);
 

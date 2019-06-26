@@ -10,8 +10,8 @@ namespace Nop.Web.Areas.Admin.Factories
     {
         BookDirSearchModel PrepareBookDirSearchModel(BookDirSearchModel searchModel, BookDirModel bdm);
 
-        BookDirListModel PrepareBookDirListModel();
-
+        BookDirListModel PrepareBookDirListModel(BookDirSearchModel model);
+    
         BookDirModel PrepareBookDirModel();
     }
 }

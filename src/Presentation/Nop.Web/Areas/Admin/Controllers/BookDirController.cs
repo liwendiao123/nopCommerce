@@ -80,13 +80,13 @@ namespace Nop.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public virtual IActionResult List(CategorySearchModel searchModel)
+        public virtual IActionResult List(BookDirSearchModel searchModel)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCategories))
                 return AccessDeniedDataTablesJson();
 
             //prepare model
-            var model = _categoryModelFactory.PrepareCategoryListModel(searchModel);
+            var model = _bookDirFactory.PrepareBookDirSearchModel(searchModel,new BookDirModel());
 
             return Json(model);
         }
@@ -96,7 +96,6 @@ namespace Nop.Web.Areas.Admin.Controllers
 
 
         #region Create / Edit / Delete
-
         /// <summary>
         /// 创建目录
         /// </summary>
@@ -105,7 +104,6 @@ namespace Nop.Web.Areas.Admin.Controllers
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.BookDirManage))
                 return AccessDeniedView();
-
             //prepare model
             //var model = _categoryModelFactory.PrepareCategoryModel(new CategoryModel(), null);
             var model = _bookDirFactory.PrepareBookDirModel();
@@ -115,13 +113,31 @@ namespace Nop.Web.Areas.Admin.Controllers
 
         public IActionResult Edit()
         {
+
+            if (!_permissionService.Authorize(StandardPermissionProvider.BookDirManage))
+                return AccessDeniedView();
             return View();
             
         }
 
         public IActionResult Delete()
         {
+
+            if (!_permissionService.Authorize(StandardPermissionProvider.BookDirManage))
+                return AccessDeniedView();
+
             return View();
+        }
+
+
+        public IActionResult GetList(BookDirSearchModel searchModel)
+        {
+
+
+            //prepare model
+            var model = _bookDirFactory.PrepareBookDirListModel(searchModel);
+
+            return Json(model);
         }
 
         #endregion

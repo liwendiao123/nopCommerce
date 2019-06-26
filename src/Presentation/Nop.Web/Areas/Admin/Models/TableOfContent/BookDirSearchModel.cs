@@ -16,6 +16,7 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
         {
             AvailableStores = new List<SelectListItem>();
             AvailableBooks = new List<SelectListItem>();
+            AvailableCategories = new List<SelectListItem>();
         }
         #endregion
         #region Properties
@@ -31,6 +32,13 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
         /// </summary>
         [NopResourceDisplayName("Admin.AiBook.BookDir.List.SearchStore")]        
         public int SearchStoreId { get; set; }
+
+        [NopResourceDisplayName("Admin.AiBook.BookDir.List.BookID")]
+        public int BookID { get; set; }
+
+
+        [NopResourceDisplayName("Admin.AiBook.BookDir.List.CategoryID")]
+        public int CategoryID { get; set; }
         /// <summary>
         /// 
         /// </summary>
@@ -41,6 +49,8 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
         /// </summary>
         [NopResourceDisplayName("Admin.AiBook.BookDir.List.AvailableBooks")]
         public IList<SelectListItem> AvailableBooks { get; set; }
+
+
 
         /// <summary>
         /// 

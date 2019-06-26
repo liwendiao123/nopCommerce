@@ -129,7 +129,7 @@ namespace Nop.Services.TableOfContent
         /// <param name="pageSize">Page size</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Categories</returns>
-        public virtual IPagedList<BookDir> GetAllCategories(string categoryName, int storeId = 0,
+        public virtual IPagedList<BookDir> GetAllBookDirsData(string categoryName, int storeId = 0,
             int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false)
         {
             //if (_commonSettings.UseStoredProcedureForLoadingCategories)

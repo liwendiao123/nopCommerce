@@ -195,21 +195,16 @@ namespace Nop.Web.Areas.Admin.Factories
 
             //prepare available category templates
             _baseAdminModelFactory.PrepareCategoryTemplates(model.AvailableCategoryTemplates, false);
-
             //prepare available parent categories
             _baseAdminModelFactory.PrepareCategories(model.AvailableCategories,
                 defaultItemText: _localizationService.GetResource("Admin.Catalog.Categories.Fields.Parent.None"));
-
             //prepare model discounts
             var availableDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToCategories, showHidden: true);
             _discountSupportedModelFactory.PrepareModelDiscounts(model, category, availableDiscounts, excludeProperties);
-
             //prepare model customer roles
             _aclSupportedModelFactory.PrepareModelCustomerRoles(model, category, excludeProperties);
-
             //prepare model stores
             _storeMappingSupportedModelFactory.PrepareModelStores(model, category, excludeProperties);
-
             return model;
         }
 
