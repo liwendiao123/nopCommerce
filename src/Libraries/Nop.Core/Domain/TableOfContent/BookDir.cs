@@ -21,11 +21,8 @@ namespace Nop.Core.Domain.TableOfContent
 
         private  ICollection<AiBookModel> _aiBookModels;
 
-
        //private ICollection<DiscountBookDirMapping> _discountCategoryMappings;
-
        public int BookID { get; set; }
-
         /// <summary>
         /// Gets or sets the name
         /// </summary>

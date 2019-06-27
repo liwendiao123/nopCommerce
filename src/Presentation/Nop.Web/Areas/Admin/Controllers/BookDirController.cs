@@ -26,15 +26,18 @@ namespace Nop.Web.Areas.Admin.Controllers
         private readonly IUrlRecordService _urlRecordService;
         private readonly IBookDirService _bookDirService;
         private readonly IBookDirFactory _bookDirFactory;
+        private readonly IProductModelFactory _productModelFactory;
 
-        public BookDirController(IUrlRecordService urlRecordService, 
-            IPermissionService permissionService,
-            ICustomerActivityService customerActivityService,
-            IEventPublisher eventPublisher, 
-            ILocalizationService localizationService,
-            INotificationService notificationService, 
-            IBookDirService bookDirService,
-            IBookDirFactory bookDirFactory
+        public BookDirController(
+            IUrlRecordService urlRecordService
+            ,IPermissionService permissionService
+            ,ICustomerActivityService customerActivityService
+            ,IEventPublisher eventPublisher
+            ,ILocalizationService localizationService
+            ,INotificationService notificationService
+            ,IBookDirService bookDirService
+            ,IBookDirFactory bookDirFactory
+            ,IProductModelFactory productModelFactory
             )
         {
             _urlRecordService = urlRecordService;
@@ -45,6 +48,7 @@ namespace Nop.Web.Areas.Admin.Controllers
             _notificationService = notificationService;
             _bookDirService = bookDirService;
             _bookDirFactory = bookDirFactory;
+            _productModelFactory = productModelFactory;
 
         }
         public IActionResult Index()
@@ -140,6 +144,30 @@ namespace Nop.Web.Areas.Admin.Controllers
             return Json(model);
         }
 
+        /// <summary>
+        /// 获取所属书籍
+        /// </summary>
+        /// <param name="searchModel"></param>
+        /// <returns></returns>
+        public IActionResult GetBooksByCategory(BookDirSearchModel searchModel)
+        {
+           var result =  _productModelFactory.PrepareProductListModel(
+                new Models.Catalog.ProductSearchModel()
+                {
+                     SearchCategoryId = searchModel.CategoryID
+                });
+
+            return Json(result.Data.ToList());
+        }
+
+
+
+        public IActionResult GetBookDirByBookId(BookDirSearchModel searchModel)
+        {
+           var model = _bookDirFactory.PrepareBookDirListModel(searchModel);
+
+            return Json(model);
+        }
         #endregion
     }
 }

@@ -17,6 +17,7 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
             AvailableStores = new List<SelectListItem>();
             AvailableBooks = new List<SelectListItem>();
             AvailableCategories = new List<SelectListItem>();
+            AvailableBookDirs = new List<SelectListItem>();
         }
         #endregion
         #region Properties
@@ -28,17 +29,29 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
         public string SearchDirName { get; set; }
 
         /// <summary>
+        /// 获取上级目录ID
+        /// </summary>
+        public int BookDirId { get; set; }
+
+
+        /// <summary>
         /// 
         /// </summary>
         [NopResourceDisplayName("Admin.AiBook.BookDir.List.SearchStore")]        
         public int SearchStoreId { get; set; }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
         [NopResourceDisplayName("Admin.AiBook.BookDir.List.BookID")]
         public int BookID { get; set; }
 
 
         [NopResourceDisplayName("Admin.AiBook.BookDir.List.CategoryID")]
         public int CategoryID { get; set; }
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -51,13 +64,17 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
         public IList<SelectListItem> AvailableBooks { get; set; }
 
 
-
         /// <summary>
         /// 
         /// </summary>
-
+        [NopResourceDisplayName("Admin.AiBook.BookDir.List.AvailableBookDirs")]
+        public IList<SelectListItem> AvailableBookDirs { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         [NopResourceDisplayName("Admin.AiBook.BookDir.List.Category")]
         public IList<SelectListItem> AvailableCategories { get; set; }
+
         /// <summary>
         /// 
         /// </summary>

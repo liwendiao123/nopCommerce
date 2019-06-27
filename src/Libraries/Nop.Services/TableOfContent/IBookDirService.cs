@@ -34,7 +34,7 @@ namespace Nop.Services.TableOfContent
         /// <returns>Stores</returns>
         IList<BookDir> GetAllBookDirs(bool loadCacheableCopy = true);
 
-        IPagedList<BookDir> GetAllBookDirsData(string categoryName, int storeId = 0,
+        IPagedList<BookDir> GetAllBookDirsData(string categoryName, int cateId = 0, int bookID = 0, int bookdirID = 0, int storeId = 0,
             int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false);
 
         /// <summary>

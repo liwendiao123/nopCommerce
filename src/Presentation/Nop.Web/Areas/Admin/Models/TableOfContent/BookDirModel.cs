@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -12,12 +13,7 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
     public partial class BookDirModel : BaseNopEntityModel, ILocalizedModel<BookDirLocalizedModel>, IStoreMappingSupportedModel, IAclSupportedModel, IDiscountSupportedModel
         
     {
-        public IList<BookDirLocalizedModel> Locales { get; set; }
 
-
-        public IList<SelectListItem> BookList { get; set; }
-
-        public IList<SelectListItem> ParentBookDir { get; set; }
 
         #region Ctor 构造器
 
@@ -33,7 +29,6 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
             AvailableDiscounts = new List<SelectListItem>();
             AvailableStores = new List<SelectListItem>();
             SelectedStoreIds = new List<int>();
-
 
         }
 
@@ -82,10 +77,22 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
         [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.ParentBookDirId")]
         public string ParentBookDirId { get; set; }
 
+        [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.CategryID")]
+        public int CategryID { get; set; }
+
+        /// <summary>
+        /// 书籍ID
+        /// </summary>
+        [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.BookID")]
+        public int BookID { get; set; }
+
+
 
         /// <summary>
         /// Gets or sets the picture identifier
         /// </summary>
+        [UIHint("Picture")]
+        [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.PictureID")]
         public int PictureId { get; set; }
 
         /// <summary>
@@ -98,6 +105,11 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
         /// </summary>
         public bool AllowCustomersToSelectPageSize { get; set; }
 
+        [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.IsLastNode")]
+        /// <summary>
+        ///  是否为知识点
+        /// </summary>
+        public bool IsLastNode { get; set; }
         #endregion
 
 
@@ -155,12 +167,24 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
         public IList<int> SelectedStoreIds { get; set; }
         public IList<SelectListItem> AvailableStores { get; set; }
 
+        [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.AvailableCategories")]
         public IList<SelectListItem> AvailableCategories { get; set; }
 
         //discounts
         [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.Discounts")]
         public IList<int> SelectedDiscountIds { get; set; }
+
+        [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.AvailableDiscounts")]
         public IList<SelectListItem> AvailableDiscounts { get; set; }
+
+
+
+        public IList<BookDirLocalizedModel> Locales { get; set; }
+
+
+        public IList<SelectListItem> BookList { get; set; }
+
+        public IList<SelectListItem> ParentBookDir { get; set; }
 
         public BookDirSearchModel CategoryProductSearchModel { get; set; }
 
@@ -171,11 +195,14 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
     }
 
 
-    public partial class BookDirLocalizedModel: ILocalizedModel
+    public partial class BookDirLocalizedModel: ILocalizedLocaleModel
     {
         public int LanguageId { get; set; }
 
         [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.Name")]
         public string Name { get; set; }
+
+        [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.Description")]
+        public string Description { get; set; }
     }
 }

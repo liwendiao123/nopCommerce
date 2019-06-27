@@ -129,7 +129,7 @@ namespace Nop.Services.TableOfContent
         /// <param name="pageSize">Page size</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Categories</returns>
-        public virtual IPagedList<BookDir> GetAllBookDirsData(string categoryName, int storeId = 0,
+        public virtual IPagedList<BookDir> GetAllBookDirsData(string categoryName,int cateId = 0, int bookID = 0,int bookdirID = 0, int storeId = 0,
             int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false)
         {
             //if (_commonSettings.UseStoredProcedureForLoadingCategories)
@@ -163,9 +163,25 @@ namespace Nop.Services.TableOfContent
             if (!showHidden)
                 query = query.Where(c => c.Published);
             if (!string.IsNullOrWhiteSpace(categoryName))
-                query = query.Where(c => c.Name.Contains(categoryName));
+            query = query.Where(c => c.Name.Contains(categoryName));
             query = query.Where(c => !c.Deleted);
             query = query.OrderBy(c => c.ParentBookDirId).ThenBy(c => c.DisplayOrder).ThenBy(c => c.Id);
+
+
+            if (cateId > 0)
+            {
+               ///todo..
+            }
+
+            if (bookID > 0)
+            {
+               ///todo...
+            }
+
+            if (bookdirID > 0)
+            {
+                ///todo...
+            }
 
             //if ((storeId > 0 && !_catalogSettings.IgnoreStoreLimitations) || (!showHidden && !_catalogSettings.IgnoreAcl))
             //{

@@ -720,11 +720,9 @@ namespace Nop.Web.Areas.Admin.Factories
                     productModel.ProductTypeName = _localizationService.GetLocalizedEnum(product.ProductType);
                     if (product.ProductType == ProductType.SimpleProduct && product.ManageInventoryMethod == ManageInventoryMethod.ManageStock)
                         productModel.StockQuantityStr = _productService.GetTotalStockQuantity(product).ToString();
-
                     return productModel;
                 });
             });
-
             return model;
         }
 
