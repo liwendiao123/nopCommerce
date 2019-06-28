@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Nop.Core.Domain.AIBookModel;
 using Nop.Core.Domain.Discounts;
 using Nop.Web.Framework.Models;
 using Nop.Web.Framework.Mvc.ModelBinding;
@@ -37,6 +38,11 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
 
         #region Properties
 
+        private ICollection<AiBookModel> _aiBookModels;
+
+
+
+        public int CategoryTemplateId { get; set; }
 
         /// <summary>
         /// 课本目录名称
@@ -75,7 +81,7 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
         /// Gets or sets the meta title
         /// </summary>
         [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.ParentBookDirId")]
-        public string ParentBookDirId { get; set; }
+        public int ParentBookDirId { get; set; }
 
         [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.CategryID")]
         public int CategryID { get; set; }
@@ -111,6 +117,10 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
         /// </summary>
         public bool IsLastNode { get; set; }
         #endregion
+
+
+
+         public string PriceRanges { get; set; }
 
 
         /// <summary>
@@ -188,6 +198,12 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
 
         public BookDirSearchModel CategoryProductSearchModel { get; set; }
 
+
+        public virtual ICollection<AiBookModel> AiBookModels
+        {
+            get => _aiBookModels ?? (_aiBookModels = new List<AiBookModel>());
+            set => _aiBookModels = value;
+        }
         /// <summary>
         /// Gets or sets the collection of applied discounts
         /// </summary>
@@ -204,5 +220,11 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
 
         [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.Description")]
         public string Description { get; set; }
+
+        [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.MetaKeywords")]
+        public string MetaKeywords { get;  set; }
+
+        [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.MetaDescription")]
+        public string MetaDescription { get;  set; }
     }
 }

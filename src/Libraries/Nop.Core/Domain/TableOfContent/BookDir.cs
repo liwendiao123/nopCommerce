@@ -8,6 +8,7 @@ using Nop.Core.Domain.Stores;
 using System.Linq;
 using Nop.Core.Domain.AIBookModel;
 using Nop.Core.Domain.Localization;
+using Newtonsoft.Json;
 
 namespace Nop.Core.Domain.TableOfContent
 {
@@ -36,6 +37,8 @@ namespace Nop.Core.Domain.TableOfContent
         /// <summary>
         /// Gets or sets a value of used category template identifier
         /// </summary>
+       
+       [JsonIgnore]
         public int CategoryTemplateId { get; set; }
 
         /// <summary>
@@ -125,6 +128,8 @@ namespace Nop.Core.Domain.TableOfContent
         /// <summary>
         /// Gets or sets the discount-category mappings
         /// </summary>
+        /// 
+        [JsonIgnore]
         public virtual ICollection<AiBookModel> AiBookModels
         {
             get => _aiBookModels ?? (_aiBookModels = new List<AiBookModel>());

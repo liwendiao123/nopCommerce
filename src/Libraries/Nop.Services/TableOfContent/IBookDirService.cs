@@ -43,7 +43,7 @@ namespace Nop.Services.TableOfContent
         /// <param name="storeId">Store identifier</param>
         /// <param name="loadCacheableCopy">A value indicating whether to load a copy that could be cached (workaround until Entity Framework supports 2-level caching)</param>
         /// <returns>Store</returns>
-        BookDir GetBookDirById(int storeId, bool loadCacheableCopy = true);
+        BookDir GetBookDirById(int bookdirId, bool loadCacheableCopy = true);
         /// <summary>
         /// Returns a list of names of not existing stores
         /// </summary>
@@ -65,5 +65,13 @@ namespace Nop.Services.TableOfContent
         /// <param name="showHidden">A value indicating whether to load hidden records</param>
         /// <returns>BookDir breadcrumb </returns>
         IList<BookDir> GetBookDirBreadCrumb(BookDir bookDir, IList<BookDir> allBookDirs = null, bool showHidden = false);
+        /// <summary>
+        /// 获取课本子目录
+        /// </summary>
+        /// <param name="parentBookirId"></param>
+        /// <param name="storeId"></param>
+        /// <param name="showHidden"></param>
+        /// <returns></returns>
+        IList<int> GetChildBookDirIds(int parentBookirId, int storeId = 0, bool showHidden = false);
     }
 }

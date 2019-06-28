@@ -100,7 +100,7 @@ namespace Nop.Web.Areas.Admin.Factories
                 throw new ArgumentNullException(nameof(searchModel));
             }
 
-           var result =   _bookDirService.GetAllBookDirsData(searchModel.SearchDirName,0, searchModel.Page, searchModel.PageSize);
+           var result =   _bookDirService.GetAllBookDirsData(searchModel.SearchDirName,searchModel.CategoryID,searchModel.BookID,searchModel.BookDirId, searchModel.Page, searchModel.PageSize);
 
 
             var model = new BookDirListModel().PrepareToGrid(searchModel, result, () =>
@@ -119,19 +119,21 @@ namespace Nop.Web.Areas.Admin.Factories
 
             return model;
         }
-        public BookDirModel PrepareBookDirModel(BookDirModel model, BookDir category = null, bool excludeProperties = false)
+        public BookDirModel PrepareBookDirModel(BookDirModel model, BookDir bookdir = null, bool excludeProperties = false)
         {
             Action<BookDirLocalizedModel, int> localizedModelConfiguration = null;
 
-            if (category != null)
+            if (bookdir != null)
             {
                 //fill in model values from the entity
                 if (model == null)
                 {
-                    model = category.ToModel<BookDirModel>();
-                    model.SeName = _urlRecordService.GetSeName(category, 0, true, false);
+                    model = bookdir.ToModel<BookDirModel>();
+                    model.SeName = _urlRecordService.GetSeName(bookdir, 0, true, false);
                 }
 
+
+              
                 //prepare nested search model
 
                // PrepareBookDirSearchModel()
@@ -141,19 +143,25 @@ namespace Nop.Web.Areas.Admin.Factories
                 //define localized model configuration action
                 localizedModelConfiguration = (locale, languageId) =>
                 {
-                    locale.Name = _localizationService.GetLocalized(category, entity => entity.Name, languageId, false, false);
-                    //locale.Description = _localizationService.GetLocalized(category, entity => entity.Description, languageId, false, false);
-                    //locale.MetaKeywords = _localizationService.GetLocalized(category, entity => entity.MetaKeywords, languageId, false, false);
-                    //locale.MetaDescription = _localizationService.GetLocalized(category, entity => entity.MetaDescription, languageId, false, false);
+                    locale.Name = _localizationService.GetLocalized(bookdir, entity => entity.Name, languageId, false, false);
+                    locale.Description = _localizationService.GetLocalized(bookdir, entity => entity.Description, languageId, false, false);
+                    locale.MetaKeywords = _localizationService.GetLocalized(bookdir, entity => entity.MetaKeywords, languageId, false, false);
+                    locale.MetaDescription = _localizationService.GetLocalized(bookdir, entity => entity.MetaDescription, languageId, false, false);
                     //locale.MetaTitle = _localizationService.GetLocalized(category, entity => entity.MetaTitle, languageId, false, false);
                     //locale.SeName = _urlRecordService.GetSeName(category, languageId, false, false);
                 };
             }
 
             //set default values for the new model
-            if (category == null)
+            if (bookdir == null)
             {
-              //  model.PageSize = _catalogSettings.DefaultCategoryPageSize;
+
+                if (model == null)
+                {
+                    model = new BookDirModel();
+                }
+
+                //model.PageSize = _catalogSettings.DefaultCategoryPageSize;
                // model.PageSizeOptions = _catalogSettings.DefaultCategoryPageSizeOptions;
                 model.Published = true;
               //  model.IncludeInTopMenu = true;
@@ -161,8 +169,8 @@ namespace Nop.Web.Areas.Admin.Factories
             }
 
             //prepare localized models
-           // if (!excludeProperties)
-               //model.Locales = _localizedModelFactory.PrepareLocalizedModels(localizedModelConfiguration);
+            if (!excludeProperties)
+               model.Locales = _localizedModelFactory.PrepareLocalizedModels(localizedModelConfiguration);
 
             //prepare available category templates
            // _baseAdminModelFactory.PrepareCategoryTemplates(model.AvailableCategoryTemplates, false);
@@ -173,9 +181,9 @@ namespace Nop.Web.Areas.Admin.Factories
            // var availableDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToCategories, showHidden: true);
             //_discountSupportedModelFactory.PrepareModelDiscounts(model, category, availableDiscounts, excludeProperties);
             //prepare model customer roles
-            _aclSupportedModelFactory.PrepareModelCustomerRoles(model, category, excludeProperties);
+            _aclSupportedModelFactory.PrepareModelCustomerRoles(model, bookdir, excludeProperties);
             //prepare model stores
-           _storeMappingSupportedModelFactory.PrepareModelStores(model, category, excludeProperties);
+           _storeMappingSupportedModelFactory.PrepareModelStores(model, bookdir, excludeProperties);
             return model;
         }
 

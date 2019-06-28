@@ -13,7 +13,8 @@ using Nop.Services.Security;
 using Nop.Data;
 using Nop.Services.Localization;
 using Nop.Core.Domain.Stores;
-
+using Nop.Services.Catalog;
+using Nop.Core.Domain.Customers;
 namespace Nop.Services.TableOfContent
 {
     public partial class BookDirService : IBookDirService
@@ -33,6 +34,9 @@ namespace Nop.Services.TableOfContent
         private readonly ILocalizationService _localizationService;
         private readonly IStaticCacheManager _staticCacheManager;
         private readonly IStoreContext _storeContext;
+        private readonly ICategoryService _cateservice;
+        private readonly IProductService _productService;
+       
 
         #endregion
 
@@ -45,7 +49,9 @@ namespace Nop.Services.TableOfContent
             IStaticCacheManager cacheManager, 
             ILogger logger, 
             IWorkContext workContext,
-            CommonSettings commonSettings
+            ICategoryService cateservice,
+            CommonSettings commonSettings,
+            IProductService productService
             )
         {
             _eventPublisher = eventPublisher;
@@ -53,6 +59,8 @@ namespace Nop.Services.TableOfContent
             _cacheManager = cacheManager;
             _logger = logger;
             _workContext = workContext;
+            _cateservice = cateservice;
+            _productService = productService;
         }
         #endregion
 
@@ -165,58 +173,47 @@ namespace Nop.Services.TableOfContent
             if (!string.IsNullOrWhiteSpace(categoryName))
             query = query.Where(c => c.Name.Contains(categoryName));
             query = query.Where(c => !c.Deleted);
-            query = query.OrderBy(c => c.ParentBookDirId).ThenBy(c => c.DisplayOrder).ThenBy(c => c.Id);
 
 
-            if (cateId > 0)
-            {
-               ///todo..
-            }
 
-            if (bookID > 0)
-            {
-               ///todo...
-            }
-
+            #region 短路条件查询 ----范围由小到大提高查询效率 liwendiao 备注
             if (bookdirID > 0)
             {
-                ///todo...
+               var resultIds = GetChildBookDirIds(bookdirID);
+                query = query.Where(x => resultIds.Contains(x.ParentBookDirId));                
             }
 
-            //if ((storeId > 0 && !_catalogSettings.IgnoreStoreLimitations) || (!showHidden && !_catalogSettings.IgnoreAcl))
-            //{
-            //    //if (!showHidden && !_catalogSettings.IgnoreAcl)
-            //    //{
-            //    //    //ACL (access control list)
-            //    //    var allowedCustomerRolesIds = _workContext.CurrentCustomer.GetCustomerRoleIds();
-            //    //    query = from c in query
-            //    //            join acl in _aclRepository.Table
-            //    //                on new { c1 = c.Id, c2 = nameof(Category) } equals new { c1 = acl.EntityId, c2 = acl.EntityName } into c_acl
-            //    //            from acl in c_acl.DefaultIfEmpty()
-            //    //            where !c.SubjectToAcl || allowedCustomerRolesIds.Contains(acl.CustomerRoleId)
-            //    //            select c;
-            //    //}
+            else if (bookID > 0)
+            {
+                query = query.Where(x => bookID == x.BookID);
+            }
+           else if (cateId > 0)
+            {
+                ///todo..
+                var result = _cateservice.GetChildCategoryIds(cateId);
+                if (result != null && !result.Contains(cateId))
+                {
+                    result.Add(cateId);
+                }
+                if (result == null)
+                {
+                    result = new List<int>();
+                }
+                var product = _productService.SearchProducts(0, Int32.MaxValue, result);
+                if (product != null)
+                {
+                    var pres = product.OrderBy(x => x.Id).Select(x => x.Id).ToList();
+                    query = query.Where(x => pres.Contains(x.BookID));
+                }
+            }
 
-            //    //if (storeId > 0 && !_catalogSettings.IgnoreStoreLimitations)
-            //    //{
-            //    //    //Store mapping
-            //    //    query = from c in query
-            //    //            join sm in _storeMappingRepository.Table
-            //    //                on new { c1 = c.Id, c2 = nameof(Category) } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into c_sm
-            //    //            from sm in c_sm.DefaultIfEmpty()
-            //    //            where !c.LimitedToStores || storeId == sm.StoreId
-            //    //            select c;
-            //    //}
-
-            //    query = query.Distinct().OrderBy(c => c.ParentBookDirId).ThenBy(c => c.DisplayOrder).ThenBy(c => c.Id);
-            //}
-
+            #endregion
+            query = query.OrderBy(c => c.ParentBookDirId).ThenBy(c => c.DisplayOrder).ThenBy(c => c.Id);
+            ///
             var unsortedCategories = query.ToList();
-
-            //sort categories
+            ///sort categories
             var sortedCategories = SortBookDirsForTree(unsortedCategories);
-
-            //paging
+            ///paging
             return new PagedList<BookDir>(sortedCategories, pageIndex, pageSize);
         }
 
@@ -253,21 +250,21 @@ namespace Nop.Services.TableOfContent
             return result;
         }
 
-        public BookDir GetBookDirById(int storeId, bool loadCacheableCopy = true)
+        public BookDir GetBookDirById(int bookdirId, bool loadCacheableCopy = true)
         {
-            if (storeId == 0)
+            if (bookdirId == 0)
                 return null;
 
             BookDir LoadStoreFunc()
             {
-                return _bookdirRepository.GetById(storeId);
+                return _bookdirRepository.GetById(bookdirId);
             }
 
             if (!loadCacheableCopy)
                 return LoadStoreFunc();
 
             //cacheable copy
-            var key = string.Format(NopBookDirDefault.BookDirsByIdCacheKey, storeId);
+            var key = string.Format(NopBookDirDefault.BookDirsByIdCacheKey, bookdirId);
             return _cacheManager.Get(key, () =>
             {
                 var store = LoadStoreFunc();
@@ -404,6 +401,44 @@ namespace Nop.Services.TableOfContent
            // return new List<BookDir>();
         }
 
-       // IList<BookDir> GetBookDirBreadCrumb(BookDir bookDir, IList<BookDir> allBookDirs = null, bool showHidden = false)
+
+        /// <summary>
+        /// Gets child category identifiers
+        /// </summary>
+        /// <param name="parentCategoryId">Parent category identifier</param>
+        /// <param name="storeId">Store identifier; 0 if you want to get all records</param>
+        /// <param name="showHidden">A value indicating whether to show hidden records</param>
+        /// <returns>Category identifiers</returns>
+        public virtual IList<int> GetChildBookDirIds(int parentBookirId, int storeId = 0, bool showHidden = false)
+        {
+            var cacheKey = string.Format(NopBookDirDefault.GetChildBookDirsByParentIdCacheKey,
+                parentBookirId,
+                string.Join(",", _workContext.CurrentCustomer.GetCustomerRoleIds()),
+                _storeContext.CurrentStore.Id,
+                showHidden);
+            return _staticCacheManager.Get(cacheKey, () =>
+            {
+                //little hack for performance optimization
+                //there's no need to invoke "GetAllCategoriesByParentCategoryId" multiple times (extra SQL commands) to load childs
+                //so we load all categories at once (we know they are cached) and process them server-side
+                var categoriesIds = new List<int>();
+                //var categories = GetAllCategories(storeId: storeId, showHidden: showHidden)
+                //    .Where(c => c.ParentCategoryId == parentCategoryId);
+
+                var categories = _bookdirRepository.Table
+                                        .Where(x=>x.ParentBookDirId == parentBookirId)
+                                        .Select(x=>x.Id).ToList();
+                foreach (var category in categories)
+                {
+                    categoriesIds.Add(category);
+                    categoriesIds.AddRange(GetChildBookDirIds(category, storeId, showHidden));
+                }
+
+                return categoriesIds;
+            });
+        }
+
+
+        // IList<BookDir> GetBookDirBreadCrumb(BookDir bookDir, IList<BookDir> allBookDirs = null, bool showHidden = false)
     }
 }

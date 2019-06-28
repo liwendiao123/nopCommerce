@@ -12,6 +12,9 @@ using Nop.Services.Seo;
 using Nop.Services.TableOfContent;
 using Nop.Web.Areas.Admin.Factories;
 using Nop.Web.Areas.Admin.Models.TableOfContent;
+using Nop.Web.Areas.Admin.Infrastructure.Mapper.Extensions; 
+using Nop.Web.Framework.Mvc.Filters;
+using Nop.Core.Domain.TableOfContent;
 
 namespace Nop.Web.Areas.Admin.Controllers
 {
@@ -115,13 +118,87 @@ namespace Nop.Web.Areas.Admin.Controllers
         }
 
 
-        public IActionResult Edit()
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        public IActionResult Create(BookDirModel model, bool continueEditing)
+        {  if (!_permissionService.Authorize(StandardPermissionProvider.ManageCategories))
+                return AccessDeniedView();
+
+            if (ModelState.IsValid)
+            {
+                var category = model.ToEntity<BookDir>();
+                category.CreatedOnUtc = DateTime.UtcNow;
+                category.UpdatedOnUtc = DateTime.UtcNow;
+                if (string.IsNullOrEmpty(category.PriceRanges))
+                {
+                    category.PriceRanges = "0";
+                }
+               
+
+                //search engine name
+                model.SeName = _urlRecordService.ValidateSeName(category, model.SeName, category.Name, true);
+                _urlRecordService.SaveSlug(category, model.SeName, 0);
+
+                //locales
+                // UpdateLocales(category, model);
+
+                //discounts
+                //    var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToCategories, showHidden: true);
+                //            foreach (var discount in allDiscounts)
+                //            {
+                //                if (model.SelectedDiscountIds != null && model.SelectedDiscountIds.Contains(discount.Id))
+                //                    //category.AppliedDiscounts.Add(discount);
+                //                    category.DiscountCategoryMappings.Add(new DiscountCategoryMapping { Discount = discount
+                //});
+                //            }
+
+                _bookDirService.InsertBookDir(category);
+
+               // _categoryService.UpdateCategory(category);
+
+                //update picture seo file name
+              //  UpdatePictureSeoNames(category);
+
+                //ACL (customer roles)
+               // SaveCategoryAcl(category, model);
+
+                //stores
+               // SaveStoreMappings(category, model);
+
+//activity log
+            _customerActivityService.InsertActivity("AddNewBookDir",
+                    string.Format(_localizationService.GetResource("ActivityLog.AddNewBookDir"), category.Name), category);
+
+                _notificationService.SuccessNotification(_localizationService.GetResource("Admin.AiBookDir.BookDir.AddNewBookDir"));
+
+                if (!continueEditing)
+                    return RedirectToAction("Index");
+                
+                return RedirectToAction("Edit", new { id = category.Id });
+            }
+
+            //prepare model
+            model = _bookDirFactory.PrepareBookDirModel();
+
+            //if we got this far, something failed, redisplay form
+            return View(model);
+        }
+
+        public IActionResult Edit(int id)
         {
 
-            if (!_permissionService.Authorize(StandardPermissionProvider.BookDirManage))
-                return AccessDeniedView();
-            return View();
-            
+            //try to get a category with the specified id
+            //  var bookdir = _categoryService.GetCategoryById(id);
+            var bookdir = _bookDirService.GetBookDirById(id);
+            if (bookdir == null || bookdir.Deleted)
+                return RedirectToAction("List");
+
+            //prepare model
+            //var model = _categoryModelFactory.PrepareCategoryModel(null, category);
+
+            var model = _bookDirFactory.PrepareBookDirModel();
+
+            return View(model);
+
         }
 
         public IActionResult Delete()
