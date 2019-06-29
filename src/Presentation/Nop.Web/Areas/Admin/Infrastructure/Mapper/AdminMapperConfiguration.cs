@@ -20,6 +20,7 @@ using Nop.Core.Domain.Security;
 using Nop.Core.Domain.Seo;
 using Nop.Core.Domain.Shipping;
 using Nop.Core.Domain.Stores;
+using Nop.Core.Domain.TableOfContent;
 using Nop.Core.Domain.Tasks;
 using Nop.Core.Domain.Tax;
 using Nop.Core.Domain.Topics;
@@ -54,6 +55,7 @@ using Nop.Web.Areas.Admin.Models.Settings;
 using Nop.Web.Areas.Admin.Models.Shipping;
 using Nop.Web.Areas.Admin.Models.ShoppingCart;
 using Nop.Web.Areas.Admin.Models.Stores;
+using Nop.Web.Areas.Admin.Models.TableOfContent;
 using Nop.Web.Areas.Admin.Models.Tasks;
 using Nop.Web.Areas.Admin.Models.Tax;
 using Nop.Web.Areas.Admin.Models.Templates;
@@ -102,7 +104,7 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
             CreateTopicsMaps();
             CreateVendorsMaps();
             CreateWarehouseMaps();
-
+            CreateAiBookMaps();
             //add some generic mapping rules
             ForAllMaps((mapConfiguration, map) =>
             {
@@ -1644,6 +1646,35 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
             CreateMap<WarehouseModel, Warehouse>()
                 .ForMember(entity => entity.AddressId, options => options.Ignore());
         }
+
+
+        protected virtual void CreateAiBookMaps()
+        {
+            CreateMap<BookDir, BookDirModel>()
+                .ForMember(model => model.SelectedCustomerRoleIds, options => options.Ignore())
+                .ForMember(model => model.CategryID, options => options.Ignore())
+                .ForMember(model => model.Breadcrumb, options => options.Ignore())
+                .ForMember(model => model.SeName, options => options.Ignore())
+                .ForMember(model => model.SelectedCustomerRoleIds, options => options.Ignore())
+                .ForMember(model => model.AvailableCustomerRoles, options => options.Ignore())
+                .ForMember(model => model.SelectedStoreIds, options => options.Ignore())
+                .ForMember(model => model.AvailableStores, options => options.Ignore())
+                .ForMember(model => model.AvailableCategories, options => options.Ignore())
+                .ForMember(model => model.SelectedDiscountIds, options => options.Ignore())
+                .ForMember(model => model.AvailableDiscounts, options => options.Ignore())
+                .ForMember(model => model.Locales, options => options.Ignore())
+                .ForMember(model => model.BookList, options => options.Ignore())
+                .ForMember(model => model.ParentBookDir, options => options.Ignore())
+                .ForMember(model => model.CategoryProductSearchModel, options => options.Ignore())
+                .ForMember(model => model.CustomProperties, options => options.Ignore())
+                .ForMember(entity => entity.AiBookModels, options => options.Ignore());
+
+            CreateMap<BookDirModel,BookDir>()
+             //  .ForMember(model => model.SelectedCustomerRoleIds, options => options.Ignore())
+               .ForMember(entity => entity.AiBookModels, options => options.Ignore());
+
+        }
+
 
         #endregion
 

@@ -19,7 +19,9 @@ using Nop.Web.Framework.Factories;
 using Nop.Web.Framework.Models.Extensions;
 using Nop.Web.Areas.Admin.Infrastructure.Mapper.Extensions;
 using Nop.Core.Domain.TableOfContent;
-
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Nop.Core.Domain.Catalog;
+using Nop.Services;
 namespace Nop.Web.Areas.Admin.Factories
 {
     public partial class BookDirFactory : IBookDirFactory
@@ -71,8 +73,8 @@ namespace Nop.Web.Areas.Admin.Factories
             ,IStoreMappingSupportedModelFactory storeMappingSupportedModelFactory
             ,IWorkContext workContext      
             ,IBookDirService bookDirService
-          
-            ,IUrlRecordService urlRecordService)
+            ,IProductService productService
+            , IUrlRecordService urlRecordService)
         {
             _baseAdminModelFactory = baseAdminModelFactory;
             _aclSupportedModelFactory = aclSupportedModelFactory;
@@ -90,6 +92,7 @@ namespace Nop.Web.Areas.Admin.Factories
             _workContext = workContext;
             _bookDirService = bookDirService;
             _urlRecordService = urlRecordService;
+            _productService = productService;
            // _bookDirFactory = bookDirFactory;
         }
         public BookDirListModel PrepareBookDirListModel(BookDirSearchModel searchModel)
@@ -100,7 +103,7 @@ namespace Nop.Web.Areas.Admin.Factories
                 throw new ArgumentNullException(nameof(searchModel));
             }
 
-           var result =   _bookDirService.GetAllBookDirsData(searchModel.SearchDirName,searchModel.CategoryID,searchModel.BookID,searchModel.BookDirId, searchModel.Page, searchModel.PageSize);
+           var result =   _bookDirService.GetAllBookDirsData(searchModel.SearchDirName,searchModel.CategoryID,searchModel.BookID,searchModel.BookDirId,searchModel.SearchStoreId, searchModel.Page-1, searchModel.PageSize);
 
 
             var model = new BookDirListModel().PrepareToGrid(searchModel, result, () =>
@@ -132,8 +135,32 @@ namespace Nop.Web.Areas.Admin.Factories
                     model.SeName = _urlRecordService.GetSeName(bookdir, 0, true, false);
                 }
 
+                var result = _productService.GetProductById(bookdir.BookID);
 
-              
+                if (result != null )
+                {
+                    if (result.ProductCategories != null)
+                    {
+                        model.CategryID = result.ProductCategories.FirstOrDefault().CategoryId;
+                    }                
+                    model.BookID = result.Id;
+
+
+                    var products = _productService.SearchProducts(showHidden: true,
+                                    categoryIds: new List<int>() {
+                                        model.CategryID
+                                    },
+                                    manufacturerId: 0,
+                                    storeId: 0,
+                                    vendorId: 0,
+                                    warehouseId: 0,
+                                    productType: null,
+                                    keywords:null,
+                                    pageIndex: 0, 
+                                    pageSize: int.MaxValue);
+
+                   // model.BookList = products.ToList().ToSelect<Product>()
+                }
                 //prepare nested search model
 
                // PrepareBookDirSearchModel()
@@ -218,6 +245,24 @@ namespace Nop.Web.Areas.Admin.Factories
             //prepare page parameters
             searchModel.SetGridPageSize();
             return searchModel;
+        }
+
+
+
+        public virtual void PrepareBookItems(IList<SelectListItem> items,IList<Product> bitems,bool withSpecialDefaultItem = true, string defaultItemText = null)
+        {
+            if (items == null)
+                throw new ArgumentNullException(nameof(items));
+
+            //prepare available request types
+          //  var gdprRequestTypeItems = GdprRequestType.ConsentAgree.ToSelectList(false);
+            foreach (var gdprRequestTypeItem in bitems)
+            {
+                items.Add(gdprRequestTypeItem);
+            }
+
+            //insert special item for the default value
+            PrepareDefaultItem(items, withSpecialDefaultItem, defaultItemText);
         }
     }
 }

@@ -120,11 +120,8 @@ namespace Nop.Core.Domain.TableOfContent
         /// </summary>
         public DateTime UpdatedOnUtc { get; set; }
 
-        /// <summary>
-        /// Gets or sets the collection of applied discounts
-        /// </summary>
-       // public virtual IList<Discount> AppliedDiscounts => DiscountBookDirMappings.Select(mapping => mapping.Discount).ToList();
-
+        public bool IsLastNode { get; set; }
+   
         /// <summary>
         /// Gets or sets the discount-category mappings
         /// </summary>

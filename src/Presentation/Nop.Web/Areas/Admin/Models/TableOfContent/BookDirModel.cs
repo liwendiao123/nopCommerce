@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
 using Nop.Core.Domain.AIBookModel;
 using Nop.Core.Domain.Discounts;
 using Nop.Web.Framework.Models;
@@ -11,6 +13,14 @@ using Nop.Web.Framework.Mvc.ModelBinding;
 
 namespace Nop.Web.Areas.Admin.Models.TableOfContent
 {
+
+    /// <summary>
+    /// Category (for caching)
+    /// </summary>
+    [Serializable]
+    //Entity Framework will assume that any class that inherits from a POCO class that is mapped to a table on the database requires a Discriminator column
+    //That's why we have to add [NotMapped] as an attribute of the derived class.
+    [NotMapped]
     public partial class BookDirModel : BaseNopEntityModel, ILocalizedModel<BookDirLocalizedModel>, IStoreMappingSupportedModel, IAclSupportedModel, IDiscountSupportedModel
         
     {
@@ -83,6 +93,8 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
         [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.ParentBookDirId")]
         public int ParentBookDirId { get; set; }
 
+
+        
         [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.CategryID")]
         public int CategryID { get; set; }
 
@@ -162,28 +174,48 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
         /// Gets or sets the date and time of instance update
         /// </summary>
         public DateTime UpdatedOnUtc { get; set; }
+
+
+        [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.Breadcrumb")]
         public string Breadcrumb { get; internal set; }
+
+
         public string SeName { get; internal set; }
 
 
 
         //ACL (customer roles)
+   
         [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.AclCustomerRoles")]
         public IList<int> SelectedCustomerRoleIds { get; set; }
+
+
+
         public IList<SelectListItem> AvailableCustomerRoles { get; set; }
 
         //store mapping
+
         [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.LimitedToStores")]
         public IList<int> SelectedStoreIds { get; set; }
+
+
+   
         public IList<SelectListItem> AvailableStores { get; set; }
+
+
 
         [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.AvailableCategories")]
         public IList<SelectListItem> AvailableCategories { get; set; }
 
+
+
+        [JsonIgnore]
         //discounts
         [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.Discounts")]
         public IList<int> SelectedDiscountIds { get; set; }
 
+
+        [JsonIgnore]
         [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.AvailableDiscounts")]
         public IList<SelectListItem> AvailableDiscounts { get; set; }
 
@@ -193,6 +225,7 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
 
 
         public IList<SelectListItem> BookList { get; set; }
+
 
         public IList<SelectListItem> ParentBookDir { get; set; }
 
@@ -204,6 +237,9 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
             get => _aiBookModels ?? (_aiBookModels = new List<AiBookModel>());
             set => _aiBookModels = value;
         }
+
+       
+        public new Dictionary<string, object> CustomProperties { get; set; }
         /// <summary>
         /// Gets or sets the collection of applied discounts
         /// </summary>

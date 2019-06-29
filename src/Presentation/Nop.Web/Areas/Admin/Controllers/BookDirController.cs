@@ -195,7 +195,7 @@ namespace Nop.Web.Areas.Admin.Controllers
             //prepare model
             //var model = _categoryModelFactory.PrepareCategoryModel(null, category);
 
-            var model = _bookDirFactory.PrepareBookDirModel();
+            var model = _bookDirFactory.PrepareBookDirModel(null,bookdir);
 
             return View(model);
 
@@ -243,7 +243,7 @@ namespace Nop.Web.Areas.Admin.Controllers
         {
            var model = _bookDirFactory.PrepareBookDirListModel(searchModel);
 
-            return Json(model);
+            return Json(model.Data.ToList());
         }
         #endregion
     }

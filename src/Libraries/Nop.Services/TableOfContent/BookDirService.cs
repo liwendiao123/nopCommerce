@@ -51,6 +51,7 @@ namespace Nop.Services.TableOfContent
             IWorkContext workContext,
             ICategoryService cateservice,
             CommonSettings commonSettings,
+            ILocalizationService localizationService,
             IProductService productService
             )
         {
@@ -61,6 +62,7 @@ namespace Nop.Services.TableOfContent
             _workContext = workContext;
             _cateservice = cateservice;
             _productService = productService;
+            _localizationService = localizationService;
         }
         #endregion
 

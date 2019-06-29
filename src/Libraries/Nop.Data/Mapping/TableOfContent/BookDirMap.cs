@@ -21,7 +21,7 @@ namespace Nop.Data.Mapping.TableOfContent
             builder.Property(dir => dir.MetaKeywords).HasMaxLength(1024);
             builder.Property(dir => dir.MetaTitle).HasMaxLength(1024);
            
-
+          //  builder.o
      
             base.Configure(builder);
         }
