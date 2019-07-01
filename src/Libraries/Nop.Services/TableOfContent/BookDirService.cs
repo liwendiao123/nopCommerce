@@ -15,6 +15,7 @@ using Nop.Services.Localization;
 using Nop.Core.Domain.Stores;
 using Nop.Services.Catalog;
 using Nop.Core.Domain.Customers;
+
 namespace Nop.Services.TableOfContent
 {
     public partial class BookDirService : IBookDirService
@@ -35,24 +36,28 @@ namespace Nop.Services.TableOfContent
         private readonly IStaticCacheManager _staticCacheManager;
         private readonly IStoreContext _storeContext;
         private readonly ICategoryService _cateservice;
-        private readonly IProductService _productService;
-       
-
+        private readonly IProductService _productService;      
         #endregion
 
 
         #region  Ctor
 
         public BookDirService(
-            IEventPublisher eventPublisher,
-            IRepository<BookDir> bookdirRepository,
-            IStaticCacheManager cacheManager, 
-            ILogger logger, 
-            IWorkContext workContext,
-            ICategoryService cateservice,
-            CommonSettings commonSettings,
-            ILocalizationService localizationService,
-            IProductService productService
+            IEventPublisher eventPublisher
+            ,IRepository<BookDir> bookdirRepository
+            ,IStaticCacheManager cacheManager
+            ,ILogger logger 
+            ,IWorkContext workContext
+            ,ICategoryService cateservice
+            ,ILocalizationService localizationService
+            , CommonSettings commonSettings
+            , IProductService productService
+            ,IRepository<StoreMapping> storeMappingRepository    
+            ,IAclService aclService
+            ,IDataProvider dataProvider
+            ,IDbContext dbContext
+            ,IStaticCacheManager staticCacheManager
+            ,IStoreContext storeContext
             )
         {
             _eventPublisher = eventPublisher;
@@ -63,6 +68,13 @@ namespace Nop.Services.TableOfContent
             _cateservice = cateservice;
             _productService = productService;
             _localizationService = localizationService;
+            _commonSettings = commonSettings;
+            _storeMappingRepository = storeMappingRepository;
+            _aclService = aclService;
+            _dataProvider = dataProvider;
+            _dbContext = dbContext;
+            _staticCacheManager = staticCacheManager;
+            _storeContext = storeContext;
         }
         #endregion
 
@@ -105,9 +117,6 @@ namespace Nop.Services.TableOfContent
 
         public IList<BookDir> GetAllBookDirs(bool loadCacheableCopy = true)
         {
-
-
-
             IList<BookDir> loadBookDirsFunc()
             {
                 var query = from s in _bookdirRepository.Table orderby s.DisplayOrder, s.Id select s;
@@ -342,15 +351,10 @@ namespace Nop.Services.TableOfContent
 
                 if (bookdir is IEntityForCaching)
                     throw new ArgumentException("Cacheable entities are not supported by Entity Framework");
-
                 _bookdirRepository.Update(bookdir);
-
                 _cacheManager.RemoveByPrefix(NopBookDirDefault.BookDirsPrefixCacheKey);
-
                 //event notification
                 _eventPublisher.EntityUpdated(bookdir);
-
-
                 return 1;
             }
             catch (Exception ex)
@@ -365,14 +369,12 @@ namespace Nop.Services.TableOfContent
             string separator = ">>", int languageId = 0)
         {
             var result = string.Empty;
-
             var breadcrumb = GetBookDirBreadCrumb(bookDir, allBookDirs, true);
             for (var i = 0; i <= breadcrumb.Count - 1; i++)
             {
                 var categoryName = _localizationService.GetLocalized(breadcrumb[i], x => x.Name, languageId);
                 result = string.IsNullOrEmpty(result) ? categoryName : $"{result} {separator} {categoryName}";
             }
-
             return result;
         }
 

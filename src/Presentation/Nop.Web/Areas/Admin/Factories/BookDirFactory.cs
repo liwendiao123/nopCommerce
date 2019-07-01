@@ -22,6 +22,8 @@ using Nop.Core.Domain.TableOfContent;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Nop.Core.Domain.Catalog;
 using Nop.Services;
+using Nop.Core.Domain.Gdpr;
+
 namespace Nop.Web.Areas.Admin.Factories
 {
     public partial class BookDirFactory : IBookDirFactory
@@ -251,18 +253,18 @@ namespace Nop.Web.Areas.Admin.Factories
 
         public virtual void PrepareBookItems(IList<SelectListItem> items,IList<Product> bitems,bool withSpecialDefaultItem = true, string defaultItemText = null)
         {
-            if (items == null)
-                throw new ArgumentNullException(nameof(items));
+            //if (items == null)
+            //    throw new ArgumentNullException(nameof(items));
 
-            //prepare available request types
-          //  var gdprRequestTypeItems = GdprRequestType.ConsentAgree.ToSelectList(false);
-            foreach (var gdprRequestTypeItem in bitems)
-            {
-                items.Add(gdprRequestTypeItem);
-            }
+            ////prepare available request types
+            //var gdprRequestTypeItems = GdprRequestType.ConsentAgree.ToSelectList(false);
+            //foreach (var gdprRequestTypeItem in bitems)
+            //{
+            //    items.Add(gdprRequestTypeItem);
+            //}
 
-            //insert special item for the default value
-            PrepareDefaultItem(items, withSpecialDefaultItem, defaultItemText);
+            ////insert special item for the default value
+            //PrepareDefaultItem(items, withSpecialDefaultItem, defaultItemText);
         }
     }
 }

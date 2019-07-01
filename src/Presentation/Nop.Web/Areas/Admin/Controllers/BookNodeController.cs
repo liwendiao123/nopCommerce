@@ -18,7 +18,7 @@ using Nop.Core.Domain.TableOfContent;
 
 namespace Nop.Web.Areas.Admin.Controllers
 {
-    public class BookDirController : BaseAdminController
+    public class BookNodeController : BaseAdminController
     {
        
         private readonly ICustomerActivityService _customerActivityService;
@@ -31,7 +31,7 @@ namespace Nop.Web.Areas.Admin.Controllers
         private readonly IBookDirFactory _bookDirFactory;
         private readonly IProductModelFactory _productModelFactory;
 
-        public BookDirController(
+        public BookNodeController(
             IUrlRecordService urlRecordService
             ,IPermissionService permissionService
             ,ICustomerActivityService customerActivityService

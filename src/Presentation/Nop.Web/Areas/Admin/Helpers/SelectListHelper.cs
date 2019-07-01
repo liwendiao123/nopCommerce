@@ -170,6 +170,58 @@ namespace Nop.Web.Areas.Admin.Helpers
             return result;
         }
 
-            
+
+        /// <summary>
+        /// 获取书籍列表
+        /// </summary>
+        /// <param name="bookservice"></param>
+        /// <param name="cateids"></param>
+        /// <param name="customer"></param>
+        /// <param name="cacheManager"></param>
+        /// <param name="showHidden"></param>
+        /// <returns></returns>
+        public static List<SelectListItem> GetBookList(IProductService bookservice, List<int> cateids, Customer customer = null, ICacheManager cacheManager = null, bool showHidden = false)
+        {
+            if (bookservice == null)
+                throw new ArgumentNullException(nameof(bookservice));
+
+            if (cacheManager == null)
+                throw new ArgumentNullException(nameof(cacheManager));
+
+            var cacheKey = string.Format(NopModelCacheDefaults.VendorsListKey, showHidden);
+            var listItems = cacheManager.Get(cacheKey, () =>
+            {
+                //   var vendors = bookDirService.GetAllVendors(showHidden: showHidden);
+                var products = bookservice.SearchProducts(showHidden: true,
+                 categoryIds: cateids,
+                 manufacturerId: 0,
+                 storeId: 0,
+                 vendorId: 0,
+                 warehouseId: 0,
+                 productType: null,
+                 keywords: null,
+                 pageIndex: 0,
+                 pageSize: int.MaxValue);
+                return products.Select(v => new SelectListItem
+                {
+                    Text = v.Name,
+                    Value = v.Id.ToString()
+                });
+            });
+
+            var result = new List<SelectListItem>();
+            //clone the list to ensure that "selected" property is not set
+            foreach (var item in listItems)
+            {
+                result.Add(new SelectListItem
+                {
+                    Text = item.Text,
+                    Value = item.Value
+                });
+            }
+
+            return result;
+        }
+
     }
 }
