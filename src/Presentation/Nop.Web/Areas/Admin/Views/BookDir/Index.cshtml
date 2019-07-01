@@ -112,45 +112,45 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                     @await Html.PartialAsync("Table", new DataTablesModel
-                    {
-                        Name = "categories-grid",
-                        UrlRead = new DataUrl("GetList", "BookDir", null),
-                        SearchButtonId = "search-categories",
-                        Length = Model.PageSize,
-                        LengthMenu = Model.AvailablePageSizes,
-                        Filters = new List<FilterParameter>
+               {
+                   Name = "bookdirs-grid",
+                   UrlRead = new DataUrl("GetList", "BookDir", null),
+                   SearchButtonId = "search-bookdirs",
+                   Length = Model.PageSize,
+                   LengthMenu = Model.AvailablePageSizes,
+                   Filters = new List<FilterParameter>
                         {
                             new FilterParameter(nameof(Model.SearchDirName)),
                             new FilterParameter(nameof(Model.SearchStoreId))
                         },
-                        ColumnCollection = new List<ColumnProperty>
+                   ColumnCollection = new List<ColumnProperty>
                         {
-                            new ColumnProperty(nameof(CategoryModel.Breadcrumb))
+                            new ColumnProperty(nameof(BookDirModel.Breadcrumb))
                             {
-                                Title = T("Admin.Catalog.Categories.Fields.Name").Text
+                                Title = T("Admin.AiBook.BookDir.Fields.Breadcrumb").Text
                             },
-                            new ColumnProperty(nameof(CategoryModel.Published))
+                            new ColumnProperty(nameof(BookDirModel.Published))
                             {
-                                Title = T("Admin.Catalog.Categories.Fields.Published").Text,
+                                Title = T("Admin.AiBook.BookDir.Fields.Published").Text,
                                 Width = "100",
                                 ClassName = NopColumnClassDefaults.CenterAll,
                                 Render = new RenderBoolean()
                             },
-                            new ColumnProperty(nameof(CategoryModel.DisplayOrder))
+                            new ColumnProperty(nameof(BookDirModel.DisplayOrder))
                             {
-                                Title = T("Admin.Catalog.Categories.Fields.DisplayOrder").Text,
+                                Title = T("Admin.AiBook.BookDir.Fields.Fields.DisplayOrder").Text,
                                 Width = "150",
                                 ClassName =  NopColumnClassDefaults.CenterAll
                             },
-                            new ColumnProperty(nameof(CategoryModel.Id))
+                            new ColumnProperty(nameof(BookDirModel.Id))
                             {
                                 Title = T("Admin.Common.Edit").Text,
                                 Width = "100",
                                 ClassName =  NopColumnClassDefaults.Button,
-                                Render = new RenderButtonEdit(new DataUrl("Edit"))
+                                Render = new RenderButtonEdit(new DataUrl("BookDir/Edit"))
                             }
                         }
-                    })
+               })
                 </div>
             </div>
         </div>

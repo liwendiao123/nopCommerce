@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Nop.Services.TableOfContent
+namespace Nop.Services.AIBookModel
 {
-  public class NopBookDirDefault
+  public  class NopBookNodeDefault
     {
         #region Store mappings
 
@@ -15,12 +15,12 @@ namespace Nop.Services.TableOfContent
         /// {0} : entity ID
         /// {1} : entity name
         /// </remarks>
-        public static string BookDirMappingByEntityIdNameCacheKey => "Nop.bookDirmapping.entityid-name-{0}-{1}";
+        public static string BookNodeMappingByEntityIdNameCacheKey => "Nop.bookNodemapping.entityid-name-{0}-{1}";
 
         /// <summary>
         /// Gets a key pattern to clear cache
         /// </summary>
-        public static string BookDirMappingPrefixCacheKey => "Nop.bookDirmapping.";
+        public static string BookNodeMappingPrefixCacheKey => "Nop.bookNodemapping.";
 
         #endregion
 
@@ -29,7 +29,7 @@ namespace Nop.Services.TableOfContent
         /// <summary>
         /// Gets a key for caching
         /// </summary>
-        public static string BookDirsAllCacheKey => "Nop.BookDir.all";
+        public static string BookNodesAllCacheKey => "Nop.BookNode.all";
 
         /// <summary>
         /// Gets a key for caching
@@ -37,14 +37,14 @@ namespace Nop.Services.TableOfContent
         /// <remarks>
         /// {0} : store ID
         /// </remarks>
-        public static string BookDirsByIdCacheKey => "Nop.BookDir.id-{0}";
+        public static string BookNodesByIdCacheKey => "Nop.BookNode.id-{0}";
 
         /// <summary>
         /// Gets a key pattern to clear cache
         /// </summary>
-        public static string BookDirsPrefixCacheKey => "Nop.BookDir.";
+        public static string BookNodesPrefixCacheKey => "Nop.BookNodes.";
 
-        public static string GetChildBookDirsByParentIdCacheKey => "Nop.BookDir.SubDir.ids-{0}";
+        public static string GetChildBookNodesByParentIdCacheKey => "Nop.BookNode.SubDir.ids-{0}";
 
         #endregion
     }

@@ -22,6 +22,14 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper.Extensions
         /// <returns>Mapped destination object</returns>
         private static TDestination Map<TDestination>(this object source)
         {
+            try
+            {
+                return AutoMapperConfiguration.Mapper.Map<TDestination>(source);
+            }
+            catch (Exception ex)
+            {
+                Console.Write(ex.Message);
+            }
             //use AutoMapper for mapping objects
             return AutoMapperConfiguration.Mapper.Map<TDestination>(source);
         }

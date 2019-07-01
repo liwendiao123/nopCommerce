@@ -1,0 +1,194 @@
+﻿@model BookDirModel
+
+<div class="panel-body">
+
+
+
+    @(Html.LocalizedEditor<BookDirModel, BookDirLocalizedModel>("bookdir-name-localized",
+                                            @<div>
+                                                <div class="form-group">
+                                                    <div class="col-md-3">
+                                                        <nop-label asp-for="@Model.Locales[item].Name" />
+                                                    </div>
+                                                    <div class="col-md-9">
+                                                        <nop-editor asp-for="@Model.Locales[item].Name" />
+                                                        <span asp-validation-for="@Model.Locales[item].Name"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="col-md-3">
+                                                        <nop-label asp-for="@Model.Locales[item]" />
+                                                    </div>
+                                                    <div class="col-md-9">
+                                                        <nop-editor asp-for="@Model.Locales[item].Description" asp-template="RichEditor" />
+                                                        <span asp-validation-for="@Model.Locales[item].Description"></span>
+                                                    </div>
+                                                </div>
+                                                <input type="hidden" asp-for="@Model.Locales[item].LanguageId" />
+                                            </div> ,
+                                                                                                            @<div>
+                                                                                                                <div class="form-group">
+                                                                                                                    <div class="col-md-3">
+                                                                                                                        <nop-label asp-for="Name" />
+                                                                                                                    </div>
+                                                                                                                    <div class="col-md-9">
+                                                                                                                        <nop-editor asp-for="Name" asp-required="true" />
+                                                                                                                        <span asp-validation-for="Name"></span>
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                                <div class="form-group">
+                                                                                                                    <div class="col-md-3">
+                                                                                                                        <nop-label asp-for="Description" />
+                                                                                                                    </div>
+                                                                                                                    <div class="col-md-9">
+                                                                                                                        <nop-editor asp-for="Description" asp-template="RichEditor" />
+                                                                                                                        <span asp-validation-for="Description"></span>
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            </div>))
+    <div class="form-group">
+        <div class="col-md-3">
+            <nop-label asp-for="CategryID" />
+        </div>
+        <div class="col-md-9">
+            <nop-select asp-for="CategryID" asp-items="Model.AvailableCategories" />
+            <span asp-validation-for="CategryID"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-3">
+            <nop-label asp-for="BookID" />
+        </div>
+        <div class="col-md-9">
+            <nop-select asp-for="BookID" asp-items="Model.BookList" />
+            <span asp-validation-for="BookID"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-3">
+            <nop-label asp-for="ParentBookDirId" />
+        </div>
+        <div class="col-md-9">
+            <nop-select asp-for="ParentBookDirId" asp-items="Model.ParentBookDir" />
+            <span asp-validation-for="ParentBookDirId"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-3">
+            <nop-label asp-for="IsLastNode" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="IsLastNode" />
+            <span asp-validation-for="IsLastNode"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-3">
+            <nop-label asp-for="Published" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="Published" />
+            <span asp-validation-for="Published"></span>
+        </div>
+    </div>
+
+    <div class="form-group advanced-setting">
+        <div class="col-md-3">
+            <nop-label asp-for="PictureId" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="PictureId" />
+            <span asp-validation-for="PictureId"></span>
+        </div>
+    </div>
+
+    <!--scripts -->
+    <script>
+        $(document).ready(function () {
+            $("#@Html.IdFor(model => model.AllowCustomersToSelectPageSize)").click(togglePageSize);
+            togglePageSize();
+        });
+
+        function togglePageSize() {
+            if ($('#@Html.IdFor(model => model.AllowCustomersToSelectPageSize)').is(':checked')) {
+                $('#pnlPageSize').hide();
+                $('#pnlPageSizeOptions').show();
+            } else {
+                $('#pnlPageSize').show();
+                $('#pnlPageSizeOptions').hide();
+            }
+        }
+
+
+
+        $(document).ready(function () {
+
+
+            //书籍类别
+            $("#@Html.IdFor(model => model.CategryID)").change(function() {
+                var selectedItem = $(this).val();
+                var ddlStates = $("#@Html.IdFor(model => model.BookID)");
+
+                var postData = {
+                    CategoryID: selectedItem,
+                    addSelectStateItem: "true"
+                };
+
+                $.ajax({
+                    cache: false,
+                    type: "GET",
+                    url: "@(Url.Action("GetBooksByCategory", "BookDir"))",
+                    data: postData,
+                    success: function (data, textStatus, jqXHR) {
+
+                        console.log("添加数据：" + JSON.stringify(data));
+
+                        ddlStates.html('');
+                        $.each(data, function(id, option) {
+                            ddlStates.append($('<option></option>').val(option.Id).html(option.Name));
+                        });
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $("#statesAlert").click();
+                    }
+                });
+            });
+
+
+            ///
+              $("#@Html.IdFor(model => model.BookID)").change(function() {
+                var selectedItem = $(this).val();
+                var ddlStates = $("#@Html.IdFor(model => model.ParentBookDirId)");
+
+                var postData = {
+                    BookID: selectedItem,
+                    addSelectStateItem: "true"
+                };
+
+                $.ajax({
+                    cache: false,
+                    type: "GET",
+                    url: "@(Url.Action("GetBookDirByBookId", "BookDir"))",
+                    data: postData,
+                    success: function (data, textStatus, jqXHR) {
+
+                        console.log("添加数据：" + JSON.stringify(data));
+
+                        ddlStates.html('');
+                        $.each(data, function(id, option) {
+                            ddlStates.append($('<option></option>').val(option.Id).html(option.Name));
+                        });
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $("#statesAlert").click();
+                    }
+                });
+            });
+        });
+
+
+    </script>
+
+
+</div>

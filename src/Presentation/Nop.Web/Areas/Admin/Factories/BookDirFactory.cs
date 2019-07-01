@@ -19,6 +19,10 @@ using Nop.Web.Framework.Factories;
 using Nop.Web.Framework.Models.Extensions;
 using Nop.Web.Areas.Admin.Infrastructure.Mapper.Extensions;
 using Nop.Core.Domain.TableOfContent;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Nop.Core.Domain.Catalog;
+using Nop.Services;
+using Nop.Core.Domain.Gdpr;
 
 namespace Nop.Web.Areas.Admin.Factories
 {
@@ -71,8 +75,8 @@ namespace Nop.Web.Areas.Admin.Factories
             ,IStoreMappingSupportedModelFactory storeMappingSupportedModelFactory
             ,IWorkContext workContext      
             ,IBookDirService bookDirService
-          
-            ,IUrlRecordService urlRecordService)
+            ,IProductService productService
+            , IUrlRecordService urlRecordService)
         {
             _baseAdminModelFactory = baseAdminModelFactory;
             _aclSupportedModelFactory = aclSupportedModelFactory;
@@ -90,6 +94,7 @@ namespace Nop.Web.Areas.Admin.Factories
             _workContext = workContext;
             _bookDirService = bookDirService;
             _urlRecordService = urlRecordService;
+            _productService = productService;
            // _bookDirFactory = bookDirFactory;
         }
         public BookDirListModel PrepareBookDirListModel(BookDirSearchModel searchModel)
@@ -100,7 +105,7 @@ namespace Nop.Web.Areas.Admin.Factories
                 throw new ArgumentNullException(nameof(searchModel));
             }
 
-           var result =   _bookDirService.GetAllBookDirsData(searchModel.SearchDirName,0, searchModel.Page, searchModel.PageSize);
+           var result =   _bookDirService.GetAllBookDirsData(searchModel.SearchDirName,searchModel.CategoryID,searchModel.BookID,searchModel.BookDirId,searchModel.SearchStoreId, searchModel.Page-1, searchModel.PageSize);
 
 
             var model = new BookDirListModel().PrepareToGrid(searchModel, result, () =>
@@ -119,19 +124,45 @@ namespace Nop.Web.Areas.Admin.Factories
 
             return model;
         }
-        public BookDirModel PrepareBookDirModel(BookDirModel model, BookDir category = null, bool excludeProperties = false)
+        public BookDirModel PrepareBookDirModel(BookDirModel model, BookDir bookdir = null, bool excludeProperties = false)
         {
             Action<BookDirLocalizedModel, int> localizedModelConfiguration = null;
 
-            if (category != null)
+            if (bookdir != null)
             {
                 //fill in model values from the entity
                 if (model == null)
                 {
-                    model = category.ToModel<BookDirModel>();
-                    model.SeName = _urlRecordService.GetSeName(category, 0, true, false);
+                    model = bookdir.ToModel<BookDirModel>();
+                    model.SeName = _urlRecordService.GetSeName(bookdir, 0, true, false);
                 }
 
+                var result = _productService.GetProductById(bookdir.BookID);
+
+                if (result != null )
+                {
+                    if (result.ProductCategories != null)
+                    {
+                        model.CategryID = result.ProductCategories.FirstOrDefault().CategoryId;
+                    }                
+                    model.BookID = result.Id;
+
+
+                    var products = _productService.SearchProducts(showHidden: true,
+                                    categoryIds: new List<int>() {
+                                        model.CategryID
+                                    },
+                                    manufacturerId: 0,
+                                    storeId: 0,
+                                    vendorId: 0,
+                                    warehouseId: 0,
+                                    productType: null,
+                                    keywords:null,
+                                    pageIndex: 0, 
+                                    pageSize: int.MaxValue);
+
+                   // model.BookList = products.ToList().ToSelect<Product>()
+                }
                 //prepare nested search model
 
                // PrepareBookDirSearchModel()
@@ -141,19 +172,25 @@ namespace Nop.Web.Areas.Admin.Factories
                 //define localized model configuration action
                 localizedModelConfiguration = (locale, languageId) =>
                 {
-                    locale.Name = _localizationService.GetLocalized(category, entity => entity.Name, languageId, false, false);
-                    //locale.Description = _localizationService.GetLocalized(category, entity => entity.Description, languageId, false, false);
-                    //locale.MetaKeywords = _localizationService.GetLocalized(category, entity => entity.MetaKeywords, languageId, false, false);
-                    //locale.MetaDescription = _localizationService.GetLocalized(category, entity => entity.MetaDescription, languageId, false, false);
+                    locale.Name = _localizationService.GetLocalized(bookdir, entity => entity.Name, languageId, false, false);
+                    locale.Description = _localizationService.GetLocalized(bookdir, entity => entity.Description, languageId, false, false);
+                    locale.MetaKeywords = _localizationService.GetLocalized(bookdir, entity => entity.MetaKeywords, languageId, false, false);
+                    locale.MetaDescription = _localizationService.GetLocalized(bookdir, entity => entity.MetaDescription, languageId, false, false);
                     //locale.MetaTitle = _localizationService.GetLocalized(category, entity => entity.MetaTitle, languageId, false, false);
                     //locale.SeName = _urlRecordService.GetSeName(category, languageId, false, false);
                 };
             }
 
             //set default values for the new model
-            if (category == null)
+            if (bookdir == null)
             {
-              //  model.PageSize = _catalogSettings.DefaultCategoryPageSize;
+
+                if (model == null)
+                {
+                    model = new BookDirModel();
+                }
+
+                //model.PageSize = _catalogSettings.DefaultCategoryPageSize;
                // model.PageSizeOptions = _catalogSettings.DefaultCategoryPageSizeOptions;
                 model.Published = true;
               //  model.IncludeInTopMenu = true;
@@ -161,21 +198,21 @@ namespace Nop.Web.Areas.Admin.Factories
             }
 
             //prepare localized models
-           // if (!excludeProperties)
-               //model.Locales = _localizedModelFactory.PrepareLocalizedModels(localizedModelConfiguration);
+            if (!excludeProperties)
+               model.Locales = _localizedModelFactory.PrepareLocalizedModels(localizedModelConfiguration);
 
             //prepare available category templates
            // _baseAdminModelFactory.PrepareCategoryTemplates(model.AvailableCategoryTemplates, false);
             //prepare available parent categories
-          //  _baseAdminModelFactory.PrepareCategories(model.a,
-            //    defaultItemText: _localizationService.GetResource("Admin.Catalog.Categories.Fields.Parent.None"));
+           _baseAdminModelFactory.PrepareCategories(model.AvailableCategories,
+                defaultItemText: _localizationService.GetResource("Admin.Catalog.Categories.Fields.Parent.None"));
             //prepare model discounts
            // var availableDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToCategories, showHidden: true);
             //_discountSupportedModelFactory.PrepareModelDiscounts(model, category, availableDiscounts, excludeProperties);
             //prepare model customer roles
-            _aclSupportedModelFactory.PrepareModelCustomerRoles(model, category, excludeProperties);
+            _aclSupportedModelFactory.PrepareModelCustomerRoles(model, bookdir, excludeProperties);
             //prepare model stores
-           _storeMappingSupportedModelFactory.PrepareModelStores(model, category, excludeProperties);
+           _storeMappingSupportedModelFactory.PrepareModelStores(model, bookdir, excludeProperties);
             return model;
         }
 
@@ -210,6 +247,24 @@ namespace Nop.Web.Areas.Admin.Factories
             //prepare page parameters
             searchModel.SetGridPageSize();
             return searchModel;
+        }
+
+
+
+        public virtual void PrepareBookItems(IList<SelectListItem> items,IList<Product> bitems,bool withSpecialDefaultItem = true, string defaultItemText = null)
+        {
+            //if (items == null)
+            //    throw new ArgumentNullException(nameof(items));
+
+            ////prepare available request types
+            //var gdprRequestTypeItems = GdprRequestType.ConsentAgree.ToSelectList(false);
+            //foreach (var gdprRequestTypeItem in bitems)
+            //{
+            //    items.Add(gdprRequestTypeItem);
+            //}
+
+            ////insert special item for the default value
+            //PrepareDefaultItem(items, withSpecialDefaultItem, defaultItemText);
         }
     }
 }

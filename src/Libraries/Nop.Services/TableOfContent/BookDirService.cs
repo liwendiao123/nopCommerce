@@ -13,6 +13,8 @@ using Nop.Services.Security;
 using Nop.Data;
 using Nop.Services.Localization;
 using Nop.Core.Domain.Stores;
+using Nop.Services.Catalog;
+using Nop.Core.Domain.Customers;
 
 namespace Nop.Services.TableOfContent
 {
@@ -33,19 +35,29 @@ namespace Nop.Services.TableOfContent
         private readonly ILocalizationService _localizationService;
         private readonly IStaticCacheManager _staticCacheManager;
         private readonly IStoreContext _storeContext;
-
+        private readonly ICategoryService _cateservice;
+        private readonly IProductService _productService;      
         #endregion
 
 
         #region  Ctor
 
         public BookDirService(
-            IEventPublisher eventPublisher,
-            IRepository<BookDir> bookdirRepository,
-            IStaticCacheManager cacheManager, 
-            ILogger logger, 
-            IWorkContext workContext,
-            CommonSettings commonSettings
+            IEventPublisher eventPublisher
+            ,IRepository<BookDir> bookdirRepository
+            ,IStaticCacheManager cacheManager
+            ,ILogger logger 
+            ,IWorkContext workContext
+            ,ICategoryService cateservice
+            ,ILocalizationService localizationService
+            , CommonSettings commonSettings
+            , IProductService productService
+            ,IRepository<StoreMapping> storeMappingRepository    
+            ,IAclService aclService
+            ,IDataProvider dataProvider
+            ,IDbContext dbContext
+            ,IStaticCacheManager staticCacheManager
+            ,IStoreContext storeContext
             )
         {
             _eventPublisher = eventPublisher;
@@ -53,6 +65,16 @@ namespace Nop.Services.TableOfContent
             _cacheManager = cacheManager;
             _logger = logger;
             _workContext = workContext;
+            _cateservice = cateservice;
+            _productService = productService;
+            _localizationService = localizationService;
+            _commonSettings = commonSettings;
+            _storeMappingRepository = storeMappingRepository;
+            _aclService = aclService;
+            _dataProvider = dataProvider;
+            _dbContext = dbContext;
+            _staticCacheManager = staticCacheManager;
+            _storeContext = storeContext;
         }
         #endregion
 
@@ -95,9 +117,6 @@ namespace Nop.Services.TableOfContent
 
         public IList<BookDir> GetAllBookDirs(bool loadCacheableCopy = true)
         {
-
-
-
             IList<BookDir> loadBookDirsFunc()
             {
                 var query = from s in _bookdirRepository.Table orderby s.DisplayOrder, s.Id select s;
@@ -129,7 +148,7 @@ namespace Nop.Services.TableOfContent
         /// <param name="pageSize">Page size</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Categories</returns>
-        public virtual IPagedList<BookDir> GetAllBookDirsData(string categoryName, int storeId = 0,
+        public virtual IPagedList<BookDir> GetAllBookDirsData(string categoryName,int cateId = 0, int bookID = 0,int bookdirID = 0, int storeId = 0,
             int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false)
         {
             //if (_commonSettings.UseStoredProcedureForLoadingCategories)
@@ -163,44 +182,49 @@ namespace Nop.Services.TableOfContent
             if (!showHidden)
                 query = query.Where(c => c.Published);
             if (!string.IsNullOrWhiteSpace(categoryName))
-                query = query.Where(c => c.Name.Contains(categoryName));
+            query = query.Where(c => c.Name.Contains(categoryName));
             query = query.Where(c => !c.Deleted);
+
+
+
+            #region 短路条件查询 ----范围由小到大提高查询效率 liwendiao 备注
+            if (bookdirID > 0)
+            {
+               var resultIds = GetChildBookDirIds(bookdirID);
+                query = query.Where(x => resultIds.Contains(x.ParentBookDirId));                
+            }
+
+            else if (bookID > 0)
+            {
+                query = query.Where(x => bookID == x.BookID);
+            }
+           else if (cateId > 0)
+            {
+                ///todo..
+                var result = _cateservice.GetChildCategoryIds(cateId);
+                if (result != null && !result.Contains(cateId))
+                {
+                    result.Add(cateId);
+                }
+                if (result == null)
+                {
+                    result = new List<int>();
+                }
+                var product = _productService.SearchProducts(0, Int32.MaxValue, result);
+                if (product != null)
+                {
+                    var pres = product.OrderBy(x => x.Id).Select(x => x.Id).ToList();
+                    query = query.Where(x => pres.Contains(x.BookID));
+                }
+            }
+
+            #endregion
             query = query.OrderBy(c => c.ParentBookDirId).ThenBy(c => c.DisplayOrder).ThenBy(c => c.Id);
-
-            //if ((storeId > 0 && !_catalogSettings.IgnoreStoreLimitations) || (!showHidden && !_catalogSettings.IgnoreAcl))
-            //{
-            //    //if (!showHidden && !_catalogSettings.IgnoreAcl)
-            //    //{
-            //    //    //ACL (access control list)
-            //    //    var allowedCustomerRolesIds = _workContext.CurrentCustomer.GetCustomerRoleIds();
-            //    //    query = from c in query
-            //    //            join acl in _aclRepository.Table
-            //    //                on new { c1 = c.Id, c2 = nameof(Category) } equals new { c1 = acl.EntityId, c2 = acl.EntityName } into c_acl
-            //    //            from acl in c_acl.DefaultIfEmpty()
-            //    //            where !c.SubjectToAcl || allowedCustomerRolesIds.Contains(acl.CustomerRoleId)
-            //    //            select c;
-            //    //}
-
-            //    //if (storeId > 0 && !_catalogSettings.IgnoreStoreLimitations)
-            //    //{
-            //    //    //Store mapping
-            //    //    query = from c in query
-            //    //            join sm in _storeMappingRepository.Table
-            //    //                on new { c1 = c.Id, c2 = nameof(Category) } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into c_sm
-            //    //            from sm in c_sm.DefaultIfEmpty()
-            //    //            where !c.LimitedToStores || storeId == sm.StoreId
-            //    //            select c;
-            //    //}
-
-            //    query = query.Distinct().OrderBy(c => c.ParentBookDirId).ThenBy(c => c.DisplayOrder).ThenBy(c => c.Id);
-            //}
-
+            ///
             var unsortedCategories = query.ToList();
-
-            //sort categories
+            ///sort categories
             var sortedCategories = SortBookDirsForTree(unsortedCategories);
-
-            //paging
+            ///paging
             return new PagedList<BookDir>(sortedCategories, pageIndex, pageSize);
         }
 
@@ -237,21 +261,21 @@ namespace Nop.Services.TableOfContent
             return result;
         }
 
-        public BookDir GetBookDirById(int storeId, bool loadCacheableCopy = true)
+        public BookDir GetBookDirById(int bookdirId, bool loadCacheableCopy = true)
         {
-            if (storeId == 0)
+            if (bookdirId == 0)
                 return null;
 
             BookDir LoadStoreFunc()
             {
-                return _bookdirRepository.GetById(storeId);
+                return _bookdirRepository.GetById(bookdirId);
             }
 
             if (!loadCacheableCopy)
                 return LoadStoreFunc();
 
             //cacheable copy
-            var key = string.Format(NopBookDirDefault.BookDirsByIdCacheKey, storeId);
+            var key = string.Format(NopBookDirDefault.BookDirsByIdCacheKey, bookdirId);
             return _cacheManager.Get(key, () =>
             {
                 var store = LoadStoreFunc();
@@ -327,15 +351,10 @@ namespace Nop.Services.TableOfContent
 
                 if (bookdir is IEntityForCaching)
                     throw new ArgumentException("Cacheable entities are not supported by Entity Framework");
-
                 _bookdirRepository.Update(bookdir);
-
                 _cacheManager.RemoveByPrefix(NopBookDirDefault.BookDirsPrefixCacheKey);
-
                 //event notification
                 _eventPublisher.EntityUpdated(bookdir);
-
-
                 return 1;
             }
             catch (Exception ex)
@@ -350,14 +369,12 @@ namespace Nop.Services.TableOfContent
             string separator = ">>", int languageId = 0)
         {
             var result = string.Empty;
-
             var breadcrumb = GetBookDirBreadCrumb(bookDir, allBookDirs, true);
             for (var i = 0; i <= breadcrumb.Count - 1; i++)
             {
                 var categoryName = _localizationService.GetLocalized(breadcrumb[i], x => x.Name, languageId);
                 result = string.IsNullOrEmpty(result) ? categoryName : $"{result} {separator} {categoryName}";
             }
-
             return result;
         }
 
@@ -388,6 +405,44 @@ namespace Nop.Services.TableOfContent
            // return new List<BookDir>();
         }
 
-       // IList<BookDir> GetBookDirBreadCrumb(BookDir bookDir, IList<BookDir> allBookDirs = null, bool showHidden = false)
+
+        /// <summary>
+        /// Gets child category identifiers
+        /// </summary>
+        /// <param name="parentCategoryId">Parent category identifier</param>
+        /// <param name="storeId">Store identifier; 0 if you want to get all records</param>
+        /// <param name="showHidden">A value indicating whether to show hidden records</param>
+        /// <returns>Category identifiers</returns>
+        public virtual IList<int> GetChildBookDirIds(int parentBookirId, int storeId = 0, bool showHidden = false)
+        {
+            var cacheKey = string.Format(NopBookDirDefault.GetChildBookDirsByParentIdCacheKey,
+                parentBookirId,
+                string.Join(",", _workContext.CurrentCustomer.GetCustomerRoleIds()),
+                _storeContext.CurrentStore.Id,
+                showHidden);
+            return _staticCacheManager.Get(cacheKey, () =>
+            {
+                //little hack for performance optimization
+                //there's no need to invoke "GetAllCategoriesByParentCategoryId" multiple times (extra SQL commands) to load childs
+                //so we load all categories at once (we know they are cached) and process them server-side
+                var categoriesIds = new List<int>();
+                //var categories = GetAllCategories(storeId: storeId, showHidden: showHidden)
+                //    .Where(c => c.ParentCategoryId == parentCategoryId);
+
+                var categories = _bookdirRepository.Table
+                                        .Where(x=>x.ParentBookDirId == parentBookirId)
+                                        .Select(x=>x.Id).ToList();
+                foreach (var category in categories)
+                {
+                    categoriesIds.Add(category);
+                    categoriesIds.AddRange(GetChildBookDirIds(category, storeId, showHidden));
+                }
+
+                return categoriesIds;
+            });
+        }
+
+
+        // IList<BookDir> GetBookDirBreadCrumb(BookDir bookDir, IList<BookDir> allBookDirs = null, bool showHidden = false)
     }
 }

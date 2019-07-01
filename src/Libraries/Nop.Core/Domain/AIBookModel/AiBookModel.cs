@@ -13,6 +13,9 @@ namespace Nop.Core.Domain.AIBookModel
         /// 知识点ID
         /// </summary>
         public int BookDirID { get; set; }
+
+
+        public string Name { get; set; }
         /// <summary>
         /// 目录标识
         /// </summary>
@@ -36,7 +39,7 @@ namespace Nop.Core.Domain.AIBookModel
         /// </summary>
         public string AbUrl { get; set; }
 
-
+        public int DisplayOrder { get; set; }
         /// <summary>
         /// 配置信息
         /// </summary>

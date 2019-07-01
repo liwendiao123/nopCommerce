@@ -16,6 +16,7 @@ using Nop.Core.Infrastructure.DependencyManagement;
 using Nop.Core.Redis;
 using Nop.Data;
 using Nop.Services.Affiliates;
+using Nop.Services.AIBookModel;
 using Nop.Services.Authentication;
 using Nop.Services.Authentication.External;
 using Nop.Services.Blogs;
@@ -233,8 +234,9 @@ namespace Nop.Web.Framework.Infrastructure
             builder.RegisterType<ReviewTypeService>().As<IReviewTypeService>().SingleInstance();
             builder.RegisterType<EventPublisher>().As<IEventPublisher>().SingleInstance();
             builder.RegisterType<SettingService>().As<ISettingService>().InstancePerLifetimeScope();
-            // builder.RegisterType<BookDirFactory>().As<IBookDirFactory>()
+           // builder.RegisterType<BookDirFactory>().As<IBookDirFactory>()
             builder.RegisterType<BookDirService>().As<IBookDirService>().InstancePerLifetimeScope();
+            builder.RegisterType<AiBookService>().As<IAiBookService>().InstancePerLifetimeScope();
             //plugin managers
             builder.RegisterGeneric(typeof(PluginManager<>)).As(typeof(IPluginManager<>)).InstancePerLifetimeScope();
             builder.RegisterType<AuthenticationPluginManager>().As<IAuthenticationPluginManager>().InstancePerLifetimeScope();

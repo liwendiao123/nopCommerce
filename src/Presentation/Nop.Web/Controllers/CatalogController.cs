@@ -301,7 +301,6 @@ namespace Nop.Web.Controllers
                 pageSize: productNumber);
 
             var showLinkToResultSearch = _catalogSettings.ShowLinkToAllResultInSearchAutoComplete && (products.TotalCount > productNumber);
-
             var models =  _productModelFactory.PrepareProductOverviewModels(products, false, _catalogSettings.ShowProductImagesInSearchAutoComplete, _mediaSettings.AutoCompleteSearchThumbPictureSize).ToList();
             var result = (from p in models
                     select new

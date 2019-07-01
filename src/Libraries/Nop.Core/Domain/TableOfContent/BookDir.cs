@@ -8,6 +8,7 @@ using Nop.Core.Domain.Stores;
 using System.Linq;
 using Nop.Core.Domain.AIBookModel;
 using Nop.Core.Domain.Localization;
+using Newtonsoft.Json;
 
 namespace Nop.Core.Domain.TableOfContent
 {
@@ -21,11 +22,8 @@ namespace Nop.Core.Domain.TableOfContent
 
         private  ICollection<AiBookModel> _aiBookModels;
 
-
        //private ICollection<DiscountBookDirMapping> _discountCategoryMappings;
-
        public int BookID { get; set; }
-
         /// <summary>
         /// Gets or sets the name
         /// </summary>
@@ -39,6 +37,8 @@ namespace Nop.Core.Domain.TableOfContent
         /// <summary>
         /// Gets or sets a value of used category template identifier
         /// </summary>
+       
+       [JsonIgnore]
         public int CategoryTemplateId { get; set; }
 
         /// <summary>
@@ -120,14 +120,13 @@ namespace Nop.Core.Domain.TableOfContent
         /// </summary>
         public DateTime UpdatedOnUtc { get; set; }
 
-        /// <summary>
-        /// Gets or sets the collection of applied discounts
-        /// </summary>
-       // public virtual IList<Discount> AppliedDiscounts => DiscountBookDirMappings.Select(mapping => mapping.Discount).ToList();
-
+        public bool IsLastNode { get; set; }
+   
         /// <summary>
         /// Gets or sets the discount-category mappings
         /// </summary>
+        /// 
+        [JsonIgnore]
         public virtual ICollection<AiBookModel> AiBookModels
         {
             get => _aiBookModels ?? (_aiBookModels = new List<AiBookModel>());
