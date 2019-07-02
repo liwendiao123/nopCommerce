@@ -232,12 +232,16 @@ namespace Nop.Services.AIBookModel
             else if (bookId > 0)
             {
 
-               // _bookDirService.ge
+              var result =  _bookDirService.GetAllBookDirsData(null, 0, bookId);
 
-                query = query.Where(x => bookId == x.bo);
+                var bookdirIds = result.Select(x => x.Id).ToList();
+
+                query = query.Where(x => bookdirIds.Contains(x.BookDirID));
             }
-            else if (cateId > 0)
+            else if (categoryIds.Count > 0)
             {
+
+                var cateId = categoryIds.FirstOrDefault();
                 ///todo..
                 var result = _cateservice.GetChildCategoryIds(cateId);
                 if (result != null && !result.Contains(cateId))
@@ -252,14 +256,36 @@ namespace Nop.Services.AIBookModel
                 if (product != null)
                 {
                     var pres = product.OrderBy(x => x.Id).Select(x => x.Id).ToList();
-                    query = query.Where(x => pres.Contains(x.BookID));
+                    // query = query.Where(x => pres.Contains(x.BookID));
+
+                    List<int> bookdirs = new List<int>();
+
+                    foreach (var item in pres)
+                    {
+                        var subresult = _bookDirService.GetAllBookDirsData(null, 0, item);
+                        var subresultids = subresult.Select(x => x.Id).ToList();
+
+                        bookdirs.AddRange(subresultids);
+                    }
+
+                    bookdirs = bookdirs.Distinct().ToList();
+
+                    query = query.Where(x => bookdirs.Contains(x.BookDirID));
                 }
             }
+
+            query = query.OrderBy(c => c.DisplayOrder).ThenBy(c => c.Id);
+            ///
+            var unsortedCategories = query.ToList();
+            ///sort categories
+            //var sortedCategories = SortBookDirsForTree(unsortedCategories);
+            ///paging
+            return new PagedList<AiBookModel>(unsortedCategories, pageIndex, pageSize);
 
             #endregion
 
 
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public int UpdateAiBookModel(AiBookModel aibookmodel)

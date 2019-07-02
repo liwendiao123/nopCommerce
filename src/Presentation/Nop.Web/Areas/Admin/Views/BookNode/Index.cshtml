@@ -1,4 +1,249 @@
-﻿
-@*
-    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model AiBookSearchModelView
+@{
+    //page title
+    ViewBag.Title = T("Admin.AiBook.BookNode").Text;
+    //active menu item (system name)
+    Html.SetActiveMenuItemSystemName("课本目录");
+}
+@{
+    const string hideSearchBlockAttributeName = "BookNodePage.HideSearchBlock";
+    var hideSearchBlock = genericAttributeService.GetAttribute<bool>(workContext.CurrentCustomer, hideSearchBlockAttributeName);
+}
+<nop-antiforgery-token />
+<div class="content-header clearfix">
+    <h1 class="pull-left">
+        @T("Admin.AiBook.BookNode")
+    </h1>
+    <div class="pull-right">
+        <a asp-action="Create" class="btn bg-blue">
+            <i class="fa fa-plus-square"></i>
+            @T("Admin.Common.AddNew")
+        </a>
+        <div class="btn-group">
+            <button type="button" class="btn btn-success">
+                <i class="fa fa-download"></i>
+                @T("Admin.Common.Export")
+            </button>
+            <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                <span class="caret"></span>
+                <span class="sr-only">&nbsp;</span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li>
+                    <a asp-action="ExportXml">
+                        <i class="fa fa-file-code-o"></i>
+                        @T("Admin.Common.ExportToXml")
+                    </a>
+                </li>
+                <li>
+                    <a asp-action="ExportXlsx">
+                        <i class="fa fa-file-excel-o"></i>
+                        @T("Admin.Common.ExportToExcel")
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <button type="button" name="importexcel" class="btn bg-olive" data-toggle="modal" data-target="#importexcel-window">
+            <i class="fa fa-upload"></i>
+            @T("Admin.Common.Import")
+        </button>
+        @await Component.InvokeAsync("AdminWidget", new { widgetZone = AdminWidgetZones.CategoryListButtons })
+    </div>
+</div>
+<div class="content">
+    <div class="form-horizontal">
+        <div class="panel-group">
+            <div class="panel panel-default panel-search">
+                <div class="panel-body">
+                    <div class="row search-row @(!hideSearchBlock ? "opened" : "")" data-hideAttribute="@hideSearchBlockAttributeName">
+                        <div class="search-text">@T("Admin.Common.Search")</div>
+                        <div class="icon-search"><i class="fa fa-search" aria-hidden="true"></i></div>
+                        <div class="icon-collapse"><i class="fa fa-angle-down" aria-hidden="true"></i></div>
+                    </div>
+
+                    <div class="search-body @(hideSearchBlock ? "closed" : "")">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="BookAiModelName" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-editor asp-for="BookAiModelName" />
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="CateId" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-select asp-for="CateId" asp-items="Model.AvailableCategories" />
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="BookId" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-select asp-for="BookId" asp-items="Model.AvailableBooks" />
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="BookDirId" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-select asp-for="BookDirId" asp-items="Model.AvailableBookDirs" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-8 col-md-offset-4">
+                                        <button type="button" id="search-categories" class="btn btn-primary btn-search"><i class="fa fa-search"></i>@T("Admin.Common.Search")</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    @await Html.PartialAsync("Table", new DataTablesModel
+               {
+                   Name = "bookdirs-grid",
+                   UrlRead = new DataUrl("GetList", "BookNode", null),
+                   SearchButtonId = "search-bookdirs",
+                   Length = Model.PageSize,
+                   LengthMenu = Model.AvailablePageSizes,
+                   Filters = new List<FilterParameter>
+                        {
+                            new FilterParameter(nameof(Model.BookAiModelName)),
+                           // new FilterParameter(nameof(Model.SearchStoreId))
+                        },
+                   ColumnCollection = new List<ColumnProperty>
+                        {
+                            new ColumnProperty(nameof(AiBookModelView.Name))
+                            {
+                                Title = T("Admin.AiBook.BookNode.Fields.Name").Text
+                            },
+                            new ColumnProperty(nameof(AiBookModelView.Desc))
+                            {
+                                Title = T("Admin.AiBook.BookNode.Fields.Desc").Text
+                            },
+                            new ColumnProperty(nameof(AiBookModelView.UniqueId))
+                            {
+                                Title = T("Admin.AiBook.BookNode.Fields.UniqueId").Text
+                            },
+                            new ColumnProperty(nameof(AiBookModelView.WebModelUrl))
+                            {
+                                Title = T("Admin.AiBook.BookNode.Fields.WebModelUrl").Text
+                            },
+                            new ColumnProperty(nameof(AiBookModelView.WebGltfUrl))
+                            {
+                                Title = T("Admin.AiBook.BookNode.Fields.WebGltfUrl").Text
+                            },
+                            new ColumnProperty(nameof(AiBookModelView.WebBinUrl))
+                            {
+                                Title = T("Admin.AiBook.BookNode.Fields.WebBinUrl").Text
+                            },
+                            new ColumnProperty(nameof(AiBookModelView.AbUrl))
+                            {
+                                Title = T("Admin.AiBook.BookNode.Fields.AbUrl").Text
+                               // Render = new RenderLink(new DataUrl())
+                            },
+                               new ColumnProperty(nameof(AiBookModelView.ImgUrl))
+                            {
+                                Title = T("Admin.AiBook.BookNode.Fields.ImgUrl").Text,
+                               Width = "100",
+                               Render = new RenderPicture()
+                            },
+                            new ColumnProperty(nameof(AiBookModelView.StrJson))
+                            {
+                                Title = T("Admin.AiBook.BookNode.Fields.AbUrl").Text
+                               // Render = new RenderLink(new DataUrl())
+                            },
+                            new ColumnProperty(nameof(AiBookModelView.Published))
+                            {
+                                Title = T("Admin.AiBook.BookNode.Fields.Published").Text,
+                                Width = "100",
+                                ClassName = NopColumnClassDefaults.CenterAll,
+                                Render = new RenderBoolean()
+
+
+                            },
+                            new ColumnProperty(nameof(AiBookModelView.Deleted))
+                            {
+                                Title = T("Admin.AiBook.BookNode.Fields.Deleted").Text,
+                                Width = "100",
+                                ClassName = NopColumnClassDefaults.CenterAll,
+                                Render = new RenderBoolean()
+                            },
+                            new ColumnProperty(nameof(AiBookModelView.Active))
+                            {
+                                Title = T("Admin.AiBook.BookNode.Fields.Active").Text,
+                                Width = "100",
+                                ClassName = NopColumnClassDefaults.CenterAll,
+                                Render = new RenderBoolean()
+                            },
+
+                            new ColumnProperty(nameof(AiBookModelView.Id))
+                            {
+                                Title = T("Admin.Common.Edit").Text,
+                                Width = "100",
+                                ClassName =  NopColumnClassDefaults.Button,
+                                Render = new RenderButtonEdit(new DataUrl("BookNode/Edit"))
+                            }
+                        }
+               })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*import categories form*@
+<div id="importexcel-window" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="importexcel-window-title">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="importexcel-window-title">@T("Admin.Common.ImportFromExcel")</h4>
+            </div>
+            <form asp-controller="Category" asp-action="ImportFromXlsx" method="post" enctype="multipart/form-data">
+                <div class="form-horizontal">
+                    <div class="modal-body">
+                        <ul class="common-list">
+                            <li>
+                                <em>@T("Admin.Catalog.Categories.List.ImportFromExcelTip")</em>
+                            </li>
+                            <li>
+                                <em>@T("Admin.Common.ImportFromExcel.ManyRecordsWarning")</em>
+                            </li>
+                        </ul>
+                        <div class="form-group">
+                            <div class="col-md-2">
+                                <div class="label-wrapper">
+                                    <label class="control-label">
+                                        @T("Admin.Common.ExcelFile")
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <input type="file" id="importexcelfile" name="importexcelfile" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">
+                            @T("Admin.Common.ImportFromExcel")
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

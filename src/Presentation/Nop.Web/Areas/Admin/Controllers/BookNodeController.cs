@@ -15,6 +15,9 @@ using Nop.Web.Areas.Admin.Models.TableOfContent;
 using Nop.Web.Areas.Admin.Infrastructure.Mapper.Extensions; 
 using Nop.Web.Framework.Mvc.Filters;
 using Nop.Core.Domain.TableOfContent;
+using Nop.Services.AIBookModel;
+using Nop.Web.Areas.Admin.Models.AiBook;
+using Nop.Core.Domain.AIBookModel;
 
 namespace Nop.Web.Areas.Admin.Controllers
 {
@@ -30,7 +33,8 @@ namespace Nop.Web.Areas.Admin.Controllers
         private readonly IBookDirService _bookDirService;
         private readonly IBookDirFactory _bookDirFactory;
         private readonly IProductModelFactory _productModelFactory;
-
+        private readonly IBookNodeFactory _bookNodeFactory;
+        private readonly IAiBookService _bookNodeService;
         public BookNodeController(
             IUrlRecordService urlRecordService
             ,IPermissionService permissionService
@@ -41,6 +45,8 @@ namespace Nop.Web.Areas.Admin.Controllers
             ,IBookDirService bookDirService
             ,IBookDirFactory bookDirFactory
             ,IProductModelFactory productModelFactory
+            ,IBookNodeFactory bookNodeFactory
+            ,IAiBookService bookNodeService
             )
         {
             _urlRecordService = urlRecordService;
@@ -52,9 +58,11 @@ namespace Nop.Web.Areas.Admin.Controllers
             _bookDirService = bookDirService;
             _bookDirFactory = bookDirFactory;
             _productModelFactory = productModelFactory;
+            _bookNodeFactory = bookNodeFactory;
+            _bookNodeService = bookNodeService;
 
         }
-        public IActionResult Index()
+        public IActionResult Index(AiBookSearchModelView smodel)
         {
 
 
@@ -62,8 +70,8 @@ namespace Nop.Web.Areas.Admin.Controllers
                 return AccessDeniedView();
 
             //prepare model
-            var model = _bookDirFactory.PrepareBookDirSearchModel(new BookDirSearchModel(),new BookDirModel());
-
+            //  var model = _bookDirFactory.PrepareBookDirSearchModel(new BookDirSearchModel(),new BookDirModel());
+            var model = _bookNodeFactory.PrepareBookNodeSearchModel(smodel);
             return View(model);
         }
 
@@ -77,24 +85,28 @@ namespace Nop.Web.Areas.Admin.Controllers
 
         public virtual IActionResult List()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCategories))
+            if (!_permissionService.Authorize(StandardPermissionProvider.BookModelManage))
                 return AccessDeniedView();
 
-            //prepare model
-            var model = _bookDirFactory.PrepareBookDirSearchModel(new BookDirSearchModel(),new BookDirModel());
 
+                var smodel = new AiBookSearchModelView();
+           
+
+            //prepare model
+          //  var model = _bookDirFactory.PrepareBookDirSearchModel(new BookDirSearchModel(),new BookDirModel());
+            var model = _bookNodeFactory.PrepareBookNodeSearchModel(smodel);
             return View(model);
         }
 
         [HttpPost]
-        public virtual IActionResult List(BookDirSearchModel searchModel)
+        public virtual IActionResult List(AiBookSearchModelView searchModel)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCategories))
                 return AccessDeniedDataTablesJson();
 
             //prepare model
-            var model = _bookDirFactory.PrepareBookDirSearchModel(searchModel,new BookDirModel());
-
+            // var model = _bookDirFactory.PrepareBookDirSearchModel(searchModel,new BookDirModel());
+            var model = _bookNodeFactory.PrepareBookNodeSearchModel(searchModel);
             return Json(model);
         }
 
@@ -113,30 +125,30 @@ namespace Nop.Web.Areas.Admin.Controllers
                 return AccessDeniedView();
             //prepare model
             //var model = _categoryModelFactory.PrepareCategoryModel(new CategoryModel(), null);
-            var model = _bookDirFactory.PrepareBookDirModel();
+            var model = _bookNodeFactory.PrepareBookNodeModel(new AiBookModelView(),0);
             return View(model);
         }
 
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-        public IActionResult Create(BookDirModel model, bool continueEditing)
+        public IActionResult Create(AiBookModelView  model, bool continueEditing)
         {  if (!_permissionService.Authorize(StandardPermissionProvider.ManageCategories))
                 return AccessDeniedView();
 
             if (ModelState.IsValid)
             {
-                var category = model.ToEntity<BookDir>();
+                var category = model.ToEntity<AiBookModel>();
                 category.CreatedOnUtc = DateTime.UtcNow;
                 category.UpdatedOnUtc = DateTime.UtcNow;
-                if (string.IsNullOrEmpty(category.PriceRanges))
-                {
-                    category.PriceRanges = "0";
-                }
-               
+                //if (string.IsNullOrEmpty(category.PriceRanges))
+                //{
+                //    category.PriceRanges = "0";
+                //}
+
 
                 //search engine name
-                model.SeName = _urlRecordService.ValidateSeName(category, model.SeName, category.Name, true);
-                _urlRecordService.SaveSlug(category, model.SeName, 0);
+                //  model.SeName = _urlRecordService.ValidateSeName(category, model.SeName, category.Name, true);
+                // _urlRecordService.SaveSlug(category, model.SeName, 0);
 
                 //locales
                 // UpdateLocales(category, model);
@@ -151,8 +163,8 @@ namespace Nop.Web.Areas.Admin.Controllers
                 //});
                 //            }
 
-                _bookDirService.InsertBookDir(category);
-
+                // _bookDirService.InsertBookDir(category);
+                _bookNodeService.InsertAiBookModel(category);
                // _categoryService.UpdateCategory(category);
 
                 //update picture seo file name
@@ -165,10 +177,10 @@ namespace Nop.Web.Areas.Admin.Controllers
                // SaveStoreMappings(category, model);
 
 //activity log
-            _customerActivityService.InsertActivity("AddNewBookDir",
-                    string.Format(_localizationService.GetResource("ActivityLog.AddNewBookDir"), category.Name), category);
+            _customerActivityService.InsertActivity("AddNewBookNode",
+                    string.Format(_localizationService.GetResource("ActivityLog.AddNewBookNode"), category.Name), category);
 
-                _notificationService.SuccessNotification(_localizationService.GetResource("Admin.AiBookDir.BookDir.AddNewBookDir"));
+                _notificationService.SuccessNotification(_localizationService.GetResource("Admin.AiBookDir.BookNode.AddNewBookNode"));
 
                 if (!continueEditing)
                     return RedirectToAction("Index");
@@ -177,7 +189,8 @@ namespace Nop.Web.Areas.Admin.Controllers
             }
 
             //prepare model
-            model = _bookDirFactory.PrepareBookDirModel();
+            model = _bookNodeFactory.PrepareBookNodeModel(new AiBookModelView(), 0);
+          
 
             //if we got this far, something failed, redisplay form
             return View(model);
@@ -188,33 +201,48 @@ namespace Nop.Web.Areas.Admin.Controllers
 
             //try to get a category with the specified id
             //  var bookdir = _categoryService.GetCategoryById(id);
-            var bookdir = _bookDirService.GetBookDirById(id);
-            if (bookdir == null || bookdir.Deleted)
+            var booknode = _bookNodeService.GetAiBookModelById(id);
+            if (booknode == null || booknode.Deleted)
                 return RedirectToAction("List");
 
             //prepare model
             //var model = _categoryModelFactory.PrepareCategoryModel(null, category);
 
-            var model = _bookDirFactory.PrepareBookDirModel(null,bookdir);
-
+            // var model = _bookDirFactory.PrepareBookDirModel(null,bookdir);
+            var aimodel = booknode.ToModel<AiBookModelView>();
+            var model = _bookNodeFactory.PrepareBookNodeModel(aimodel, 0);
             return View(model);
 
         }
 
-        public IActionResult Delete()
+        public IActionResult Delete(int id)
         {
 
             if (!_permissionService.Authorize(StandardPermissionProvider.BookDirManage))
                 return AccessDeniedView();
 
-            return View();
+            //try to get a blog post with the specified id
+            var bookNode = _bookNodeService.GetAiBookModelById(id);
+            if (bookNode == null)
+                return RedirectToAction("Index");
+
+            _bookNodeService.DeleteAiBookModel(bookNode);
+            //_blogService.DeleteBlogPost(bookNode);
+            //activity log
+            _customerActivityService.InsertActivity("DeleteBookNode",
+                string.Format(_localizationService.GetResource("ActivityLog.DeleteBookNode"), bookNode.Id), bookNode);
+
+            _notificationService.SuccessNotification(_localizationService.GetResource("Admin.Aibook.BookManage.BookNode.Deleted"));
+
+            return RedirectToAction("Index");
+            //return View();
         }
 
 
-        public IActionResult GetList(BookDirSearchModel searchModel)
+        public IActionResult GetList(AiBookSearchModelView searchModel)
         {
             //prepare model
-            var model = _bookDirFactory.PrepareBookDirListModel(searchModel);
+            var model = _bookNodeFactory.PrepareBookNodeListModel(searchModel);
 
                return Json(model);
         }

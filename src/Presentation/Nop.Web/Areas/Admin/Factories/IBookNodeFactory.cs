@@ -23,7 +23,8 @@ namespace Nop.Web.Areas.Admin.Factories
         /// </summary>
         /// <param name="searchModel"></param>
         /// <returns></returns>
-        AiBookSearchModelView PrepareBookNodeListModel(AiBookSearchModelView searchModel);
-        AiBookSearchModelView PrepareBlogPostSearchModel(AiBookSearchModelView searchModel);
+        AiBookModelListView PrepareBookNodeListModel(AiBookSearchModelView searchModel);
+        AiBookSearchModelView PrepareBookNodeSearchModel(AiBookSearchModelView bookModelModel);
+       // AiBookSearchModelView PrepareBlogPostSearchModel(AiBookSearchModelView searchModel);
     }
 }

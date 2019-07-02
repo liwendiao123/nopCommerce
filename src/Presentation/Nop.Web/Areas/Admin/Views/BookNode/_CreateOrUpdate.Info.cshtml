@@ -106,29 +106,29 @@
         </div>))
     <div class="form-group">
         <div class="col-md-3">
-            <nop-label asp-for="CategryID" />
+            <nop-label asp-for="CateId" />
         </div>
         <div class="col-md-9">
-            <nop-select asp-for="CategryID" asp-items="Model.AvailableCategories" />
-            <span asp-validation-for="CategryID"></span>
+            <nop-select asp-for="CateId" asp-items="Model.AvailableCategories" />
+            <span asp-validation-for="CateId"></span>
         </div>
     </div>
     <div class="form-group">
         <div class="col-md-3">
-            <nop-label asp-for="BookID" />
+            <nop-label asp-for="BookId" />
         </div>
         <div class="col-md-9">
-            <nop-select asp-for="BookID" asp-items="Model.BookList" />
-            <span asp-validation-for="BookID"></span>
+            <nop-select asp-for="BookId" asp-items="Model.AvailableBooks" />
+            <span asp-validation-for="BookId"></span>
         </div>
     </div>
     <div class="form-group">
         <div class="col-md-3">
-            <nop-label asp-for="ParentBookDirId" />
+            <nop-label asp-for="BookDirId" />
         </div>
         <div class="col-md-9">
-            <nop-select asp-for="ParentBookDirId" asp-items="Model.ParentBookDir" />
-            <span asp-validation-for="ParentBookDirId"></span>
+            <nop-select asp-for="BookDirId" asp-items="Model.AvailableBookDirs" />
+            <span asp-validation-for="BookDirId"></span>
         </div>
     </div>
     <div class="form-group">

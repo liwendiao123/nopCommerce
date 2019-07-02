@@ -96,7 +96,7 @@ namespace Nop.Web.Areas.Admin.Models.AiBook
     /// <summary>
     /// 
     /// </summary>
-    public partial class AiBookModelLocalizedModel : ILocalizedModel
+    public partial class AiBookModelLocalizedModel : ILocalizedLocaleModel
     {
 
         public int LanguageId { get; set; }

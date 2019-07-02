@@ -19,7 +19,9 @@ using Nop.Services.TableOfContent;
 using Nop.Web.Areas.Admin.Helpers;
 using Nop.Web.Areas.Admin.Models.AiBook;
 using Nop.Web.Framework.Factories;
-
+using Nop.Web.Framework.Models.Extensions;
+using Nop.Web.Areas.Admin.Infrastructure.Mapper.Extensions;
+using Nop.Core.Domain.AIBookModel;
 
 namespace Nop.Web.Areas.Admin.Factories
 {
@@ -51,6 +53,7 @@ namespace Nop.Web.Areas.Admin.Factories
         private readonly IProductService _productService;
         private readonly IBookDirFactory _bookDirFactory;
         private readonly IBookDirService _bookdirService;
+        //private readonly IAiBookService
 
         #endregion
 
@@ -125,7 +128,57 @@ namespace Nop.Web.Areas.Admin.Factories
             return bookModelModel;
         }
 
-        public AiBookSearchModelView PrepareBookNodeListModel(AiBookSearchModelView searchModel)
+        public AiBookModelListView PrepareBookNodeListModel(AiBookSearchModelView searchModel)
+        {
+            if (searchModel == null)
+                throw new ArgumentNullException(nameof(searchModel));
+
+
+
+
+            var result = _aiBookService.SearchAiBookModels(searchModel.BookAiModelName,searchModel.Page,searchModel.PageSize,new List<int> { searchModel.CateId },searchModel.BookId,searchModel.BookDirId,0);
+
+            var model = new AiBookModelListView().PrepareToGrid(searchModel, result, () =>
+            {
+                return result.Select(category =>
+                {
+                    //fill in model values from the entity
+                    var categoryModel = category.ToModel<AiBookModelView>();
+                    //fill in additional values (not existing in the entity)
+                    //categoryModel.Breadcrumb = _bookDirService.GetFormattedBreadCrumb(category);
+                    //categoryModel.SeName = _urlRecordService.GetSeName(category, 0, true, false);
+                    return categoryModel;
+                });
+            });
+
+
+            return model;
+           // _baseAdminModelFactory.PrepareCategories(searchModel.AvailableCategories,
+             // defaultItemText: _localizationService.GetResource("Admin.Catalog.Categories.Fields.Parent.None"));
+
+
+            //if (searchModel.BookId > 0)
+            //{
+            //    var result = _productService.GetProductById(searchModel.BookId);
+            //    if (result != null)
+            //    {
+            //        if (result.ProductCategories != null)
+            //        {
+            //            searchModel.CateId = result.ProductCategories.FirstOrDefault().CategoryId;
+            //        }
+            //        searchModel.BookId = result.Id;
+            //        searchModel.AvailableBooks = SelectListHelper.GetBookList(_productService, new List<int> { searchModel.CateId });
+            //    }
+            //}
+            //if (searchModel.BookDirId > 0)
+            //{
+            //    searchModel.AvailableBookDirs = SelectListHelper.GetBookDirList(_bookdirService);
+            //}
+            //return searchModel;
+            // throw new NotImplementedException();
+        }
+
+        public AiBookSearchModelView PrepareBookNodeSearchModel(AiBookSearchModelView searchModel)
         {
             if (searchModel == null)
                 throw new ArgumentNullException(nameof(searchModel));
@@ -133,7 +186,17 @@ namespace Nop.Web.Areas.Admin.Factories
 
             _baseAdminModelFactory.PrepareCategories(searchModel.AvailableCategories,
               defaultItemText: _localizationService.GetResource("Admin.Catalog.Categories.Fields.Parent.None"));
+            if (searchModel.BookDirId > 0)
+            {
 
+               var bookdir = _bookdirService.GetBookDirById(searchModel.BookDirId);
+
+                if (bookdir != null)
+                {
+                    searchModel.BookId = bookdir.BookID;
+                }
+                searchModel.AvailableBookDirs = SelectListHelper.GetBookDirList(_bookdirService);
+            }
 
             if (searchModel.BookId > 0)
             {
@@ -148,17 +211,8 @@ namespace Nop.Web.Areas.Admin.Factories
                     searchModel.AvailableBooks = SelectListHelper.GetBookList(_productService, new List<int> { searchModel.CateId });
                 }
             }
-            if (searchModel.BookDirId > 0)
-            {
-                searchModel.AvailableBookDirs = SelectListHelper.GetBookDirList(_bookdirService);
-            }
+     
             return searchModel;
-            // throw new NotImplementedException();
-        }
-
-        public AiBookSearchModelView PrepareBlogPostSearchModel(AiBookSearchModelView searchModel)
-        {
-            throw new NotImplementedException();
         }
     }
 }
