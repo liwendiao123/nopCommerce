@@ -273,10 +273,8 @@ namespace Nop.Web.Areas.Admin.Controllers
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
                 return AccessDeniedView();
-
             //prepare model
             var model = _customerModelFactory.PrepareCustomerSearchModel(new CustomerSearchModel());
-
             return View(model);
         }
 
@@ -285,10 +283,8 @@ namespace Nop.Web.Areas.Admin.Controllers
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
                 return AccessDeniedDataTablesJson();
-
             //prepare model
             var model = _customerModelFactory.PrepareCustomerListModel(searchModel);
-
             return Json(model);
         }
 

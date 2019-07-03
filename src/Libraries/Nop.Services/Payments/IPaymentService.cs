@@ -135,5 +135,8 @@ namespace Nop.Services.Payments
         /// <param name="order">Order</param>
         /// <returns>Serialized CustomValues CustomValues</returns>
         Dictionary<string, object> DeserializeCustomValues(Order order);
+
+
+      //  LoadPaymentMethodBySystemName(string systemName);
     }
 }

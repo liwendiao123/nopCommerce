@@ -53,9 +53,7 @@ namespace Nop.Web.Areas.Admin.Factories
         private readonly IProductService _productService;
         private readonly IBookDirFactory _bookDirFactory;
         private readonly IBookDirService _bookdirService;
-        //private readonly ILocalizedModelFactory _localizedModelFactory;
-        //private readonly _localizedModelFactory
-        //private readonly IAiBookService
+     
 
         #endregion
 
@@ -99,6 +97,7 @@ namespace Nop.Web.Areas.Admin.Factories
             _bookDirFactory = bookdirFactory;
             _bookdirService = bookdirService;
             _localizationService = localizationService;
+            _productService = productService;
             _localizedModelFactory = localizedModelFactory;
         }
 
@@ -116,6 +115,17 @@ namespace Nop.Web.Areas.Admin.Factories
             //Prepare Categories
             _baseAdminModelFactory.PrepareCategories(bookModelModel.AvailableCategories,
                defaultItemText: _localizationService.GetResource("Admin.Catalog.Categories.Fields.Parent.None"));
+            if (bookModelModel.BookDirId > 0)
+            {
+                var bookdir = _bookdirService.GetBookDirById(bookModelModel.BookDirId);
+                if (bookdir != null)
+                {
+                    bookModelModel.BookId = bookdir.BookID;
+                }
+                bookModelModel.AvailableBookDirs = SelectListHelper.GetBookDirList(_bookdirService, _workContext.CurrentCustomer, _cacheManager);
+            }
+
+
             if (bookModelModel.BookId > 0)
             {
                 var result = _productService.GetProductById(bookModelModel.BookId);
@@ -126,13 +136,10 @@ namespace Nop.Web.Areas.Admin.Factories
                         bookModelModel.CateId = result.ProductCategories.FirstOrDefault().CategoryId;
                     }
                     bookModelModel.BookId = result.Id;
-                  bookModelModel.AvailableBooks =  SelectListHelper.GetBookList(_productService, new List<int> { bookModelModel.CateId });  
+                  bookModelModel.AvailableBooks =  SelectListHelper.GetBookList(_productService, new List<int> { bookModelModel.CateId },_workContext.CurrentCustomer,_cacheManager);  
                 }
             }
-            if (bookModelModel.BookDirId > 0)
-            {
-              bookModelModel.AvailableBookDirs =  SelectListHelper.GetBookDirList(_bookdirService);
-            }
+           
 
             localizedModelConfiguration = (locale, languageId) =>
             {
