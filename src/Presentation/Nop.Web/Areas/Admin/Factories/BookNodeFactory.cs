@@ -53,6 +53,8 @@ namespace Nop.Web.Areas.Admin.Factories
         private readonly IProductService _productService;
         private readonly IBookDirFactory _bookDirFactory;
         private readonly IBookDirService _bookdirService;
+        //private readonly ILocalizedModelFactory _localizedModelFactory;
+        //private readonly _localizedModelFactory
         //private readonly IAiBookService
 
         #endregion
@@ -77,6 +79,8 @@ namespace Nop.Web.Areas.Admin.Factories
                               ,IProductService productService
                               ,IBookDirFactory bookdirFactory
                               ,IBookDirService bookdirService
+                              ,ILocalizationService localizationService
+                              ,ILocalizedModelFactory localizedModelFactory
                                 )
         {
             _captchaSettings = captchaSettings;
@@ -94,14 +98,20 @@ namespace Nop.Web.Areas.Admin.Factories
             _baseAdminModelFactory = baseAdminModelFactory;
             _bookDirFactory = bookdirFactory;
             _bookdirService = bookdirService;
+            _localizationService = localizationService;
+            _localizedModelFactory = localizedModelFactory;
         }
 
         #endregion
 
         public AiBookModelView PrepareBookNodeModel(AiBookModelView bookModelModel, int? filterByBookId)
         {
+
+            var model = new AiBookModel();
             if (bookModelModel == null)
                 throw new ArgumentNullException(nameof(bookModelModel));
+
+            Action<AiBookModelLocalizedModel, int> localizedModelConfiguration = null;
             //prepare nested search models
             //Prepare Categories
             _baseAdminModelFactory.PrepareCategories(bookModelModel.AvailableCategories,
@@ -124,7 +134,21 @@ namespace Nop.Web.Areas.Admin.Factories
               bookModelModel.AvailableBookDirs =  SelectListHelper.GetBookDirList(_bookdirService);
             }
 
+            localizedModelConfiguration = (locale, languageId) =>
+            {
+                locale.Name = _localizationService.GetLocalized(model, entity => entity.Name, languageId, false, false);
+                locale.Desc = _localizationService.GetLocalized(model, entity => entity.Desc, languageId, false, false);
+                locale.WebModelUrl = _localizationService.GetLocalized(model, entity => entity.WebModelUrl, languageId, false, false);
+                locale.WebGltfUrl = _localizationService.GetLocalized(model, entity => entity.WebGltfUrl, languageId, false, false);
+                locale.WebBinUrl = _localizationService.GetLocalized(model, entity => entity.WebBinUrl, languageId, false, false);
+                locale.AbUrl = _localizationService.GetLocalized(model, entity => entity.AbUrl, languageId, false, false);
+                locale.ImgUrl = _localizationService.GetLocalized(model, entity => entity.ImgUrl, languageId, false, false);
+                locale.StrJson = _localizationService.GetLocalized(model, entity => entity.StrJson, languageId, false, false);
+                //locale.SeName = _urlRecordService.GetSeName(category, languageId, false, false);
+            };
 
+           
+                bookModelModel.Locales = _localizedModelFactory.PrepareLocalizedModels(localizedModelConfiguration);
             return bookModelModel;
         }
 
@@ -136,7 +160,7 @@ namespace Nop.Web.Areas.Admin.Factories
 
 
 
-            var result = _aiBookService.SearchAiBookModels(searchModel.BookAiModelName,searchModel.Page,searchModel.PageSize,new List<int> { searchModel.CateId },searchModel.BookId,searchModel.BookDirId,0);
+            var result = _aiBookService.SearchAiBookModels(searchModel.BookAiModelName,searchModel.Page -1,searchModel.PageSize,new List<int> { searchModel.CateId },searchModel.BookId,searchModel.BookDirId,0);
 
             var model = new AiBookModelListView().PrepareToGrid(searchModel, result, () =>
             {

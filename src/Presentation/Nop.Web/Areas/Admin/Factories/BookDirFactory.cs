@@ -136,9 +136,7 @@ namespace Nop.Web.Areas.Admin.Factories
                     model = bookdir.ToModel<BookDirModel>();
                     model.SeName = _urlRecordService.GetSeName(bookdir, 0, true, false);
                 }
-
                 var result = _productService.GetProductById(bookdir.BookID);
-
                 if (result != null )
                 {
                     if (result.ProductCategories != null)
@@ -146,8 +144,6 @@ namespace Nop.Web.Areas.Admin.Factories
                         model.CategryID = result.ProductCategories.FirstOrDefault().CategoryId;
                     }                
                     model.BookID = result.Id;
-
-
                     var products = _productService.SearchProducts(showHidden: true,
                                     categoryIds: new List<int>() {
                                         model.CategryID

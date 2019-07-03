@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Nop.Core.Domain.Localization;
 using Nop.Core.Domain.TableOfContent;
 
 namespace Nop.Core.Domain.AIBookModel
 {
-    public partial class AiBookModel:BaseEntity
+    public partial class AiBookModel:BaseEntity,ILocalizedEntity
     {
 
    
@@ -16,6 +17,9 @@ namespace Nop.Core.Domain.AIBookModel
 
 
         public string Name { get; set; }
+        
+        public string Desc { get; set; }
+        
         /// <summary>
         /// 目录标识
         /// </summary>
@@ -79,5 +83,7 @@ namespace Nop.Core.Domain.AIBookModel
         /// 书籍目录
         /// </summary>
         public virtual BookDir BookDir { get; set; }
+
+        public string ImgUrl { get; set; }
     }
 }

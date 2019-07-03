@@ -238,10 +238,12 @@ namespace Nop.Services.AIBookModel
 
                 query = query.Where(x => bookdirIds.Contains(x.BookDirID));
             }
-            else if (categoryIds.Count > 0)
+            else if (categoryIds.Where(c=>c > 0).Count() > 0)
             {
 
                 var cateId = categoryIds.FirstOrDefault();
+
+               
                 ///todo..
                 var result = _cateservice.GetChildCategoryIds(cateId);
                 if (result != null && !result.Contains(cateId))

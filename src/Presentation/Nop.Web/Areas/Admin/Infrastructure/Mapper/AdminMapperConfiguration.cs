@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Nop.Core.Domain.Affiliates;
+using Nop.Core.Domain.AIBookModel;
 using Nop.Core.Domain.Blogs;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Common;
@@ -34,6 +35,7 @@ using Nop.Services.Shipping;
 using Nop.Services.Shipping.Pickup;
 using Nop.Services.Tax;
 using Nop.Web.Areas.Admin.Models.Affiliates;
+using Nop.Web.Areas.Admin.Models.AiBook;
 using Nop.Web.Areas.Admin.Models.Blogs;
 using Nop.Web.Areas.Admin.Models.Catalog;
 using Nop.Web.Areas.Admin.Models.Cms;
@@ -105,6 +107,7 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
             CreateVendorsMaps();
             CreateWarehouseMaps();
             CreateAiBookMaps();
+            CreateAiBookModelMaps();
             //add some generic mapping rules
             ForAllMaps((mapConfiguration, map) =>
             {
@@ -1675,14 +1678,30 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
 
         }
 
+        protected virtual void CreateAiBookModelMaps()
+        {
+            CreateMap<AiBookModel, AiBookModelView>()
+              .ForMember(entity => entity.AvailableBookDirs, options => options.Ignore())
+              .ForMember(entity => entity.AvailableCategories, options => options.Ignore())
+              .ForMember(entity => entity.CateId, options => options.Ignore())
+              .ForMember(entity => entity.BookId, options => options.Ignore())
+                
+             .ForMember(entity => entity.AvailableBooks, options => options.Ignore());
+
+
+            CreateMap<AiBookModelView, AiBookModel>()
+             
+                .ForMember(entity => entity.BookDir, options => options.Ignore());
+        }
+
 
         #endregion
 
-        #region Properties
+            #region Properties
 
-        /// <summary>
-        /// Order of this mapper implementation
-        /// </summary>
+            /// <summary>
+            /// Order of this mapper implementation
+            /// </summary>
         public int Order => 0;
 
         #endregion

@@ -14,10 +14,10 @@
     </div>
     <div class="form-group">
         <div class="col-md-3">
-            <nop-label asp-for="@Model.Locales[item]" />
+            <nop-label asp-for="@Model.Locales[item].Desc" />
         </div>
         <div class="col-md-9">
-            <nop-editor asp-for="@Model.Locales[item].Desc" asp-template="RichEditor" />
+            <nop-textarea asp-for="@Model.Locales[item].Desc"  />
             <span asp-validation-for="@Model.Locales[item].Desc"></span>
         </div>
     </div>
@@ -78,32 +78,95 @@
             <nop-label asp-for="@Model.Locales[item].StrJson" />
         </div>
         <div class="col-md-9">
-            <nop-editor asp-for="@Model.Locales[item].StrJson"  asp-template="RichEditor"/>
+            <nop-textarea asp-for="@Model.Locales[item].StrJson"/>
             <span asp-validation-for="@Model.Locales[item].StrJson"></span>
         </div>
     </div>
     <input type="hidden" asp-for="@Model.Locales[item].LanguageId" />
 </div> ,
         @<div>
-            <div class="form-group">
-                <div class="col-md-3">
-                    <nop-label asp-for="Name" />
-                </div>
-                <div class="col-md-9">
-                    <nop-editor asp-for="Name" asp-required="true" />
-                    <span asp-validation-for="Name"></span>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-md-3">
-                    <nop-label asp-for="Desc" />
-                </div>
-                <div class="col-md-9">
-                    <nop-editor asp-for="Desc" asp-template="RichEditor" />
-                    <span asp-validation-for="Desc"></span>
-                </div>
-            </div>
-        </div>))
+    <div class="form-group">
+        <div class="col-md-3">
+            <nop-label asp-for="Name" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="Name" asp-required="true" />
+            <span asp-validation-for="Name"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-3">
+            <nop-label asp-for="Desc" />
+        </div>
+        <div class="col-md-9">
+            <nop-textarea asp-for="Desc" />
+            <span asp-validation-for="Desc"></span>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class="col-md-3">
+            <nop-label asp-for="WebModelUrl" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="WebModelUrl" />
+            <span asp-validation-for="WebModelUrl"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-3">
+            <nop-label asp-for="WebGltfUrl" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="WebGltfUrl" />
+            <span asp-validation-for="WebGltfUrl"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-3">
+            <nop-label asp-for="WebBinUrl" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="WebBinUrl" />
+            <span asp-validation-for="WebBinUrl"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-3">
+            <nop-label asp-for="AbUrl" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="AbUrl" />
+            <span asp-validation-for="AbUrl"></span>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class="col-md-3">
+            <nop-label asp-for="ImgUrl" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="ImgUrl" />
+            <span asp-validation-for="ImgUrl"></span>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class="col-md-3">
+            <nop-label asp-for="StrJson" />
+        </div>
+        <div class="col-md-9">
+            <nop-textarea asp-for="StrJson" />
+            <span asp-validation-for="StrJson"></span>
+        </div>
+    </div>
+</div>))
     <div class="form-group">
         <div class="col-md-3">
             <nop-label asp-for="CateId" />
@@ -140,7 +203,73 @@
             <span asp-validation-for="Published"></span>
         </div>
     </div>
-
-
-
 </div>
+
+<script>
+
+    
+        $(document).ready(function () {
+
+
+            //书籍类别
+            $("#@Html.IdFor(model => model.CateId)").change(function() {
+                var selectedItem = $(this).val();
+                var ddlStates = $("#@Html.IdFor(model => model.BookId)");
+
+                var postData = {
+                    CategoryID: selectedItem,
+                    addSelectStateItem: "true"
+                };
+
+                $.ajax({
+                    cache: false,
+                    type: "GET",
+                    url: "@(Url.Action("GetBooksByCategory", "BookDir"))",
+                    data: postData,
+                    success: function (data, textStatus, jqXHR) {
+
+                        console.log("添加数据：" + JSON.stringify(data));
+
+                        ddlStates.html('');
+                        $.each(data, function(id, option) {
+                            ddlStates.append($('<option></option>').val(option.Id).html(option.Name));
+                        });
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $("#statesAlert").click();
+                    }
+                });
+            });
+
+
+            ///
+              $("#@Html.IdFor(model => model.BookId)").change(function() {
+                var selectedItem = $(this).val();
+                var ddlStates = $("#@Html.IdFor(model => model.BookDirId)");
+
+                var postData = {
+                    BookID: selectedItem,
+                    addSelectStateItem: "true"
+                };
+
+                $.ajax({
+                    cache: false,
+                    type: "GET",
+                    url: "@(Url.Action("GetBookDirByBookId", "BookDir"))",
+                    data: postData,
+                    success: function (data, textStatus, jqXHR) {
+
+                        console.log("添加数据：" + JSON.stringify(data));
+
+                        ddlStates.html('');
+                        $.each(data, function(id, option) {
+                            ddlStates.append($('<option></option>').val(option.Id).html(option.Name));
+                        });
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $("#statesAlert").click();
+                    }
+                });
+            });
+        });
+</script>

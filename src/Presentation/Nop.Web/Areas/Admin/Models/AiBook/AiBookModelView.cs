@@ -52,16 +52,19 @@ namespace Nop.Web.Areas.Admin.Models.AiBook
         public string WebBinUrl { get; set; }
         [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.AbUrl")]
         public string AbUrl { get; set; }
-        [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.ImgUrl")]
-        [UIHint("Picture")]
+        [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.ImgUrl")]     
         public string ImgUrl { get; set; }
         [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.StrJson")]
         public string StrJson { get; set; }
-
+        [NopResourceDisplayName("Admin.Catalog.Products.Fields.Published")]
         public bool Published { get; set; }
-
+        [NopResourceDisplayName("Admin.Catalog.Categories.Fields.Deleted")]
         public bool Deleted { get; set; }
 
+        [NopResourceDisplayName("Admin.Catalog.Categories.Fields.DisplayOrder")]
+        public int DisplayOrder { get; set; }
+
+        [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.Active")]
         public bool Active { get; set; }
 
         public DateTime CreatedOnUtc { get; set; }
