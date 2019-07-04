@@ -119,7 +119,14 @@ namespace Nop.Plugin.Api.Data
         /// <param name="entity">Entity</param>
         public virtual void Detach<TEntity>(TEntity entity) where TEntity : BaseEntity
         {
-            throw new NotImplementedException();
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            var entityEntry = Entry(entity);
+            if (entityEntry == null)
+                return;
+            //set the entity is not being tracked by the context
+            entityEntry.State = EntityState.Detached;
         }
 
         public IQueryable<TQuery> QueryFromSql<TQuery>(string sql, params object[] parameters) where TQuery : class

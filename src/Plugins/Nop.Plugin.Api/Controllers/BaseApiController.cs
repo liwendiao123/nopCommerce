@@ -128,7 +128,6 @@ namespace Nop.Plugin.Api.Controllers
                 return;
 
             entity.LimitedToStores = passedStoreIds.Any();
-
             var existingStoreMappings = StoreMappingService.GetStoreMappings(entity);
             var allStores = StoreService.GetAllStores();
             foreach (var store in allStores)

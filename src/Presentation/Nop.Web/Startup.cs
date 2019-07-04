@@ -13,22 +13,16 @@ namespace Nop.Web
     public class Startup
     {
         #region Fields
-
         private readonly IConfiguration _configuration;
         private readonly IHostingEnvironment _hostingEnvironment;
-
         #endregion
-
         #region Ctor
-
         public Startup(IConfiguration configuration, IHostingEnvironment hostingEnvironment)
         {
             _configuration = configuration;
             _hostingEnvironment = hostingEnvironment;
         }
-
         #endregion
-
         /// <summary>
         /// Add services to the application and configure service provider
         /// </summary>
@@ -37,7 +31,6 @@ namespace Nop.Web
         {
             return services.ConfigureApplicationServices(_configuration, _hostingEnvironment);
         }
-
         /// <summary>
         /// Configure the application HTTP request pipeline
         /// </summary>

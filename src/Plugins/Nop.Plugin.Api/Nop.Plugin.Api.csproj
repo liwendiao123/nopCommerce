@@ -4,6 +4,8 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <Description>This plugin allows you to access/create Nop resources outside of the system</Description>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <Authors>lwd</Authors>
+    <Company>qstech</Company>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

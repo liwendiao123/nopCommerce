@@ -14,6 +14,12 @@
     // That is why we need to make sure that the plugin is installed before setting the scheme.
     public class ApiAuthorize : AuthorizeAttribute
     {
+      //  private readonly IPluginManager _pluginManager;
+        public ApiAuthorize()
+        {
+
+        }
+
         public new string Policy
         {
             get => base.AuthenticationSchemes;
@@ -34,7 +40,6 @@
             //{
             //    return value;
             //}
-
             return default(string);
         }
     }

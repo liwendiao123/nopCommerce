@@ -50,9 +50,7 @@
             // required by the WebHooks support
             // TODO: Upgrade 4.1. check this!
             //configManagerHelper.AddConnectionString();
-
             _objectContext.Install();
-
             //locales
             _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Api", "Api plugin");
             _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Api.Admin.Menu.ManageClients", "Manage Api Clients");
