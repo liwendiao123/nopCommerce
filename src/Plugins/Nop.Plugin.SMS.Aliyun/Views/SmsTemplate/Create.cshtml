@@ -1,0 +1,35 @@
+﻿@model SmsTemplateModel
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminPopupLayout.cshtml";
+    //page title
+    ViewBag.Title = T("Plugins.SMS.Aliyun.SmsTemplate.AddNew").Text;
+    //active menu item (system name)
+    Html.SetActiveMenuItemSystemName("Manage Short Message Template");
+}
+
+<form asp-controller="SmsTemplate" asp-action="Create" method="post">
+    <div class="content-header clearfix">
+        <h1 class="pull-left">
+            @T("Plugins.SMS.Aliyun.SmsTemplate.AddNew")
+            <small>
+                <i class="fa fa-arrow-circle-left"></i>
+                <a asp-action="List">@T("Admin.Common.BackToList")</a>
+            </small>
+        </h1>
+        <div class="pull-right">
+            <button type="submit" name="save" class="btn bg-blue">
+                <i class="fa fa-floppy-o"></i>
+                @T("Admin.Common.Save")
+            </button>
+            <button type="submit" name="save-continue" class="btn bg-blue">
+                <i class="fa fa-floppy-o"></i>
+                @T("Admin.Common.SaveContinue")
+            </button>
+            @await Component.InvokeAsync("AdminWidget", new { widgetZone = "admin_topic_details_buttons" })
+        </div>
+    </div>
+    @*@await Html.PartialAsync("_CreateOrUpdate", Model)*@
+    @await Html.PartialAsync("~/Plugins/SMS.Aliyun/Views/SmsTemplate/_CreateOrUpdate.cshtml", Model)
+</form>
+

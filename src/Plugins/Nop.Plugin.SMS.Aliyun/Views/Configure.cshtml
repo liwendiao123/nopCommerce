@@ -1,0 +1,101 @@
+﻿@model Nop.Plugin.SMS.Aliyun.Models.ConfigurationModel
+@{
+    Layout = "_ConfigurePlugin";
+}
+
+<form asp-controller="AliyunSms" asp-action="Configure" method="post">
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <p>1、到阿里云网站申请短信服务：https://dysms.console.aliyun.com/dysms.htm</p>
+                <p style="margin-left:30px;">本人不是阿里云的托，我也用其他短信接口，但还没封装成插件。</p>
+                <p>2、申请好短信模板，或者使用默认提供的几个短信模板。</p>
+                <p>3、安装本插件，打开“配置”按钮，输入您的AccessKeyID、AccessKeySecret和 短信签名，保存。</p>
+                <p>4、添加短信模板到系统中，此处要注意 短信模板的编码要与您在阿里云短信服务平台申请的短信模板编码一致。</p>
+                <p>5、添加短信模板时，可以使用“测试”按钮，测试一下是否正确。 </p>
+                <p>6、本插件刚刚成型，如有问题请联系QQ：954219492，或者加入QQ群：169366609，邮件请发到：954219492@qq.com</p>
+                <p>7、如果您需要定制短信发送插件可以来这里：<a href="https://shop117119354.taobao.com">糊里糊涂插件定制中心，哈哈</a></p>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="Enabled" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="Enabled" />
+                        <span asp-validation-for="Enabled"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="AccessKeyID" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="AccessKeyID" />
+                        <span asp-validation-for="AccessKeyID"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="AccessKeySecret" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="AccessKeySecret" />
+                        <span asp-validation-for="AccessKeySecret"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="SignName" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="SignName" />
+                        <span asp-validation-for="SignName"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="Product" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="Product" />
+                        <span asp-validation-for="Product"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="Domain" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="Domain" />
+                        <span asp-validation-for="Domain"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="RegionId" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="RegionId" />
+                        <span asp-validation-for="RegionId"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="EndpointName" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="EndpointName" />
+                        <span asp-validation-for="EndpointName"></span>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <div class="col-md-9 col-md-offset-3">
+                        <input type="submit" name="save" class="btn bg-primary" value="@T("Admin.Common.Save")" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

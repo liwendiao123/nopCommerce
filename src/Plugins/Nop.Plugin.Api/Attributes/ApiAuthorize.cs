@@ -17,9 +17,7 @@
       //  private readonly IPluginManager _pluginManager;
         public ApiAuthorize()
         {
-
         }
-
         public new string Policy
         {
             get => base.AuthenticationSchemes;
@@ -34,8 +32,10 @@
         
         private static string GetAuthenticationSchemeName(string value)
         {
-            //var pluginInstalled = PluginManager.FindPlugin<ApiStartup>(typeof(ApiStartup))?.Installed ?? false;
+           
 
+
+            //var pluginInstalled = PluginManager.FindPlugin<ApiStartup>(typeof(ApiStartup))?.Installed ?? false;
             //if (pluginInstalled)
             //{
             //    return value;

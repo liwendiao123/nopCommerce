@@ -1,0 +1,11 @@
+﻿{
+  "Group": "Messaging",
+  "FriendlyName": "Send Short Message",
+  "SystemName": "SMS.Aliyun",
+  "Version": "1.00",
+  "SupportedVersions": [ "4.00", "4.1", "4.2" ],
+  "Author": "954219492@qq.com",
+  "DisplayOrder": 5,
+  "FileName": "Nop.Plugin.SMS.Aliyun.dll",
+  "Description": "此插件使用阿里云短信服务发送短信 (如果有问题，请联系QQ：954219492，或者加入QQ群：169366609，邮件请发到：954219492@qq.com)"
+}

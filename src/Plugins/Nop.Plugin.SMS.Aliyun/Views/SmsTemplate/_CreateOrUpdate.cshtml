@@ -1,0 +1,381 @@
+﻿@model SmsTemplateModel
+@inject Nop.Core.Domain.Common.AdminAreaSettings adminAreaSettings
+@using Nop.Core.Domain.Messages;
+@using Nop.Services
+
+<div asp-validation-summary="All"></div>
+<input asp-for="Id" type="hidden" />
+
+<div class="content">
+    <div class="form-horizontal">
+        @await Component.InvokeAsync("SettingMode", new { modeName = "messagetemplate-advanced-mode" })
+        <div class="panel-group">
+            @await Component.InvokeAsync("AdminWidget", new { widgetZone = "admin_message_template_details_top", additionalData = Model.Id })
+            @if (Model.Id > 0)
+            {
+
+            }
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="margin-bottom">
+                        <em>@T($"Plugins.SMS.Aliyun.SmsTemplate.Description.{Model.SystemName}")</em>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <nop-label asp-for="SystemName" />
+                        </div>
+                        <div class="col-md-9">
+                            @*<div class="form-text-row">@Model.SystemName</div>
+                                <input asp-for="SystemName" type="hidden" />*@
+                            <nop-editor asp-for="SystemName" asp-required="true" />
+                            <span asp-validation-for="SystemName"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <nop-label asp-for="TemplateCode" />
+                        </div>
+                        <div class="col-md-9">
+                            <nop-editor asp-for="TemplateCode" asp-required="true" />
+                            <span asp-validation-for="TemplateCode"></span>
+                        </div>
+                    </div>
+
+                    @(Html.LocalizedEditor<SmsTemplateModel, SmsTemplateLocalizedModel>("messagetemplate-localized",
+                    @<div>
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                <nop-label asp-for="@Model.Locales[item].Subject" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="@Model.Locales[item].Subject" />
+                                <span asp-validation-for="@Model.Locales[item].Subject"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                <nop-label asp-for="@Model.Locales[item].Body" />
+                            </div>
+                            <div class="col-md-9">
+                                @if (adminAreaSettings.UseRichEditorInMessageTemplates)
+                            {
+                                    <nop-editor asp-for="@Model.Locales[item].Body" asp-template="RichEditor" />
+                            }
+                            else
+                            {
+                                    <nop-textarea asp-for="@Model.Locales[item].Body" />
+                                    <text>
+                                    <script type="text/javascript">
+                    $(document).ready(function() {
+                        $('#@Html.IdFor(model => model.Locales[item].Body)')
+                            .height($('#@Html.IdFor(model => model.Body)')[0].scrollHeight);
+                    });
+                                    </script>
+                                    </text>
+                            }
+                                /**/
+                                /**/
+                                /**/
+                                <span asp-validation-for="@Model.Locales[item].Body"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                <div class="label-wrapper">
+                                    <label class="control-label">
+                                        @T("Admin.ContentManagement.MessageTemplates.Test")
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <button type="button" class="btn btn-primary test-btn" >@T("Admin.ContentManagement.MessageTemplates.Test")</button>
+                            </div>
+                        </div>
+                        <input type="hidden" asp-for="@Model.Locales[item].LanguageId" />
+                    </div>
+                    ,
+                    @<div>
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                <nop-label asp-for="Subject" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="Subject" asp-required="true" />
+                                <span asp-validation-for="Subject"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                <nop-label asp-for="Body" />
+                            </div>
+                            <div class="col-md-9">
+                                @if (adminAreaSettings.UseRichEditorInMessageTemplates)
+                            {
+                                    <div class="input-group input-group-required">
+                                        <nop-editor asp-for="Body" asp-template="RichEditor" />
+                                        <div class="input-group-btn">
+                                            <nop-required />
+                                        </div>
+                                    </div>
+                            }
+                            else
+                            {
+                                    <nop-textarea asp-for="Body" asp-required="true" />
+                                    <text>
+                                    <script type="text/javascript">
+                                        $(document).ready(function() {
+                                            $('#@Html.IdFor(model => model.Body)')
+                                                .height($('#@Html.IdFor(model => model.Body)')[0].scrollHeight);
+                                        });
+                                    </script>
+                                    </text>
+                            }
+                                <span asp-validation-for="Body"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                <div class="label-wrapper">
+                                    <label class="control-label">@T("Admin.ContentManagement.MessageTemplates.Test")</label>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <button type="button" class="btn btn-primary test-btn">@T("Admin.ContentManagement.MessageTemplates.Test")</button>
+                            </div>
+                        </div>
+                    </div>
+                                                                                                                                                                                                            ))
+
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <nop-label asp-for="IsActive" />
+                        </div>
+                        <div class="col-md-9">
+                            <nop-editor asp-for="IsActive" />
+                            <span asp-validation-for="IsActive"></span>
+                        </div>
+                    </div>
+                    <div class="form-group advanced-setting">
+                        <div class="col-md-3">
+                            <nop-label asp-for="SendImmediately" />
+                        </div>
+                        <div class="col-md-9">
+                            <nop-editor asp-for="SendImmediately" />
+                            <span asp-validation-for="SendImmediately"></span>
+                        </div>
+                    </div>
+                    <div class="form-group advanced-setting" id="pnl-send-after">
+                        <div class="col-md-3">
+                            <nop-label asp-for="DelayBeforeSend" />
+                        </div>
+                        <div class="col-md-9">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <nop-editor asp-for="DelayBeforeSend" />
+                                    <span asp-validation-for="DelayBeforeSend"></span>
+                                </div>
+                                <div class="col-md-3">
+                                    <nop-select asp-for="DelayPeriodId" asp-items="@(((MessageDelayPeriod)Model.DelayPeriodId).ToSelectList())" style="max-width: 200px;" />
+                                    <span asp-validation-for="DelayPeriodId"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group advanced-setting">
+                        <div class="col-md-3">
+                            <nop-label asp-for="SelectedStoreIds" />
+                        </div>
+                        <div class="col-md-9">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <nop-select asp-for="SelectedStoreIds" asp-items="Model.AvailableStores" asp-multiple="true" />
+                                    <script type="text/javascript">
+                                        $(document).ready(function() {
+                                            var storesIdsInput = $('#@Html.IdFor(model => model.SelectedStoreIds)')
+                                                .data("kendoMultiSelect");
+                                            storesIdsInput.setOptions({
+                                                autoClose: false,
+                                                filter: "contains"
+                                            });
+
+                                            @if (Model.AvailableStores.Count == 0)
+                                            {
+                                                <text>
+                                                    storesIdsInput.setOptions({
+                                                        enable: false,
+                                                        placeholder: 'No stores available'
+                                                    });
+                                                    storesIdsInput._placeholder();
+                                                    storesIdsInput._enable();
+                                                </text>
+                                            }
+                                        });
+                                    </script>
+                                </div>
+                                <div class="col-md-8">
+                                    @await Component.InvokeAsync("MultistoreDisabledWarning")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @await Component.InvokeAsync("AdminWidget", new { widgetZone = "admin_message_template_details_bottom", additionalData = Model.Id })
+        </div>
+        <script type="text/javascript">
+    $(document).ready(function() {
+
+        $("#@Html.IdFor(model => model.SendImmediately)").click(sendImmediately);
+        //toggleHasAttachedDownload();
+        sendImmediately();
+    });
+
+
+    function sendImmediately() {
+        if ($('#@Html.IdFor(model => model.SendImmediately)').is(':checked'))
+            $('#pnl-send-after').hide();
+        else
+            $('#pnl-send-after').show();
+    }
+        </script>
+    </div>
+</div>
+
+@if (Model.Id > 0)
+{
+<div id="send-test-message-window" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="send-test-message-window-title">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="send-test-message-window-title">发送测试短信</h4>
+            </div>
+            
+            <div class="form-horizontal">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <nop-label asp-for="ToMobileNumber"/>
+                        </div>
+                        <div class="col-md-9">
+                            <nop-editor asp-for="ToMobileNumber"  placeholder="电话号码"/>
+                            <span asp-validation-for="ToMobileNumber"></span>
+                        </div>
+                    </div>
+                    @*<div class="form-group">
+                        <div class="col-md-3">
+                            <nop-label asp-for="VariableValue"/>
+                        </div>
+                        <div class="col-md-9">
+                            <nop-editor asp-for="VariableValue"  placeholder="模板变量值"/>
+                            <span asp-validation-for="VariableValue"></span>
+                        </div>
+                    </div>*@
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="send-test-message-cancel-button">取消</button>
+                <button type="button" class="btn btn-primary" id="send-test-message-button">发送</button>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+    @*<div class="modal" id="send-test-message-window" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">发送测试短信</h4>
+                </div>
+                <div class="modal-body">
+                    @using (Html.BeginForm("", "", FormMethod.Post, new { id = "groupon-voucher-form", @class = "form-horizontal" }))
+                    {
+                        <div class="form-group">
+                            <label for="MobileNumber" class="col-sm-2 control-label">电话号码</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="MobileNumber" placeholder="电话号码">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="VariableValue" class="col-sm-2 control-label">模板变量值</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="VariableValue" placeholder="模板变量值">
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="send-test-message-cancel-button">取消</button>
+                    <button type="button" class="btn btn-primary" id="send-test-message-button">发送</button>
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+    <script>
+    $(document).ready(function () {
+        $("#send-test-message-window").on("hide.bs.modal", function () {
+            $('#GrouponVoucherCode').val('');
+            $('#GrouponVoucherKey').val('');
+        });
+
+        $(".test-btn").on('click', function (event) {
+            var membershipId = $('#SystemName').val();
+            if (membershipId)
+                $("#send-test-message-window").modal('show');
+            else
+                alert('请先选择填写模板系统名称！');
+        });
+
+        $("#send-test-message-button").on('click', function (event) {
+            var systemName = $('#SystemName').val();
+            var mobileNumber = $('#ToMobileNumber').val();
+            var templateCode = $('#TemplateCode').val();
+            if (!systemName) {
+                alert('模板的系统名称不能为空！');
+                event.preventDefault();
+                event.stopPropagation();
+                return false;
+            }
+            if (!mobileNumber) {
+                alert('请输入手机号！');
+                event.preventDefault();
+                event.stopPropagation();
+                return false;
+            }
+            var data = {
+                "systemName": systemName,
+                "SendTo": mobileNumber,
+                "templateCode": templateCode,
+            };
+            addAntiForgeryToken(data);
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: '@(Url.Action("TestTemplate", new {id = Model.Id}))',
+                data: data
+            })
+            .done(function (data, status, xhr) {
+                if (data.result) {
+                    alert(data.message);
+                    $("#send-test-message-window").modal('hide');
+                } else {
+                    alert(data.message);
+                }
+            })
+            .fail(function (xhr, status, error) {
+                alert('@T("Common.Error")');
+            })
+            .always(function () {
+
+            });
+        })
+    });
+
+    </script>
+}
