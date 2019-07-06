@@ -65,8 +65,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nop.Plugin.Payments.AliPay"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nop.Plugin.Api", "Plugins\Nop.Plugin.Api\Nop.Plugin.Api.csproj", "{BBC4F177-3C0B-423C-A5DF-0330EC91C72C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nop.Plugin.SMS.Aliyun", "Plugins\Nop.Plugin.SMS.Aliyun\Nop.Plugin.SMS.Aliyun.csproj", "{7120D6C6-AEB2-452B-B8ED-3803FEDFDEF8}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -369,18 +367,6 @@ Global
 		{BBC4F177-3C0B-423C-A5DF-0330EC91C72C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{BBC4F177-3C0B-423C-A5DF-0330EC91C72C}.Release|x86.ActiveCfg = Release|Any CPU
 		{BBC4F177-3C0B-423C-A5DF-0330EC91C72C}.Release|x86.Build.0 = Release|Any CPU
-		{7120D6C6-AEB2-452B-B8ED-3803FEDFDEF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7120D6C6-AEB2-452B-B8ED-3803FEDFDEF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7120D6C6-AEB2-452B-B8ED-3803FEDFDEF8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{7120D6C6-AEB2-452B-B8ED-3803FEDFDEF8}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{7120D6C6-AEB2-452B-B8ED-3803FEDFDEF8}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{7120D6C6-AEB2-452B-B8ED-3803FEDFDEF8}.Debug|x86.Build.0 = Debug|Any CPU
-		{7120D6C6-AEB2-452B-B8ED-3803FEDFDEF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7120D6C6-AEB2-452B-B8ED-3803FEDFDEF8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7120D6C6-AEB2-452B-B8ED-3803FEDFDEF8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{7120D6C6-AEB2-452B-B8ED-3803FEDFDEF8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{7120D6C6-AEB2-452B-B8ED-3803FEDFDEF8}.Release|x86.ActiveCfg = Release|Any CPU
-		{7120D6C6-AEB2-452B-B8ED-3803FEDFDEF8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -413,7 +399,6 @@ Global
 		{2426B75D-23D4-41EF-8924-47650C8A18C7} = {7881B112-7843-4542-B1F7-F99553FB9BB7}
 		{7AD63F17-6382-4F38-A8B4-B42F048B4876} = {7881B112-7843-4542-B1F7-F99553FB9BB7}
 		{BBC4F177-3C0B-423C-A5DF-0330EC91C72C} = {7881B112-7843-4542-B1F7-F99553FB9BB7}
-		{7120D6C6-AEB2-452B-B8ED-3803FEDFDEF8} = {7881B112-7843-4542-B1F7-F99553FB9BB7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EE72A8B2-332A-4175-9319-6726D36E9D25}
