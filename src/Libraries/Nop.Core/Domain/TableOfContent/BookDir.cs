@@ -67,6 +67,11 @@ namespace Nop.Core.Domain.TableOfContent
         public int PictureId { get; set; }
 
         /// <summary>
+        /// 复杂层级
+        /// </summary>
+        public int ComplexLevel { get; set; }
+
+        /// <summary>
         /// Gets or sets the page size
         /// </summary>
         public int PageSize { get; set; }

@@ -52,5 +52,9 @@ namespace Nop.Core.Domain.Logging
         /// Gets or sets the IP address
         /// </summary>
         public virtual string IpAddress { get; set; }
+        /// <summary>
+        /// 使用平台
+        /// </summary>
+        public virtual string UsePlatform { get; set; }
     }
 }

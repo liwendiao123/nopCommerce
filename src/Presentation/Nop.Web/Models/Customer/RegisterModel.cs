@@ -150,8 +150,13 @@ namespace Nop.Web.Models.Customer
         public bool HoneypotEnabled { get; set; }
         public bool DisplayCaptcha { get; set; }
 
+        public string InviteCode { get; set; }
+
         public IList<CustomerAttributeModel> CustomerAttributes { get; set; }
 
         public IList<GdprConsentModel> GdprConsents { get; set; }
+
+
+       // public IList<>
     }
 }

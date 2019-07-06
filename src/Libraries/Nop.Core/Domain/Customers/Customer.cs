@@ -113,6 +113,11 @@ namespace Nop.Core.Domain.Customers
         /// </summary>
         public string LastIpAddress { get; set; }
 
+        ///// <summary>
+        ///// 注册平台
+        ///// </summary>
+        //public string RegisterPlatform { get; set; }
+
         /// <summary>
         /// Gets or sets the date and time of entity creation
         /// </summary>
@@ -142,6 +147,9 @@ namespace Nop.Core.Domain.Customers
         /// Gets or sets the shipping address identifier
         /// </summary>
         public int? ShippingAddressId { get; set; }
+
+
+        public int? DepartmentId { get; set; }
 
         #region Navigation properties
 
@@ -194,6 +202,12 @@ namespace Nop.Core.Domain.Customers
         /// </summary>
         public virtual Address BillingAddress { get; set; }
 
+
+        /// <summary>
+        /// 部门
+        /// </summary>
+        public virtual Department Department { get; set; }
+
         /// <summary>
         /// Default shipping address
         /// </summary>
@@ -236,7 +250,6 @@ namespace Nop.Core.Domain.Customers
             CustomerCustomerRoleMappings.Remove(role);
             _customerRoles = null;
         }
-
         #endregion
     }
 }

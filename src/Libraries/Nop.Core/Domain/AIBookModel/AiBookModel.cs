@@ -50,8 +50,11 @@ namespace Nop.Core.Domain.AIBookModel
         public string StrJson { get; set; }
 
 
+        /// <summary>
+        /// 是否为特例
+        /// </summary>
+        public int ComplexLevel { get; set; }
 
-         
         /// <summary>
         /// Gets or sets a value indicating whether the entity is published
         /// </summary>
@@ -63,6 +66,7 @@ namespace Nop.Core.Domain.AIBookModel
         public bool Deleted { get; set; }
 
 
+ 
         /// <summary>
         /// Gets or sets a value indicating whether the entity is active
         /// </summary>
