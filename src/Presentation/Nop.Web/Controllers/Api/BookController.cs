@@ -41,6 +41,12 @@ namespace Nop.Web.Controllers.Api
                    name = x.Name,
                    cateid =string.Join("," ,x.ProductCategories.Select(y=>y.Id)),
                    imgurl = "",
+                   x.DisplayOrder,
+                   tag = x.ProductProductTagMappings.Select(t=>new {
+                        BookId = t.ProductId,
+                        Tag = t.ProductTag,
+                        TagId = t.ProductTagId
+                   }).ToList()
                 })
 
             });

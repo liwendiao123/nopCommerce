@@ -1,4 +1,4 @@
-
+﻿
 namespace Nop.Core.Domain.Customers
 {
     /// <summary>
@@ -115,6 +115,11 @@ namespace Nop.Core.Domain.Customers
         /// Gets a name of generic attribute to store the value of 'Phone'
         /// </summary>
         public static string PhoneAttribute => "Phone";
+
+        /// <summary>
+        /// Gets a name of generic attribute to store the value of 'Phone'
+        /// </summary>
+        public static string InviteCodeAttribute => "InviteCode";
 
         /// <summary>
         /// Gets a name of generic attribute to store the value of 'Fax'

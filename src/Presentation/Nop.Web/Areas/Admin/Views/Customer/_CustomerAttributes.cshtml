@@ -57,11 +57,21 @@
                                 </label>
                             </div>
                         }
+
+                        if (attribute.Values.Count == 0)
+                        {
+                            <div class="checkbox">
+                                <label>
+                                    <input id="@(controlId)_@(attribute.Id)" type="checkbox" name="@(controlId)" value="@attribute.Id" checked @(attribute.AttributeControlType == AttributeControlType.ReadonlyCheckboxes ? Html.Raw(" disabled=\"disabled\"") : null) />
+                                 
+                                </label>
+                            </div>
+                        }
                     }
                     break;
                 case AttributeControlType.TextBox:
                     {
-                        <input name="@(controlId)" type="text" id="@(controlId)" value="@attribute.DefaultValue" class="form-control"/>
+                        <input name="@(controlId)" type="text" id="@(controlId)" value="@attribute.DefaultValue" class="form-control" />
                     }
                     break;
                 case AttributeControlType.MultilineTextbox:

@@ -6,6 +6,8 @@
     var controlId = $"{NopAttributePrefixDefaults.Customer}{attribute.Id}";
     var textPrompt = attribute.Name;
 
+   // if(att)
+
     <div class="inputs custom-attributes">
         <label>@textPrompt:</label>
         
@@ -44,11 +46,12 @@
             <ul class="option-list">
                 @foreach (var attributeValue in attribute.Values)
                     {
-                    <li>
-                        <input id="@(controlId)_@(attributeValue.Id)" type="checkbox" name="@(controlId)" value="@attributeValue.Id" checked="@attributeValue.IsPreSelected" @(attribute.AttributeControlType == AttributeControlType.ReadonlyCheckboxes ? Html.Raw(" disabled=\"disabled\"") : null) />
-                        <label for="@(controlId)_@(attributeValue.Id)">@attributeValue.Name</label>
-                    </li>
+                        <li>
+                            <input id="@(controlId)_@(attributeValue.Id)" type="checkbox" name="@(controlId)" value="@attributeValue.Id" checked="@attributeValue.IsPreSelected" @(attribute.AttributeControlType == AttributeControlType.ReadonlyCheckboxes ? Html.Raw(" disabled=\"disabled\"") : null) />
+                            <label for="@(controlId)_@(attributeValue.Id)">@attributeValue.Name</label>
+                        </li>
                     }
+                
             </ul>
             }
             break;

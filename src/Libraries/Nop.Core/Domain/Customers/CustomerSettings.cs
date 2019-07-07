@@ -324,10 +324,24 @@ namespace Nop.Core.Domain.Customers
         /// </summary>
         public bool PhoneEnabled { get; set; }
 
+
+
         /// <summary>
         /// Gets or sets a value indicating whether 'Phone number' is required
         /// </summary>
         public bool PhoneRequired { get; set; }
+
+
+
+        /// <summary>
+        /// Gets or sets a value indicating whether 'Invite code' is enabled
+        /// </summary>
+        public bool InviteCodeEnabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether 'Invite code' is required
+        /// </summary>
+        public bool InviteCodeRequired { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether 'Fax number' is enabled

@@ -712,7 +712,26 @@ namespace Nop.Web.Controllers
                 if (_customerSettings.UsernamesEnabled && model.Username != null)
                 {
                     model.Username = model.Username.Trim();
+
+
                 }
+                else if (_customerSettings.UsernamesEnabled)
+                {
+                    if (_customerSettings.PhoneEnabled)
+                    {
+                        model.Username = model.Phone;
+                    }
+                    else
+                    {
+                        model.Username = model.Email;
+                    }
+
+
+                }
+                     
+         
+
+          
 
                 var isApproved = _customerSettings.UserRegistrationType == UserRegistrationType.Standard;
                 var registrationRequest = new CustomerRegistrationRequest(customer,
@@ -771,6 +790,11 @@ namespace Nop.Web.Controllers
                             model.StateProvinceId);
                     if (_customerSettings.PhoneEnabled)
                         _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.PhoneAttribute, model.Phone);
+
+                    if (_customerSettings.InviteCodeEnabled)
+                    {
+                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.InviteCodeAttribute, model.Phone);
+                    }
                     if (_customerSettings.FaxEnabled)
                         _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.FaxAttribute, model.Fax);
 

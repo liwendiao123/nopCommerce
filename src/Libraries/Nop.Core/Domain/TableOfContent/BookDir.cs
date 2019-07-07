@@ -9,6 +9,7 @@ using System.Linq;
 using Nop.Core.Domain.AIBookModel;
 using Nop.Core.Domain.Localization;
 using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Nop.Core.Domain.TableOfContent
 {
@@ -126,6 +127,9 @@ namespace Nop.Core.Domain.TableOfContent
         public DateTime UpdatedOnUtc { get; set; }
 
         public bool IsLastNode { get; set; }
+
+        [NotMapped]
+        public string BookNodeUrl { get; set; }
    
         /// <summary>
         /// Gets or sets the discount-category mappings

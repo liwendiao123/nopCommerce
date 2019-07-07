@@ -101,6 +101,12 @@
             $('#pnlCustomerPhoneRequired').hide();
         }
 
+        
+        if ($('#@Html.IdFor(model => model.CustomerSettings.InviteCodeEnabled)').is(':checked')) {
+            $('#pnlCustomerInviteCodeRequired').show();
+        } else {
+            $('#pnlCustomerInviteCodeRequired').hide();
+        }
         if ($('#@Html.IdFor(model => model.CustomerSettings.FaxEnabled)').is(':checked')) {
             $('#pnlCustomerFaxRequired').show();
         } else {
@@ -351,6 +357,29 @@
                 </div>
             </div>
         </nop-nested-setting>
+
+
+        <div class="form-group">
+            <div class="col-md-3">
+                <nop-label asp-for="CustomerSettings.InviteCodeEnabled" />
+            </div>
+            <div class="col-md-9">
+                <nop-editor asp-for="CustomerSettings.InviteCodeEnabled" />
+                <span asp-validation-for="CustomerSettings.InviteCodeEnabled"></span>
+            </div>
+        </div>
+        <nop-nested-setting asp-for="CustomerSettings.InviteCodeEnabled">
+            <div class="form-group" id="pnlCustomerInviteCodeRequired">
+                <div class="col-md-3">
+                    <nop-label asp-for="CustomerSettings.InviteCodeRequired" />
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="CustomerSettings.InviteCodeRequired" />
+                    <span asp-validation-for="CustomerSettings.InviteCodeRequired"></span>
+                </div>
+            </div>
+        </nop-nested-setting>
+
         <div class="form-group">
             <div class="col-md-3">
                 <nop-label asp-for="CustomerSettings.FaxEnabled" />

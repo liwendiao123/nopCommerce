@@ -188,6 +188,15 @@ namespace Nop.Web.Areas.Admin.Models.Settings
         [NopResourceDisplayName("Admin.Configuration.Settings.CustomerUser.PhoneRequired")]
         public bool PhoneRequired { get; set; }
 
+
+
+
+        [NopResourceDisplayName("Admin.Configuration.Settings.CustomerUser.InviteCodeEnabled")]
+        public bool InviteCodeEnabled { get; set; }
+
+        [NopResourceDisplayName("Admin.Configuration.Settings.CustomerUser.InviteCodeRequired")]
+        public bool InviteCodeRequired { get; set; }
+
         [NopResourceDisplayName("Admin.Configuration.Settings.CustomerUser.FaxEnabled")]
         public bool FaxEnabled { get; set; }
 

@@ -73,5 +73,8 @@ namespace Nop.Services.TableOfContent
         /// <param name="showHidden"></param>
         /// <returns></returns>
         IList<int> GetChildBookDirIds(int parentBookirId, int storeId = 0, bool showHidden = false);
+
+        IList<BookDir> SortBookDirsForTree(IList<BookDir> source, int parentId = 0,
+            bool ignoreCategoriesWithoutExistingParent = false);
     }
 }

@@ -33,8 +33,9 @@ namespace Nop.Web.Controllers.Api
                 data = result.Select(x => new {
                     id = x.Id,
                     pid = x.ParentCategoryId,
-                    name = x.Name
-
+                    name = x.Name,
+                    actualName = x.Name,
+                    x.DisplayOrder
                 }).ToList()
 
             });

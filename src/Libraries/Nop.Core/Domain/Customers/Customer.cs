@@ -149,7 +149,7 @@ namespace Nop.Core.Domain.Customers
         public int? ShippingAddressId { get; set; }
 
 
-        public int? DepartmentId { get; set; }
+        public int DepartmentId { get; set; }
 
         #region Navigation properties
 

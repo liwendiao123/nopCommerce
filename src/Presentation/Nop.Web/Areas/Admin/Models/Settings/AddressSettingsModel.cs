@@ -60,6 +60,13 @@ namespace Nop.Web.Areas.Admin.Models.Settings
         [NopResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.PhoneRequired")]
         public bool PhoneRequired { get; set; }
 
+
+        [NopResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.InviteCodeEnabled")]
+        public bool InviteCodeEnabled { get; set; }
+
+        [NopResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.InviteCodeRequired")]
+        public bool InviteCodeRequired { get; set; }
+
         [NopResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.FaxEnabled")]
         public bool FaxEnabled { get; set; }
 

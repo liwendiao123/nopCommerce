@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
+
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Nop.Core;
 using Nop.Core.Domain;
+using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Common;
 using Nop.Core.Domain.Customers;
 using Nop.Core.Domain.Forums;
@@ -30,9 +32,12 @@ using Nop.Services.Messages;
 using Nop.Services.Orders;
 using Nop.Services.Tax;
 using Nop.Web.Factories;
+using Nop.Web.Framework.Controllers;
 using Nop.Web.Framework.Mvc.Filters;
 using Nop.Web.Models.Customer;
-
+using Microsoft.Extensions.Primitives;
+using Nop.Core.Domain.Messages;
+using Nop.Services.Authentication;
 namespace Nop.Web.Controllers.Api
 {
     public class UserController  : BasePublicController
@@ -187,29 +192,391 @@ namespace Nop.Web.Controllers.Api
         //[ValidateCaptcha]
         [ValidateHoneypot]
         [CheckAccessPublicStore(true)]
-        public IActionResult Register(RegisterModel model)
+        public IActionResult Register(RegisterModel model, string returnUrl, bool captchaValid, IFormCollection form)
         {
 
             //check whether registration is allowed
             if (_customerSettings.UserRegistrationType == UserRegistrationType.Disabled)
+                return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.Disabled });
+
+            if (_workContext.CurrentCustomer.IsRegistered())
             {
-                var failmodel = _customerModelFactory.PrepareRegisterResultModel((int)UserRegistrationType.Disabled);
+                //Already registered customer. 
+                _authenticationService.SignOut();
 
-                return Json(new
-                {
-                    code = -1,
-                    msg = failmodel.Result,
-                    data = new {
+                //raise logged out event       
+                _eventPublisher.Publish(new CustomerLoggedOutEvent(_workContext.CurrentCustomer));
 
-                    }
-                });
+                //Save a new record
+                _workContext.CurrentCustomer = _customerService.InsertGuestCustomer();
             }
-               
+            var customer = _workContext.CurrentCustomer;
+            customer.RegisteredInStoreId = _storeContext.CurrentStore.Id;
+
+            //custom customer attributes
+            var customerAttributesXml = ParseCustomCustomerAttributes(form);
+            var customerAttributeWarnings = _customerAttributeParser.GetAttributeWarnings(customerAttributesXml);
+            foreach (var error in customerAttributeWarnings)
+            {
+                ModelState.AddModelError("", error);
+            }
+
+            //validate CAPTCHA
+            if (_captchaSettings.Enabled && _captchaSettings.ShowOnRegistrationPage && !captchaValid)
+            {
+                ModelState.AddModelError("", _localizationService.GetResource("Common.WrongCaptchaMessage"));
+            }
+
+            if (ModelState.IsValid)
+            {
+                if (_customerSettings.UsernamesEnabled && model.Username != null)
+                {
+                    model.Username = model.Username.Trim();
+
+
+                }
+                else if (_customerSettings.UsernamesEnabled)
+                {
+                    if (_customerSettings.PhoneEnabled)
+                    {
+                        model.Username = model.Phone;
+                    }
+                    else
+                    {
+                        model.Username = model.Email;
+                    }
+
+
+                }
+
+
+
+
+
+                var isApproved = _customerSettings.UserRegistrationType == UserRegistrationType.Standard;
+                var registrationRequest = new CustomerRegistrationRequest(customer,
+                    model.Email,
+                    _customerSettings.UsernamesEnabled ? model.Username : model.Email,
+                    model.Password,
+                    _customerSettings.DefaultPasswordFormat,
+                    _storeContext.CurrentStore.Id,
+                    isApproved);
+                var registrationResult = _customerRegistrationService.RegisterCustomer(registrationRequest);
+                if (registrationResult.Success)
+                {
+                    //properties
+                    if (_dateTimeSettings.AllowCustomersToSetTimeZone)
+                    {
+                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.TimeZoneIdAttribute, model.TimeZoneId);
+                    }
+                    //VAT number
+                    if (_taxSettings.EuVatEnabled)
+                    {
+                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.VatNumberAttribute, model.VatNumber);
+
+                        var vatNumberStatus = _taxService.GetVatNumberStatus(model.VatNumber, out string _, out string vatAddress);
+                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.VatNumberStatusIdAttribute, (int)vatNumberStatus);
+                        //send VAT number admin notification
+                        if (!string.IsNullOrEmpty(model.VatNumber) && _taxSettings.EuVatEmailAdminWhenNewVatSubmitted)
+                            _workflowMessageService.SendNewVatSubmittedStoreOwnerNotification(customer, model.VatNumber, vatAddress, _localizationSettings.DefaultAdminLanguageId);
+                    }
+
+                    //form fields
+                    if (_customerSettings.GenderEnabled)
+                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.GenderAttribute, model.Gender);
+                    _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.FirstNameAttribute, model.FirstName);
+                    _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.LastNameAttribute, model.LastName);
+                    if (_customerSettings.DateOfBirthEnabled)
+                    {
+                        var dateOfBirth = model.ParseDateOfBirth();
+                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.DateOfBirthAttribute, dateOfBirth);
+                    }
+                    if (_customerSettings.CompanyEnabled)
+                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.CompanyAttribute, model.Company);
+                    if (_customerSettings.StreetAddressEnabled)
+                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.StreetAddressAttribute, model.StreetAddress);
+                    if (_customerSettings.StreetAddress2Enabled)
+                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.StreetAddress2Attribute, model.StreetAddress2);
+                    if (_customerSettings.ZipPostalCodeEnabled)
+                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.ZipPostalCodeAttribute, model.ZipPostalCode);
+                    if (_customerSettings.CityEnabled)
+                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.CityAttribute, model.City);
+                    if (_customerSettings.CountyEnabled)
+                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.CountyAttribute, model.County);
+                    if (_customerSettings.CountryEnabled)
+                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.CountryIdAttribute, model.CountryId);
+                    if (_customerSettings.CountryEnabled && _customerSettings.StateProvinceEnabled)
+                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.StateProvinceIdAttribute,
+                            model.StateProvinceId);
+                    if (_customerSettings.PhoneEnabled)
+                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.PhoneAttribute, model.Phone);
+
+                    if (_customerSettings.InviteCodeEnabled)
+                    {
+                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.InviteCodeAttribute, model.Phone);
+                    }
+                    if (_customerSettings.FaxEnabled)
+                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.FaxAttribute, model.Fax);
+
+                    //newsletter
+                    if (_customerSettings.NewsletterEnabled)
+                    {
+                        //save newsletter value
+                        var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmailAndStoreId(model.Email, _storeContext.CurrentStore.Id);
+                        if (newsletter != null)
+                        {
+                            if (model.Newsletter)
+                            {
+                                newsletter.Active = true;
+                                _newsLetterSubscriptionService.UpdateNewsLetterSubscription(newsletter);
+
+                                //GDPR
+                                if (_gdprSettings.GdprEnabled && _gdprSettings.LogNewsletterConsent)
+                                {
+                                    _gdprService.InsertLog(customer, 0, GdprRequestType.ConsentAgree, _localizationService.GetResource("Gdpr.Consent.Newsletter"));
+                                }
+                            }
+                            //else
+                            //{
+                            //When registering, not checking the newsletter check box should not take an existing email address off of the subscription list.
+                            //_newsLetterSubscriptionService.DeleteNewsLetterSubscription(newsletter);
+                            //}
+                        }
+                        else
+                        {
+                            if (model.Newsletter)
+                            {
+                                _newsLetterSubscriptionService.InsertNewsLetterSubscription(new NewsLetterSubscription
+                                {
+                                    NewsLetterSubscriptionGuid = Guid.NewGuid(),
+                                    Email = model.Email,
+                                    Active = true,
+                                    StoreId = _storeContext.CurrentStore.Id,
+                                    CreatedOnUtc = DateTime.UtcNow
+                                });
+
+                                //GDPR
+                                if (_gdprSettings.GdprEnabled && _gdprSettings.LogNewsletterConsent)
+                                {
+                                    _gdprService.InsertLog(customer, 0, GdprRequestType.ConsentAgree, _localizationService.GetResource("Gdpr.Consent.Newsletter"));
+                                }
+                            }
+                        }
+                    }
+
+                    if (_customerSettings.AcceptPrivacyPolicyEnabled)
+                    {
+                        //privacy policy is required
+                        //GDPR
+                        if (_gdprSettings.GdprEnabled && _gdprSettings.LogPrivacyPolicyConsent)
+                        {
+                            _gdprService.InsertLog(customer, 0, GdprRequestType.ConsentAgree, _localizationService.GetResource("Gdpr.Consent.PrivacyPolicy"));
+                        }
+                    }
+
+                    //GDPR
+                    if (_gdprSettings.GdprEnabled)
+                    {
+                        var consents = _gdprService.GetAllConsents().Where(consent => consent.DisplayDuringRegistration).ToList();
+                        foreach (var consent in consents)
+                        {
+                            var controlId = $"consent{consent.Id}";
+                            var cbConsent = form[controlId];
+                            if (!StringValues.IsNullOrEmpty(cbConsent) && cbConsent.ToString().Equals("on"))
+                            {
+                                //agree
+                                _gdprService.InsertLog(customer, consent.Id, GdprRequestType.ConsentAgree, consent.Message);
+                            }
+                            else
+                            {
+                                //disagree
+                                _gdprService.InsertLog(customer, consent.Id, GdprRequestType.ConsentDisagree, consent.Message);
+                            }
+                        }
+                    }
+
+                    //save customer attributes
+                    _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.CustomCustomerAttributes, customerAttributesXml);
+
+                    //login customer now
+                  //  if (isApproved)
+                      //  _authenticationService.SignIn(customer, true);
+                    //
+                    //insert default address (if possible)
+                    //var defaultAddress = new Address
+                    //{
+                    //    FirstName = _genericAttributeService.GetAttribute<string>(customer, NopCustomerDefaults.FirstNameAttribute),
+                    //    LastName = _genericAttributeService.GetAttribute<string>(customer, NopCustomerDefaults.LastNameAttribute),
+                    //    Email = customer.Email,
+                    //    Company = _genericAttributeService.GetAttribute<string>(customer, NopCustomerDefaults.CompanyAttribute),
+                    //    CountryId = _genericAttributeService.GetAttribute<int>(customer, NopCustomerDefaults.CountryIdAttribute) > 0
+                    //        ? (int?)_genericAttributeService.GetAttribute<int>(customer, NopCustomerDefaults.CountryIdAttribute)
+                    //        : null,
+                    //    StateProvinceId = _genericAttributeService.GetAttribute<int>(customer, NopCustomerDefaults.StateProvinceIdAttribute) > 0
+                    //        ? (int?)_genericAttributeService.GetAttribute<int>(customer, NopCustomerDefaults.StateProvinceIdAttribute)
+                    //        : null,
+                    //    County = _genericAttributeService.GetAttribute<string>(customer, NopCustomerDefaults.CountyAttribute),
+                    //    City = _genericAttributeService.GetAttribute<string>(customer, NopCustomerDefaults.CityAttribute),
+                    //    Address1 = _genericAttributeService.GetAttribute<string>(customer, NopCustomerDefaults.StreetAddressAttribute),
+                    //    Address2 = _genericAttributeService.GetAttribute<string>(customer, NopCustomerDefaults.StreetAddress2Attribute),
+                    //    ZipPostalCode = _genericAttributeService.GetAttribute<string>(customer, NopCustomerDefaults.ZipPostalCodeAttribute),
+                    //    PhoneNumber = _genericAttributeService.GetAttribute<string>(customer, NopCustomerDefaults.PhoneAttribute),
+                    //    FaxNumber = _genericAttributeService.GetAttribute<string>(customer, NopCustomerDefaults.FaxAttribute),
+                    //    CreatedOnUtc = customer.CreatedOnUtc
+                    //};
+                    //if (_addressService.IsAddressValid(defaultAddress))
+                    //{
+                    //    //some validation
+                    //    if (defaultAddress.CountryId == 0)
+                    //        defaultAddress.CountryId = null;
+                    //    if (defaultAddress.StateProvinceId == 0)
+                    //        defaultAddress.StateProvinceId = null;
+                    //    //set default address
+                    //    //customer.Addresses.Add(defaultAddress);
+                    //    customer.CustomerAddressMappings.Add(new CustomerAddressMapping { Address = defaultAddress });
+                    //    customer.BillingAddress = defaultAddress;
+                    //    customer.ShippingAddress = defaultAddress;
+                    //    _customerService.UpdateCustomer(customer);
+                    //}
+
+                    //notifications
+                    if (_customerSettings.NotifyNewCustomerRegistration)
+                        _workflowMessageService.SendCustomerRegisteredNotificationMessage(customer,
+                            _localizationSettings.DefaultAdminLanguageId);
+
+                    //raise event       
+                    _eventPublisher.Publish(new CustomerRegisteredEvent(customer));
+
+                    //switch (_customerSettings.UserRegistrationType)
+                    //{
+                    //    case UserRegistrationType.EmailValidation:
+                    //        {
+                    //            //email validation message
+                    //            _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.AccountActivationTokenAttribute, Guid.NewGuid().ToString());
+                    //            _workflowMessageService.SendCustomerEmailValidationMessage(customer, _workContext.WorkingLanguage.Id);
+
+                    //            //result
+                    //            return RedirectToRoute("RegisterResult",
+                    //                new { resultId = (int)UserRegistrationType.EmailValidation });
+                    //        }
+                    //    case UserRegistrationType.AdminApproval:
+                    //        {
+                    //            return RedirectToRoute("RegisterResult",
+                    //                new { resultId = (int)UserRegistrationType.AdminApproval });
+                    //        }
+                    //    case UserRegistrationType.Standard:
+                    //        {
+                    //            //send customer welcome message
+                    //            _workflowMessageService.SendCustomerWelcomeMessage(customer, _workContext.WorkingLanguage.Id);
+
+                    //            var redirectUrl = Url.RouteUrl("RegisterResult",
+                    //                new { resultId = (int)UserRegistrationType.Standard, returnUrl }, _webHelper.CurrentRequestProtocol);
+                    //            return Redirect(redirectUrl);
+                    //        }
+                    //    default:
+                    //        {
+                    //            return RedirectToRoute("Homepage");
+                    //        }
+                    //}
+                }
+
+                //errors
+                foreach (var error in registrationResult.Errors)
+                    ModelState.AddModelError("", error);
+            }
+
+            //If we got this far, something failed, redisplay form
+            model = _customerModelFactory.PrepareRegisterModel(model, true, customerAttributesXml);
+        
+            return Json(model);
 
             //return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.Disabled });
-            return View();
+          //  return View();
         }
 
+
+
+        #region
+        protected virtual string ParseCustomCustomerAttributes(IFormCollection form)
+        {
+            if (form == null)
+                throw new ArgumentNullException(nameof(form));
+
+            var attributesXml = "";
+            var attributes = _customerAttributeService.GetAllCustomerAttributes();
+            foreach (var attribute in attributes)
+            {
+                var controlId = $"{NopAttributePrefixDefaults.Customer}{attribute.Id}";
+                switch (attribute.AttributeControlType)
+                {
+                    case AttributeControlType.DropdownList:
+                    case AttributeControlType.RadioList:
+                        {
+                            var ctrlAttributes = form[controlId];
+                            if (!StringValues.IsNullOrEmpty(ctrlAttributes))
+                            {
+                                var selectedAttributeId = int.Parse(ctrlAttributes);
+                                if (selectedAttributeId > 0)
+                                    attributesXml = _customerAttributeParser.AddCustomerAttribute(attributesXml,
+                                        attribute, selectedAttributeId.ToString());
+                            }
+                        }
+                        break;
+                    case AttributeControlType.Checkboxes:
+                        {
+                            var cblAttributes = form[controlId];
+                            if (!StringValues.IsNullOrEmpty(cblAttributes))
+                            {
+                                foreach (var item in cblAttributes.ToString().Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                                {
+                                    var selectedAttributeId = int.Parse(item);
+                                    if (selectedAttributeId > 0)
+                                        attributesXml = _customerAttributeParser.AddCustomerAttribute(attributesXml,
+                                            attribute, selectedAttributeId.ToString());
+                                }
+                            }
+                        }
+                        break;
+                    case AttributeControlType.ReadonlyCheckboxes:
+                        {
+                            //load read-only (already server-side selected) values
+                            var attributeValues = _customerAttributeService.GetCustomerAttributeValues(attribute.Id);
+                            foreach (var selectedAttributeId in attributeValues
+                                .Where(v => v.IsPreSelected)
+                                .Select(v => v.Id)
+                                .ToList())
+                            {
+                                attributesXml = _customerAttributeParser.AddCustomerAttribute(attributesXml,
+                                    attribute, selectedAttributeId.ToString());
+                            }
+                        }
+                        break;
+                    case AttributeControlType.TextBox:
+                    case AttributeControlType.MultilineTextbox:
+                        {
+                            var ctrlAttributes = form[controlId];
+                            if (!StringValues.IsNullOrEmpty(ctrlAttributes))
+                            {
+                                var enteredText = ctrlAttributes.ToString().Trim();
+                                attributesXml = _customerAttributeParser.AddCustomerAttribute(attributesXml,
+                                    attribute, enteredText);
+                            }
+                        }
+                        break;
+                    case AttributeControlType.Datepicker:
+                    case AttributeControlType.ColorSquares:
+                    case AttributeControlType.ImageSquares:
+                    case AttributeControlType.FileUpload:
+                    //not supported customer attributes
+                    default:
+                        break;
+                }
+            }
+
+            return attributesXml;
+        }
+
+        #endregion
 
         public IActionResult Login()
         {
@@ -219,7 +586,75 @@ namespace Nop.Web.Controllers.Api
         [HttpPost]
         public IActionResult Login(LoginModel model)
         {
-            return View();
+            //validate CAPTCHA
+            //if (_captchaSettings.Enabled && _captchaSettings.ShowOnLoginPage && !captchaValid)
+            //{
+            //    ModelState.AddModelError("", _localizationService.GetResource("Common.WrongCaptchaMessage"));
+            //}
+
+            if (ModelState.IsValid)
+            {
+                if (_customerSettings.UsernamesEnabled && model.Username != null)
+                {
+                    model.Username = model.Username.Trim();
+                }
+                var loginResult = _customerRegistrationService.ValidateCustomer(_customerSettings.UsernamesEnabled ? model.Username : model.Email, model.Password);
+                switch (loginResult)
+                {
+                    case CustomerLoginResults.Successful:
+                        {
+                            var customer = _customerSettings.UsernamesEnabled
+                                ? _customerService.GetCustomerByUsername(model.Username)
+                                : _customerService.GetCustomerByEmail(model.Email);
+
+                            //migrate shopping cart
+                            _shoppingCartService.MigrateShoppingCart(_workContext.CurrentCustomer, customer, true);
+
+                            //sign in new customer
+                            _authenticationService.SignIn(customer, model.RememberMe);
+
+                            //raise event       
+                            _eventPublisher.Publish(new CustomerLoggedinEvent(customer));
+
+                            //activity log
+                            _customerActivityService.InsertActivity(customer, "PublicStore.Login",
+                                _localizationService.GetResource("ActivityLog.PublicStore.Login"), customer);
+
+                            //if (string.IsNullOrEmpty(returnUrl) || !Url.IsLocalUrl(returnUrl))
+                            //    return RedirectToRoute("Homepage");
+
+                            //return Redirect(returnUrl);
+                        }
+
+                        break;
+                    case CustomerLoginResults.CustomerNotExist:
+                        ModelState.AddModelError("", _localizationService.GetResource("Account.Login.WrongCredentials.CustomerNotExist"));
+                        break;
+                    case CustomerLoginResults.Deleted:
+                        ModelState.AddModelError("", _localizationService.GetResource("Account.Login.WrongCredentials.Deleted"));
+                        break;
+                    case CustomerLoginResults.NotActive:
+                        ModelState.AddModelError("", _localizationService.GetResource("Account.Login.WrongCredentials.NotActive"));
+                        break;
+                    case CustomerLoginResults.NotRegistered:
+                        ModelState.AddModelError("", _localizationService.GetResource("Account.Login.WrongCredentials.NotRegistered"));
+                        break;
+                    case CustomerLoginResults.LockedOut:
+                        ModelState.AddModelError("", _localizationService.GetResource("Account.Login.WrongCredentials.LockedOut"));
+                        break;
+                    case CustomerLoginResults.WrongPassword:
+                    default:
+                        ModelState.AddModelError("", _localizationService.GetResource("Account.Login.WrongCredentials"));
+                        break;
+                }
+            }
+
+            //If we got this far, something failed, redisplay form
+            model = _customerModelFactory.PrepareLoginModel(model.CheckoutAsGuest);
+
+
+            return Json(model);
+          //  return View(model);
         }
 
 
