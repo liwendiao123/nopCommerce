@@ -195,6 +195,11 @@ namespace Nop.Web.Controllers.Api
         public IActionResult Register(RegisterModel model, string returnUrl, bool captchaValid, IFormCollection form)
         {
 
+            if (model != null)
+            {
+                model.LastName = model.Name;
+            }
+
             //check whether registration is allowed
             if (_customerSettings.UserRegistrationType == UserRegistrationType.Disabled)
                 return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.Disabled });
@@ -256,11 +261,13 @@ namespace Nop.Web.Controllers.Api
                 var isApproved = _customerSettings.UserRegistrationType == UserRegistrationType.Standard;
                 var registrationRequest = new CustomerRegistrationRequest(customer,
                     model.Email,
+                
                     _customerSettings.UsernamesEnabled ? model.Username : model.Email,
                     model.Password,
                     _customerSettings.DefaultPasswordFormat,
                     _storeContext.CurrentStore.Id,
                     isApproved);
+               
                 var registrationResult = _customerRegistrationService.RegisterCustomer(registrationRequest);
                 if (registrationResult.Success)
                 {
@@ -488,7 +495,15 @@ namespace Nop.Web.Controllers.Api
             //If we got this far, something failed, redisplay form
             model = _customerModelFactory.PrepareRegisterModel(model, true, customerAttributesXml);
         
-            return Json(model);
+            return Json(new {
+
+                Id = model.Username,
+                Phone = model.Phone,
+                Name = model.LastName??"",
+                Email = model.Email??"",
+                Occupation = "学生",
+                SchoolName ="三中"
+            });
 
             //return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.Disabled });
           //  return View();
@@ -592,6 +607,8 @@ namespace Nop.Web.Controllers.Api
             //    ModelState.AddModelError("", _localizationService.GetResource("Common.WrongCaptchaMessage"));
             //}
 
+            Customer _customer = null;
+
             if (ModelState.IsValid)
             {
                 if (_customerSettings.UsernamesEnabled && model.Username != null)
@@ -608,8 +625,8 @@ namespace Nop.Web.Controllers.Api
                                 : _customerService.GetCustomerByEmail(model.Email);
 
                             //migrate shopping cart
-                            _shoppingCartService.MigrateShoppingCart(_workContext.CurrentCustomer, customer, true);
-
+                            //_shoppingCartService.MigrateShoppingCart(_workContext.CurrentCustomer, customer, true);
+                            _customer = customer;
                             //sign in new customer
                             _authenticationService.SignIn(customer, model.RememberMe);
 
@@ -620,13 +637,31 @@ namespace Nop.Web.Controllers.Api
                             _customerActivityService.InsertActivity(customer, "PublicStore.Login",
                                 _localizationService.GetResource("ActivityLog.PublicStore.Login"), customer);
 
+
+
+                            return Json(new {
+                                code = 0,
+                                msg="登录成功",
+                                data = new {
+                                    Id = _customer.Id,
+                                    UserName = _customer.Username,
+                                    Name ="",
+                                    Phone = _customer.Username,
+                                    Token = "",
+                                    SchoolName =_customer.Department?.Name,
+                                    DepartmentId = _customer.DepartmentId,
+                                    Role =string.Join(",", _customer.CustomerCustomerRoleMappings.Select(x=>x.CustomerRole.Name).ToList())
+                                }
+
+
+                            });
                             //if (string.IsNullOrEmpty(returnUrl) || !Url.IsLocalUrl(returnUrl))
                             //    return RedirectToRoute("Homepage");
 
                             //return Redirect(returnUrl);
                         }
 
-                        break;
+                        //break;
                     case CustomerLoginResults.CustomerNotExist:
                         ModelState.AddModelError("", _localizationService.GetResource("Account.Login.WrongCredentials.CustomerNotExist"));
                         break;
@@ -653,7 +688,12 @@ namespace Nop.Web.Controllers.Api
             model = _customerModelFactory.PrepareLoginModel(model.CheckoutAsGuest);
 
 
-            return Json(model);
+            return Json(new {
+                code = -1,
+                 msg ="登录失败;原因："+string.Join(",", ModelState.Root.Errors.Select(x=>x.ErrorMessage))
+               
+
+            });
           //  return View(model);
         }
 

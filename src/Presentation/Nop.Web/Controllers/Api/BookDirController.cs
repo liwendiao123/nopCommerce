@@ -49,7 +49,19 @@ namespace Nop.Web.Controllers.Api
             return Json(new {
                 code = 0,
                 msg = "获取成功",
-                Data = treeresult
+                data = treeresult.Select(x=>new
+                {
+                    x.Id,
+                    PId = x.ParentBookDirId,
+                    x.BookID,
+                    x.Name,
+                    x.Description,
+                    x.PriceRanges,
+                    x.DisplayOrder,
+                    x.IsLastNode,
+                    x.ComplexLevel,
+                    x.BookNodeUrl
+                }).ToList()
             });
         }
     }

@@ -37,12 +37,16 @@ namespace Nop.Web.Controllers.Api
                 code = 0,
                 msg = "",
                 Data = product.Select(x => new {
-                   id = x.Id,
-                   name = x.Name,
-                   cateid =string.Join("," ,x.ProductCategories.Select(y=>y.Id)),
-                   imgurl = "",
+
+                  //  x.ProductPictures
+                   Id = x.Id,
+                   Name = x.Name?.Trim(),
+                   TestName = "fdsfafsaf 测试" + x.Name?.Trim(),
+                   Cateid =string.Join("," ,x.ProductCategories.Select(y=>y.Id)),
+                   Imgurl = "http://arbookresouce.73data.cn/book/img/sy_img_02.png",
                    x.DisplayOrder,
-                   tag = x.ProductProductTagMappings.Select(t=>new {
+                   Desc ="",
+                   Tag = x.ProductProductTagMappings.Select(t=>new {
                         BookId = t.ProductId,
                         Tag = t.ProductTag,
                         TagId = t.ProductTagId

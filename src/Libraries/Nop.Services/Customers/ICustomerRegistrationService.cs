@@ -1,4 +1,4 @@
-using Nop.Core.Domain.Customers;
+﻿using Nop.Core.Domain.Customers;
 
 namespace Nop.Services.Customers
 {
@@ -14,6 +14,16 @@ namespace Nop.Services.Customers
         /// <param name="password">Password</param>
         /// <returns>Result</returns>
         CustomerLoginResults ValidateCustomer(string usernameOrEmail, string password);
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="usernameOrEmail"></param>
+        /// <param name="password"></param>
+        /// <param name="customer"></param>
+        /// <returns></returns>
+        CustomerLoginResults ValidateCustomer(string usernameOrEmail, string password,Customer customer);
 
         /// <summary>
         /// Register customer

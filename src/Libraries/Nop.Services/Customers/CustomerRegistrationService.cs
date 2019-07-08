@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using Nop.Core;
 using Nop.Core.Domain.Customers;
@@ -155,6 +155,54 @@ namespace Nop.Services.Customers
             return CustomerLoginResults.Successful;
         }
 
+        public virtual CustomerLoginResults ValidateCustomer(string usernameOrEmail, string password,Customer _ustomer)
+        {
+            var customer = _customerSettings.UsernamesEnabled ?
+                _customerService.GetCustomerByUsername(usernameOrEmail) :
+                _customerService.GetCustomerByEmail(usernameOrEmail);
+
+            if (customer == null)
+                return CustomerLoginResults.CustomerNotExist;
+            if (customer.Deleted)
+                return CustomerLoginResults.Deleted;
+            if (!customer.Active)
+                return CustomerLoginResults.NotActive;
+            //only registered can login
+            if (!customer.IsRegistered())
+                return CustomerLoginResults.NotRegistered;
+            //check whether a customer is locked out
+            if (customer.CannotLoginUntilDateUtc.HasValue && customer.CannotLoginUntilDateUtc.Value > DateTime.UtcNow)
+                return CustomerLoginResults.LockedOut;
+
+            if (!PasswordsMatch(_customerService.GetCurrentPassword(customer.Id), password))
+            {
+                //wrong password
+                customer.FailedLoginAttempts++;
+                if (_customerSettings.FailedPasswordAllowedAttempts > 0 &&
+                    customer.FailedLoginAttempts >= _customerSettings.FailedPasswordAllowedAttempts)
+                {
+                    //lock out
+                    customer.CannotLoginUntilDateUtc = DateTime.UtcNow.AddMinutes(_customerSettings.FailedPasswordLockoutMinutes);
+                    //reset the counter
+                    customer.FailedLoginAttempts = 0;
+                }
+
+                _customerService.UpdateCustomer(customer);
+
+                return CustomerLoginResults.WrongPassword;
+            }
+
+            //update login details
+            customer.FailedLoginAttempts = 0;
+            customer.CannotLoginUntilDateUtc = null;
+            customer.RequireReLogin = false;
+            customer.LastLoginDateUtc = DateTime.UtcNow;
+            _customerService.UpdateCustomer(customer);
+
+            return CustomerLoginResults.Successful;
+        }
+
+
         /// <summary>
         /// Register customer
         /// </summary>
@@ -174,13 +222,11 @@ namespace Nop.Services.Customers
                 result.AddError("Search engine can't be registered");
                 return result;
             }
-
             if (request.Customer.IsBackgroundTaskAccount())
             {
                 result.AddError("Background task account can't be registered");
                 return result;
             }
-
             if (request.Customer.IsRegistered())
             {
                 result.AddError("Current customer is already registered");
@@ -389,14 +435,12 @@ namespace Nop.Services.Customers
 
             var customer2 = _customerService.GetCustomerByEmail(newEmail);
             if (customer2 != null && customer.Id != customer2.Id)
-                throw new NopException(_localizationService.GetResource("Account.EmailUsernameErrors.EmailAlreadyExists"));
-
+                throw new NopException(_localizationService.GetResource("Account.EmailUsernameErrors.EmailAlreadyExists"));        
             if (requireValidation)
             {
                 //re-validate email
                 customer.EmailToRevalidate = newEmail;
                 _customerService.UpdateCustomer(customer);
-
                 //email re-validation message
                 _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.EmailRevalidationTokenAttribute, Guid.NewGuid().ToString());
                 _workflowMessageService.SendCustomerEmailRevalidationMessage(customer, _workContext.WorkingLanguage.Id);
@@ -405,10 +449,9 @@ namespace Nop.Services.Customers
             {
                 customer.Email = newEmail;
                 _customerService.UpdateCustomer(customer);
-                
+       
                 if (string.IsNullOrEmpty(oldEmail) || oldEmail.Equals(newEmail, StringComparison.InvariantCultureIgnoreCase)) 
                     return;
-
                 //update newsletter subscription (if required)
                 foreach (var store in _storeService.GetAllStores())
                 {

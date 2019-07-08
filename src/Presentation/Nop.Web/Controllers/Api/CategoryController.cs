@@ -21,7 +21,7 @@ namespace Nop.Web.Controllers.Api
             return View();
         }
 
-        public IActionResult GetData()
+        public IActionResult GetData(int id)
         {
 
           var result =   _categoryService.GetAllCategoriesByParentCategoryId(14);

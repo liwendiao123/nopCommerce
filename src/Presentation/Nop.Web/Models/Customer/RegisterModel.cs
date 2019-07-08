@@ -152,6 +152,20 @@ namespace Nop.Web.Models.Customer
 
         public string InviteCode { get; set; }
 
+        /// <summary>
+        /// 所属学校
+        /// </summary>
+        public int DepartmentId { get; set; }
+
+
+        public string Name { get; set; }
+
+        public int PlatformType { get; set; }
+
+        /// <summary>
+        /// 头像ID
+        /// </summary>
+        public string ImgUrl { get; set; }
         public IList<CustomerAttributeModel> CustomerAttributes { get; set; }
 
         public IList<GdprConsentModel> GdprConsents { get; set; }
