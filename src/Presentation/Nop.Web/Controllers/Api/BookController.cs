@@ -36,7 +36,7 @@ namespace Nop.Web.Controllers.Api
             {
                 code = 0,
                 msg = "",
-                Data = product.Select(x => new {
+                data = product.Select(x => new {
 
                   //  x.ProductPictures
                    Id = x.Id,
@@ -45,6 +45,7 @@ namespace Nop.Web.Controllers.Api
                    Cateid =string.Join("," ,x.ProductCategories.Select(y=>y.Id)),
                    Imgurl = "http://arbookresouce.73data.cn/book/img/sy_img_02.png",
                    x.DisplayOrder,
+                   VendorName = "人民教育出版社",
                    Desc ="",
                    Tag = x.ProductProductTagMappings.Select(t=>new {
                         BookId = t.ProductId,

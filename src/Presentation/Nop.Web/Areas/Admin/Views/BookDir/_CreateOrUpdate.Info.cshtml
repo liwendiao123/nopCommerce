@@ -5,47 +5,47 @@
 
 
     @(Html.LocalizedEditor<BookDirModel, BookDirLocalizedModel>("bookdir-name-localized",
-                                            @<div>
-                                                <div class="form-group">
-                                                    <div class="col-md-3">
-                                                        <nop-label asp-for="@Model.Locales[item].Name" />
-                                                    </div>
-                                                    <div class="col-md-9">
-                                                        <nop-editor asp-for="@Model.Locales[item].Name" />
-                                                        <span asp-validation-for="@Model.Locales[item].Name"></span>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <div class="col-md-3">
-                                                        <nop-label asp-for="@Model.Locales[item]" />
-                                                    </div>
-                                                    <div class="col-md-9">
-                                                        <nop-editor asp-for="@Model.Locales[item].Description" asp-template="RichEditor" />
-                                                        <span asp-validation-for="@Model.Locales[item].Description"></span>
-                                                    </div>
-                                                </div>
-                                                <input type="hidden" asp-for="@Model.Locales[item].LanguageId" />
-                                            </div> ,
-                                                                                                            @<div>
-                                                                                                                <div class="form-group">
-                                                                                                                    <div class="col-md-3">
-                                                                                                                        <nop-label asp-for="Name" />
-                                                                                                                    </div>
-                                                                                                                    <div class="col-md-9">
-                                                                                                                        <nop-editor asp-for="Name" asp-required="true" />
-                                                                                                                        <span asp-validation-for="Name"></span>
-                                                                                                                    </div>
-                                                                                                                </div>
-                                                                                                                <div class="form-group">
-                                                                                                                    <div class="col-md-3">
-                                                                                                                        <nop-label asp-for="Description" />
-                                                                                                                    </div>
-                                                                                                                    <div class="col-md-9">
-                                                                                                                        <nop-editor asp-for="Description" asp-template="RichEditor" />
-                                                                                                                        <span asp-validation-for="Description"></span>
-                                                                                                                    </div>
-                                                                                                                </div>
-                                                                                                            </div>))
+                                                    @<div>
+                                                        <div class="form-group">
+                                                            <div class="col-md-3">
+                                                                <nop-label asp-for="@Model.Locales[item].Name" />
+                                                            </div>
+                                                            <div class="col-md-9">
+                                                                <nop-editor asp-for="@Model.Locales[item].Name" />
+                                                                <span asp-validation-for="@Model.Locales[item].Name"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="col-md-3">
+                                                                <nop-label asp-for="@Model.Locales[item]" />
+                                                            </div>
+                                                            <div class="col-md-9">
+                                                                <nop-editor asp-for="@Model.Locales[item].Description" asp-template="RichEditor" />
+                                                                <span asp-validation-for="@Model.Locales[item].Description"></span>
+                                                            </div>
+                                                        </div>
+                                                        <input type="hidden" asp-for="@Model.Locales[item].LanguageId" />
+                                                    </div> ,
+                                                                                                                                                                @<div>
+                                                                                                                                                                    <div class="form-group">
+                                                                                                                                                                        <div class="col-md-3">
+                                                                                                                                                                            <nop-label asp-for="Name" />
+                                                                                                                                                                        </div>
+                                                                                                                                                                        <div class="col-md-9">
+                                                                                                                                                                            <nop-editor asp-for="Name" asp-required="true" />
+                                                                                                                                                                            <span asp-validation-for="Name"></span>
+                                                                                                                                                                        </div>
+                                                                                                                                                                    </div>
+                                                                                                                                                                    <div class="form-group">
+                                                                                                                                                                        <div class="col-md-3">
+                                                                                                                                                                            <nop-label asp-for="Description" />
+                                                                                                                                                                        </div>
+                                                                                                                                                                        <div class="col-md-9">
+                                                                                                                                                                            <nop-editor asp-for="Description" asp-template="RichEditor" />
+                                                                                                                                                                            <span asp-validation-for="Description"></span>
+                                                                                                                                                                        </div>
+                                                                                                                                                                    </div>
+                                                                                                                                                                </div>))
     <div class="form-group">
         <div class="col-md-3">
             <nop-label asp-for="CategryID" />
@@ -69,8 +69,18 @@
             <nop-label asp-for="ParentBookDirId" />
         </div>
         <div class="col-md-9">
-            <nop-select asp-for="ParentBookDirId" asp-items="Model.ParentBookDir" />
+            <nop-select asp-for="ParentBookDirId" asp-items="Model.ParentBookDir" asp-required="false" />
             <span asp-validation-for="ParentBookDirId"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-3">
+            <nop-label asp-for="DisplayOrder" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="DisplayOrder" />
+            <span asp-validation-for="DisplayOrder"></span>
         </div>
     </div>
     <div class="form-group">
@@ -145,9 +155,11 @@
                         console.log("添加数据：" + JSON.stringify(data));
 
                         ddlStates.html('');
+                        ddlStates.append($('<option></option>').val("-1").html("无"));
                         $.each(data, function(id, option) {
                             ddlStates.append($('<option></option>').val(option.Id).html(option.Name));
                         });
+
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         $("#statesAlert").click();
@@ -176,9 +188,11 @@
                         console.log("添加数据：" + JSON.stringify(data));
 
                         ddlStates.html('');
+                        ddlStates.append($('<option></option>').val("-1").html("无"));
                         $.each(data, function(id, option) {
-                            ddlStates.append($('<option></option>').val(option.Id).html(option.Name));
+                            ddlStates.append($('<option></option>').val(option.Id).html(option.Breadcrumb));
                         });
+
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         $("#statesAlert").click();

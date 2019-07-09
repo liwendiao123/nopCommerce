@@ -15,6 +15,7 @@ using Nop.Web.Areas.Admin.Models.TableOfContent;
 using Nop.Web.Areas.Admin.Infrastructure.Mapper.Extensions; 
 using Nop.Web.Framework.Mvc.Filters;
 using Nop.Core.Domain.TableOfContent;
+using Nop.Services.Media;
 
 namespace Nop.Web.Areas.Admin.Controllers
 {
@@ -25,22 +26,26 @@ namespace Nop.Web.Areas.Admin.Controllers
         private readonly IEventPublisher _eventPublisher;
         private readonly ILocalizationService _localizationService;
         private readonly INotificationService _notificationService;
+        private readonly ILocalizedEntityService _localizedEntityService;
         private readonly IPermissionService _permissionService;     
         private readonly IUrlRecordService _urlRecordService;
         private readonly IBookDirService _bookDirService;
         private readonly IBookDirFactory _bookDirFactory;
         private readonly IProductModelFactory _productModelFactory;
+        private readonly IPictureService _pictureService;
 
         public BookDirController(
             IUrlRecordService urlRecordService
             ,IPermissionService permissionService
             ,ICustomerActivityService customerActivityService
             ,IEventPublisher eventPublisher
-            ,ILocalizationService localizationService
+            ,ILocalizedEntityService localizedEntityService
+            , ILocalizationService localizationService
             ,INotificationService notificationService
             ,IBookDirService bookDirService
             ,IBookDirFactory bookDirFactory
             ,IProductModelFactory productModelFactory
+            ,IPictureService pictureService
             )
         {
             _urlRecordService = urlRecordService;
@@ -52,6 +57,8 @@ namespace Nop.Web.Areas.Admin.Controllers
             _bookDirService = bookDirService;
             _bookDirFactory = bookDirFactory;
             _productModelFactory = productModelFactory;
+            _localizedEntityService = localizedEntityService;
+            _pictureService = pictureService;
 
         }
         public IActionResult Index()
@@ -201,6 +208,70 @@ namespace Nop.Web.Areas.Admin.Controllers
 
         }
 
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        public IActionResult Edit(BookDirModel model, bool continueEditing)
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManagerBook))
+                return AccessDeniedView();
+
+            //try to get a category with the specified id
+            var category = _bookDirService.GetBookDirById(model.Id);
+            if (category == null || category.Deleted)
+                return RedirectToAction("Index");
+
+            model.CreatedOnUtc = category.CreatedOnUtc; 
+            if (ModelState.IsValid)
+            {
+                var prevPictureId = category.PictureId;
+
+                category = model.ToEntity(category);
+                category.UpdatedOnUtc = DateTime.UtcNow;
+                //.UpdateCategory(category);
+                _bookDirService.UpdateBookDir(category);
+                //search engine name
+                model.SeName = _urlRecordService.ValidateSeName(category, model.SeName, category.Name, true);
+                _urlRecordService.SaveSlug(category, model.SeName, 0);
+
+                //locales
+                UpdateLocales(category, model);
+
+
+                //delete an old picture (if deleted or updated)
+                if (prevPictureId > 0 && prevPictureId != category.PictureId)
+                {
+                    var prevPicture = _pictureService.GetPictureById(prevPictureId);
+                    if (prevPicture != null)
+                        _pictureService.DeletePicture(prevPicture);
+                }
+
+                //update picture seo file name
+               // UpdatePictureSeoNames(category);
+
+                //ACL
+                //SaveCategoryAcl(category, model);
+
+                //stores
+               // SaveStoreMappings(category, model);
+
+                //activity log
+                _customerActivityService.InsertActivity("EditBookDir",
+                    string.Format(_localizationService.GetResource("ActivityLog.EditBookDir"), category.Name), category);
+
+                _notificationService.SuccessNotification(_localizationService.GetResource("Admin.AibookDir.EditBookDir.Updated"));
+
+                if (!continueEditing)
+                    return RedirectToAction("Index");
+
+                return RedirectToAction("Edit", new { id = category.Id });
+            }
+
+            //prepare model
+             model = _bookDirFactory.PrepareBookDirModel(model, category);
+
+            //if we got this far, something failed, redisplay form
+            return View(model);
+        }
+
         public IActionResult Delete()
         {
 
@@ -217,6 +288,42 @@ namespace Nop.Web.Areas.Admin.Controllers
             var model = _bookDirFactory.PrepareBookDirListModel(searchModel);
 
                return Json(model);
+        }
+
+
+        protected virtual void UpdateLocales(BookDir category, BookDirModel model)
+        {
+            foreach (var localized in model.Locales)
+            {
+                _localizedEntityService.SaveLocalizedValue(category,
+                    x => x.Name,
+                    localized.Name,
+                    localized.LanguageId);
+
+                _localizedEntityService.SaveLocalizedValue(category,
+                    x => x.Description,
+                    localized.Description,
+                    localized.LanguageId);
+
+                _localizedEntityService.SaveLocalizedValue(category,
+                    x => x.MetaKeywords,
+                    localized.MetaKeywords,
+                    localized.LanguageId);
+
+                _localizedEntityService.SaveLocalizedValue(category,
+                    x => x.MetaDescription,
+                    localized.MetaDescription,
+                    localized.LanguageId);
+
+                //_localizedEntityService.SaveLocalizedValue(category,
+                //    x => x.MetaTitle,
+                //    localized.MetaTitle,
+                //    localized.LanguageId);
+
+                //search engine name
+                //var seName = _urlRecordService.ValidateSeName(category, localized.SeName, localized.Name, false);
+                //_urlRecordService.SaveSlug(category, seName, localized.LanguageId);
+            }
         }
 
         /// <summary>

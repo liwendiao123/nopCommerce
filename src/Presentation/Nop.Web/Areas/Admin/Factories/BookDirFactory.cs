@@ -22,6 +22,7 @@ using Nop.Core.Domain.TableOfContent;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Nop.Core.Domain.Catalog;
 using Nop.Services;
+
 using Nop.Core.Domain.Gdpr;
 
 namespace Nop.Web.Areas.Admin.Factories
@@ -155,9 +156,46 @@ namespace Nop.Web.Areas.Admin.Factories
                                     productType: null,
                                     keywords:null,
                                     pageIndex: 0, 
-                                    pageSize: int.MaxValue);
+                                    pageSize: int.MaxValue).ToList();
 
-                   // model.BookList = products.ToList().ToSelect<Product>()
+                    model.BookList = products.Select(pt => pt as BaseEntity)
+                        .ToSelectList(p => (p as Product)?.Name ?? string.Empty).ToList();
+                    model.BookList.ToList().ForEach(x =>
+                    {
+                        if (x.Value == model.BookID.ToString())
+                        {
+                            x.Selected = true;
+                        }
+
+                    });
+                    model.BookList.Add(new SelectListItem
+                    {
+                        Text = "无",
+                        Value = "0"
+
+                    });
+
+                    model.BookList = model.BookList.OrderBy(x => x.Value).ToList();
+
+
+
+
+                }
+
+                if (bookdir.ParentBookDirId > 0)
+                {
+                    model.ParentBookDir = _bookDirService.GetAllBookDirsData("").ToList()
+                                            .Select(pt => pt as BaseEntity)
+                                             .ToSelectList(p => (p as BookDir)?.Name ?? string.Empty).ToList();
+
+                    const string value = "0";
+                    string defaultItemText = null;
+                    //prepare item text
+                     defaultItemText = defaultItemText ?? _localizationService.GetResource("Admin.Common.All");
+
+                    //insert this default item at first
+                    model.ParentBookDir.Insert(0, new SelectListItem { Text = defaultItemText, Value = value });
+                    model.ParentBookDir = model.ParentBookDir.OrderBy(x => x.Value).ToList();
                 }
                 //prepare nested search model
 
