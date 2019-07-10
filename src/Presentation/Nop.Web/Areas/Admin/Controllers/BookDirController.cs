@@ -286,8 +286,7 @@ namespace Nop.Web.Areas.Admin.Controllers
         {
             //prepare model
             var model = _bookDirFactory.PrepareBookDirListModel(searchModel);
-
-               return Json(model);
+            return Json(model.Data.OrderBy(x=>x.DisplayOrder).ToList());
         }
 
 
@@ -341,13 +340,9 @@ namespace Nop.Web.Areas.Admin.Controllers
 
             return Json(result.Data.ToList());
         }
-
-
-
         public IActionResult GetBookDirByBookId(BookDirSearchModel searchModel)
         {
-           var model = _bookDirFactory.PrepareBookDirListModel(searchModel);
-
+            var model = _bookDirFactory.PrepareBookDirListModel(searchModel);
             return Json(model.Data.ToList());
         }
         #endregion

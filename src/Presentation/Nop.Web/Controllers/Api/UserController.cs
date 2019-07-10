@@ -721,5 +721,31 @@ namespace Nop.Web.Controllers.Api
             });
         }
 
+
+        public IActionResult GetUserInfo(string userName)
+        {
+
+          //var result =  _customerService.GetCustomerByUsername(userName);
+
+          // var  phone = _genericAttributeService.GetAttribute<string>(result, NopCustomerDefaults.PhoneAttribute);
+            return Json(new
+            {
+
+                code = 0,
+                msg = "获取成功",
+                data =new {
+                    Id = 1,
+                    Phone = "185******58",
+                    DepName = "南宁三中",
+                    RoleName ="学生",
+                    Email ="2811545@qq.com",
+                    InviteCode = "00001",
+                    IdCard = "",
+                    IdCardImg = "http://arbookresouce.73data.cn/book/img/sy_img_02.png",
+                },
+               
+            });
+        }
+
     }
 }

@@ -12,7 +12,6 @@ namespace Nop.Services.Cms
         /// Gets a value indicating whether to hide this plugin on the widget list page in the admin area
         /// </summary>
         bool HideInWidgetList { get; }
-
         /// <summary>
         /// Gets widget zones where this widget should be rendered
         /// </summary>

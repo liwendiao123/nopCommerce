@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Nop.Core.Domain.Messages;
 
@@ -24,7 +24,10 @@ namespace Nop.Data.Mapping.Messages
             builder.Property(template => template.BccEmailAddresses).HasMaxLength(200);
             builder.Property(template => template.Subject).HasMaxLength(1000);
             builder.Property(template => template.EmailAccountId).IsRequired();
+                 
 
+
+                 
             builder.Ignore(template => template.DelayPeriod);
 
             base.Configure(builder);

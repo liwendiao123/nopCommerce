@@ -56,7 +56,7 @@ namespace Nop.Web.Controllers.Api
                     Name=  x.Name, //章节名称
                     IsRead = false,
                     Description = x.Description,//章节描述
-                    PriceRanges = x.PriceRanges,//价格描述  如果为零 则免费 否则展示需要付费的价格
+                    PriceRanges = x.PriceRanges??"0",//价格描述  如果为零 则免费 否则展示需要付费的价格
                     DisplayOrder =  x.DisplayOrder,//展示顺序
                     IsLastNode = x.IsLastNode,  //是否为知识点
                     ComplexLevel =  x.ComplexLevel, //收费费复杂知识点
@@ -124,9 +124,10 @@ namespace Nop.Web.Controllers.Api
             }
             if (result != null)
             {
-                list.Add(result);
+               
                 if (!ids.Contains(result.Id))
                 {
+                    list.Add(result);
                     ids.Add(result.Id);
                 }
 
@@ -134,13 +135,19 @@ namespace Nop.Web.Controllers.Api
                 {
 
 
-                    result.Children.AddRange(children);
-                    result.Children.Select(x => x.Id).ToList().ForEach(x =>
+                    // result.Children.AddRange(children);
+                    children.Select(x => x).ToList().ForEach(x =>
                     {
 
-                        if (!ids.Contains(x))
+                        if (!ids.Contains(x.Id))
                         {
-                            ids.Add(x);
+                            
+                            ids.Add(x.Id);
+                        }
+
+                        if (!result.Children.Exists(c => c.Id == x.Id))
+                        {
+                            result.Children.Add(x);
                         }
 
                     });
@@ -151,12 +158,16 @@ namespace Nop.Web.Controllers.Api
             }
             else
             {
-                list.AddRange(children);
-                children.Select(x => x.Id).ToList().ForEach(x =>
+                //list.AddRange(children);
+                children.Select(x => x).ToList().ForEach(x =>
                 {
-                    if (!ids.Contains(x))
+                    if (!ids.Contains(x.Id))
                     {
-                        ids.Add(x);
+                        ids.Add(x.Id);
+                    }
+                    if (!list.Exists(c => c.Id == x.Id))
+                    {
+                        list.Add(x);
                     }
                 });
             }

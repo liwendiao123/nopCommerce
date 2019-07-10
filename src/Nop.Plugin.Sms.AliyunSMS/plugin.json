@@ -1,0 +1,11 @@
+{
+  "Group": "Sms methods",
+  "FriendlyName": "Sms Aliyun",
+  "SystemName": "Sms.AliyunSMS",
+  "Version": "1.0",
+  "SupportedVersions": [ "4.10", "4.20" ],
+  "Author": "ÆßÈý¿Æ¼¼",
+  "DisplayOrder": 1,
+  "FileName": "Nop.Plugin.Sms.AliyunSMS.dll",
+  "Description": "This plugin allows SMS with Aliyun SMS"
+}
