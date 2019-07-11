@@ -105,7 +105,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="aliyun-net-sdk-core" Version="1.5.1" />
+    <PackageReference Include="Aliyun.Net.SDK.Core" Version="1.0.3" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
+    <PackageReference Include="NPinyin.Core" Version="2.1.3" />
+    <PackageReference Include="PinYinConverterCore" Version="1.0.2" />
   </ItemGroup>
 
   <ItemGroup>

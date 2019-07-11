@@ -13,6 +13,11 @@ namespace Nop.Services.Customers
         public string Email { get; set; }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public string UserName { get; set; }
+
+        /// <summary>
         /// A value indicating whether we should validate request
         /// </summary>
         public bool ValidateRequest { get; set; }
@@ -37,6 +42,8 @@ namespace Nop.Services.Customers
         /// </summary>
         public string HashedPasswordFormat { get; set; }
 
+
+
         /// <summary>
         /// Ctor
         /// </summary>
@@ -51,6 +58,19 @@ namespace Nop.Services.Customers
             string hashedPasswordFormat = null)
         {
             Email = email;
+            ValidateRequest = validateRequest;
+            NewPasswordFormat = newPasswordFormat;
+            NewPassword = newPassword;
+            OldPassword = oldPassword;
+            HashedPasswordFormat = hashedPasswordFormat;
+        }
+
+        public ChangePasswordRequest(string email,string username, bool validateRequest,
+    PasswordFormat newPasswordFormat, string newPassword, string oldPassword = "",
+    string hashedPasswordFormat = null)
+        {
+            Email = email;
+            UserName = username;
             ValidateRequest = validateRequest;
             NewPasswordFormat = newPasswordFormat;
             NewPassword = newPassword;

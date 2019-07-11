@@ -38,6 +38,12 @@ using Nop.Web.Models.Customer;
 using Microsoft.Extensions.Primitives;
 using Nop.Core.Domain.Messages;
 using Nop.Services.Authentication;
+using Nop.Web.Models.Api;
+using Nop.Services.Security;
+using Nop.Web.Infrastructure;
+using System.Diagnostics;
+using Nop.Web.Models.AliSms;
+
 namespace Nop.Web.Controllers.Api
 {
     public class UserController  : BasePublicController
@@ -61,6 +67,9 @@ namespace Nop.Web.Controllers.Api
         private readonly ICustomerAttributeParser _customerAttributeParser;
         private readonly ICustomerAttributeService _customerAttributeService;
         private readonly ICustomerModelFactory _customerModelFactory;
+        private readonly ISmsService _smsService;
+       /// private readonly
+
         private readonly ICustomerRegistrationService _customerRegistrationService;
         private readonly ICustomerService _customerService;
         private readonly IEventPublisher _eventPublisher;
@@ -75,6 +84,7 @@ namespace Nop.Web.Controllers.Api
         private readonly IOrderService _orderService;
         private readonly IPictureService _pictureService;
         private readonly IPriceFormatter _priceFormatter;
+        private readonly IProductService _productService;
         private readonly IShoppingCartService _shoppingCartService;
         private readonly IStateProvinceService _stateProvinceService;
         private readonly IStoreContext _storeContext;
@@ -117,6 +127,7 @@ namespace Nop.Web.Controllers.Api
                     INewsLetterSubscriptionService newsLetterSubscriptionService,
                     IOrderService orderService,
                     IPictureService pictureService,
+                    IProductService productService,
                     IPriceFormatter priceFormatter,
                     IShoppingCartService shoppingCartService,
                     IStateProvinceService stateProvinceService,
@@ -127,6 +138,7 @@ namespace Nop.Web.Controllers.Api
                     IWorkflowMessageService workflowMessageService,
                     LocalizationSettings localizationSettings,
                     MediaSettings mediaSettings,
+                    ISmsService smsService,
                     StoreInformationSettings storeInformationSettings,
                     TaxSettings taxSettings
             )
@@ -160,6 +172,7 @@ namespace Nop.Web.Controllers.Api
                     _logger = logger;
                     _newsLetterSubscriptionService = newsLetterSubscriptionService;
                     _orderService = orderService;
+                    _productService = productService;
                     _pictureService = pictureService;
                     _priceFormatter = priceFormatter;
                     _shoppingCartService = shoppingCartService;
@@ -172,8 +185,8 @@ namespace Nop.Web.Controllers.Api
                     _localizationSettings = localizationSettings;
                     _mediaSettings = mediaSettings;
                     _storeInformationSettings = storeInformationSettings;
-                    _taxSettings = taxSettings;
-
+                    _smsService = smsService;
+                    _taxSettings = taxSettings;                   
         }
 
 
@@ -700,6 +713,8 @@ namespace Nop.Web.Controllers.Api
 
         public IActionResult CheckPhone(string phone)
         {
+
+
             return Json(new
             {
                 code = "",
@@ -713,18 +728,42 @@ namespace Nop.Web.Controllers.Api
         /// </summary>
         /// <param name="phone"></param>
         /// <returns></returns>
-        public IActionResult ValidatePhone(string phone)
+        public async Task<IActionResult> ValidatePhoneAsync(string phone)
         {
+
+
+
+            IDictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("code", DateTime.Now.ToString("ffffff"));
+            var sms = new SmsObject
+            {
+                Mobile = phone??"18588276558",
+                Signature = "七三科技",
+                TempletKey = "SMS_148990154",
+                Data = data,
+                OutId = "OutId"
+            };
+
+            var res =await  new AliyunSmsSender().Send(sms);
+            Debug.WriteLine($"发送结果：{res.success}");
+            Debug.WriteLine($"Response：{res.response}");
+
+
             return Json(new
             {
+                code = 0,
+                msg =""
 
             });
         }
 
-
+    /// <summary>
+    /// 获取用户基本信息
+    /// </summary>
+    /// <param name="userName"></param>
+    /// <returns></returns>
         public IActionResult GetUserInfo(string userName)
         {
-
           //var result =  _customerService.GetCustomerByUsername(userName);
 
           // var  phone = _genericAttributeService.GetAttribute<string>(result, NopCustomerDefaults.PhoneAttribute);
@@ -737,6 +776,7 @@ namespace Nop.Web.Controllers.Api
                     Id = 1,
                     Phone = "185******58",
                     DepName = "南宁三中",
+                   
                     RoleName ="学生",
                     Email ="2811545@qq.com",
                     InviteCode = "00001",
@@ -747,5 +787,270 @@ namespace Nop.Web.Controllers.Api
             });
         }
 
+        /// <summary>
+        /// 获取学习进度
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        /// 
+
+        public IActionResult LearnProgress(string userName)
+        {
+          var result =   _productService.SearchProducts();
+
+            return Json(new
+            {
+                code = 0,
+                msg = "获取成功",
+                data = result.ToList().Select(x=>new {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Percent = 0.2,
+                    DisplayOrder =   x.DisplayOrder,
+                    LastNode = new {
+                        Id = 1,  //章节ID
+                        PId = "", //上级ID
+                        IsLock = true,///是否已经购买 解锁      
+                        Name = "地壳的圈层结构", //章节名称
+                        IsRead = false,
+                        ComplexLevel = "", //收费费复杂知识点
+                        ImgUrl = "http://arbookresouce.73data.cn/book/img/sy_img_02.png",//封面展示
+                        BookNodeUrl = "" //获取对应知识点 Url 
+                    }
+                })
+            });
+
+        }
+
+
+
+        public IActionResult GetRole()
+        {
+           var list =  _customerService.GetAllCustomerRoles().ToList();
+
+
+            return Json(new
+            {
+                code = 0,
+                msg = "获取成功",
+                data = list.Where(x => !x.IsSystemRole).Select(x=> new {
+                    Id = x.Id,
+                    Name = x.Name,
+                    SystemName = x.SystemName
+
+
+                }).ToList()
+
+            });
+        }
+
+
+        [HttpPost]
+        public IActionResult UpdateInfo(UpdateCustomerInfoModel ucim)
+        {
+
+            ///1.0获取用户基本信息
+            var customer = _customerService.GetCustomerById(ucim.Id);
+
+            if (customer == null || customer.Deleted)
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "参数格式错误或者该用户已被禁用",
+                    data = false
+                });
+            }
+
+           /// 2.0获取用户所有角色
+            var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
+
+            var curroleId = allCustomerRoles.FirstOrDefault(x => x.Id == ucim.RoleId);
+
+            var newCustomerRoles = new List<CustomerRole>();
+            foreach (var customerRole in allCustomerRoles)
+            {
+                if (ucim.RoleId == (customerRole.Id))
+                    newCustomerRoles.Add(customerRole);
+            }
+            
+            var customerRolesError = ValidateCustomerRoles(newCustomerRoles, customer.CustomerRoles);
+            if (!string.IsNullOrEmpty(customerRolesError))
+            {
+                ModelState.AddModelError(string.Empty, customerRolesError);
+
+                return Json(new
+                {
+                    code = -1,
+                    msg = customerRolesError,
+                    data = false
+                });
+                //_notificationService.ErrorNotification(customerRolesError);
+            }
+
+
+            // Ensure that valid email address is entered if Registered role is checked to avoid registered customers with empty email address
+            if (newCustomerRoles.Any() && newCustomerRoles.FirstOrDefault(c => c.SystemName == NopCustomerDefaults.RegisteredRoleName) != null &&
+                !CommonHelper.IsValidEmail(ucim.Email))
+            {
+                ModelState.AddModelError(string.Empty, _localizationService.GetResource("Admin.Customers.Customers.ValidEmailRequiredRegisteredRole"));
+
+                return Json(new
+                {
+                    code = -1,
+                    msg = _localizationService.GetResource("Admin.Customers.Customers.ValidEmailRequiredRegisteredRole"),
+                    data = false
+                });
+
+                //  _notificationService.ErrorNotification(_localizationService.GetResource("Admin.Customers.Customers.ValidEmailRequiredRegisteredRole"));
+            }
+
+            //username
+            if (_customerSettings.UsernamesEnabled)
+            {
+                if (!string.IsNullOrWhiteSpace(ucim.Username))
+                    _customerRegistrationService.SetUsername(customer, ucim.Username);
+                else
+                    customer.Username = ucim.Username;
+            }
+     
+            //email
+            if (!string.IsNullOrWhiteSpace(ucim.Email))
+                _customerRegistrationService.SetEmail(customer, ucim.Email, false);
+            else
+                customer.Email = ucim.Email;
+            customer.DepartmentId = ucim.DepId;
+           // customer.InivteCode = ucim.InviteCode;
+
+            if (_customerSettings.PhoneEnabled)
+                _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.PhoneAttribute, ucim.Phone);
+
+
+            //customer roles
+            foreach (var customerRole in allCustomerRoles)
+            {
+                //ensure that the current customer cannot add/remove to/from "Administrators" system role
+                //if he's not an admin himself
+                if (customerRole.SystemName == NopCustomerDefaults.AdministratorsRoleName &&
+                    !_workContext.CurrentCustomer.IsAdmin())
+                    continue;
+
+                if (ucim.RoleId==(customerRole.Id))
+                {
+                    //new role
+                    if (customer.CustomerCustomerRoleMappings.Count(mapping => mapping.CustomerRoleId == customerRole.Id) == 0)
+                        customer.AddCustomerRoleMapping(new CustomerCustomerRoleMapping { CustomerRole = customerRole });
+                }
+                else
+                {
+                    //prevent attempts to delete the administrator role from the user, if the user is the last active administrator
+                    if (customerRole.SystemName == NopCustomerDefaults.AdministratorsRoleName && !SecondAdminAccountExists(customer))
+                    {
+                       // _notificationService.ErrorNotification(_localizationService.GetResource("Admin.Customers.Customers.AdminAccountShouldExists.DeleteRole"));
+                        continue;
+                    }
+
+                    //remove role
+                    if (customer.CustomerCustomerRoleMappings.Count(mapping => mapping.CustomerRoleId == customerRole.Id) > 0)
+                    {
+                        customer.RemoveCustomerRoleMapping(
+                            customer.CustomerCustomerRoleMappings.FirstOrDefault(mapping => mapping.CustomerRoleId == customerRole.Id));
+
+                    }
+                }
+            }
+
+            _customerService.UpdateCustomer(customer);
+            _customerActivityService.InsertActivity("EditCustomerSelf",
+                       string.Format(_localizationService.GetResource("ActivityLog.EditCustomer"), customer.Id), customer);
+            return Json(new
+            {
+                code = 0,
+                msg = "修改成功",
+                data = true
+            });
+        }
+
+        /// <summary>
+        /// 校验用户角色
+        /// </summary>
+        /// <param name="customerRoles"></param>
+        /// <param name="existingCustomerRoles"></param>
+        /// <returns></returns>
+        protected virtual string ValidateCustomerRoles(IList<CustomerRole> customerRoles, IList<CustomerRole> existingCustomerRoles)
+        {
+            if (customerRoles == null)
+                throw new ArgumentNullException(nameof(customerRoles));
+
+            if (existingCustomerRoles == null)
+                throw new ArgumentNullException(nameof(existingCustomerRoles));
+
+            //check ACL permission to manage customer roles
+            var rolesToAdd = customerRoles.Except(existingCustomerRoles);
+            var rolesToDelete = existingCustomerRoles.Except(customerRoles);
+            if (rolesToAdd.Where(role => role.SystemName != NopCustomerDefaults.RegisteredRoleName).Any() || rolesToDelete.Any())
+            {
+                //if (!_permissionService.Authorize(StandardPermissionProvider.ManageAcl))
+                //    return _localizationService.GetResource("Admin.Customers.Customers.CustomerRolesManagingError");
+            }
+
+            //ensure a customer is not added to both 'Guests' and 'Registered' customer roles
+            //ensure that a customer is in at least one required role ('Guests' and 'Registered')
+            var isInGuestsRole = customerRoles.FirstOrDefault(cr => cr.SystemName == NopCustomerDefaults.GuestsRoleName) != null;
+            var isInRegisteredRole = customerRoles.FirstOrDefault(cr => cr.SystemName == NopCustomerDefaults.RegisteredRoleName) != null;
+            if (isInGuestsRole && isInRegisteredRole)
+                return _localizationService.GetResource("Admin.Customers.Customers.GuestsAndRegisteredRolesError");
+            if (!isInGuestsRole && !isInRegisteredRole)
+                return _localizationService.GetResource("Admin.Customers.Customers.AddCustomerToGuestsOrRegisteredRoleError");
+
+            //no errors
+            return string.Empty;
+        }
+
+
+        private bool SecondAdminAccountExists(Customer customer)
+        {
+            var customers = _customerService.GetAllCustomers(customerRoleIds: new[] { _customerService.GetCustomerRoleBySystemName(NopCustomerDefaults.AdministratorsRoleName).Id });
+
+            return customers.Any(c => c.Active && c.Id != customer.Id);
+        }
+
+
+        public IActionResult ChangePassword(ChangePasswordModel model,string userName)
+        {
+            //if (!_workContext.CurrentCustomer.IsRegistered())
+            //    return Challenge();
+
+            var customer = _customerService.GetCustomerByUsername(userName);
+
+            if (ModelState.IsValid)
+            {
+                var changePasswordRequest = new ChangePasswordRequest(customer.Email,userName,
+                    true, _customerSettings.DefaultPasswordFormat, model.NewPassword, model.OldPassword);
+                var changePasswordResult = _customerRegistrationService.ChangePassword(changePasswordRequest);
+                if (changePasswordResult.Success)
+                {
+                    model.Result = _localizationService.GetResource("Account.ChangePassword.Success");
+                    return Json(new {
+                        code = 0,
+                        msg = model.Result,
+                        data = true
+                    });
+                }
+
+                //errors
+                foreach (var error in changePasswordResult.Errors)
+                    ModelState.AddModelError("", error);
+            }
+
+            //If we got this far, something failed, redisplay form
+            return Json(new {
+                code = -1,
+                msg = model.Result,
+                data = false
+
+            });
+        }
+        // public IActionResult Get
     }
 }

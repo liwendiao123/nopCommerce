@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Nop.Web.Infrastructure;
 using Nop.Web.Models.Customer;
 
 namespace Nop.Web.Controllers.Api
@@ -23,7 +24,7 @@ namespace Nop.Web.Controllers.Api
             {
                   new DepartmentList{
                      Id = 1,
-                     Name = "南宁三中"
+                     Name = "广西南宁三中"
                 },
                 new DepartmentList{
                     Id = 2,
@@ -35,7 +36,12 @@ namespace Nop.Web.Controllers.Api
             {
                 code = 0,
                 msg = "获取成功",
-                data = list
+                data = list.Select(x => new{
+
+                    x.Id,
+                    x.Name,
+                    FirstChar = PingYinHelper.GetFirstSpell(x.Name)
+                })
 
             });
 

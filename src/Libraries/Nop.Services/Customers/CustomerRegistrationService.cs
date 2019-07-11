@@ -339,7 +339,7 @@ namespace Nop.Services.Customers
                 throw new ArgumentNullException(nameof(request));
 
             var result = new ChangePasswordResult();
-            if (string.IsNullOrWhiteSpace(request.Email))
+            if (string.IsNullOrWhiteSpace(request.Email) && string.IsNullOrEmpty(request.UserName))
             {
                 result.AddError(_localizationService.GetResource("Account.ChangePassword.Errors.EmailIsNotProvided"));
                 return result;
@@ -352,12 +352,26 @@ namespace Nop.Services.Customers
             }
 
             var customer = _customerService.GetCustomerByEmail(request.Email);
-            if (customer == null)
+            if (customer == null  )
             {
-                result.AddError(_localizationService.GetResource("Account.ChangePassword.Errors.EmailNotFound"));
+
+                if (!string.IsNullOrEmpty(request.UserName))
+                {
+                    customer = _customerService.GetCustomerByUsername(request.UserName);
+                    if (customer == null)
+                    {
+                        result.AddError(_localizationService.GetResource("Account.ChangePassword.Errors.EmailNotFound"));
+                    }
+                }
+
+               
                 return result;
             }
-          
+
+
+       
+
+
             //request isn't valid
             if (request.ValidateRequest && !PasswordsMatch(_customerService.GetCurrentPassword(customer.Id), request.OldPassword))
             {
