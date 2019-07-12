@@ -32,15 +32,13 @@ namespace Nop.Web.Controllers.Api
         {
             BookDirSearchModel searchModel = new BookDirSearchModel
             {
-                 BookID = bookid,
+                  BookID = bookid,
                   BookDirId = bookdirId
             };
-          var result =  _bookDirService.GetAllBookDirsData("",0,bookid, bookdirId).ToList();
-
+            var result =  _bookDirService.GetAllBookDirsData("",0,bookid, bookdirId).ToList();
             result.ForEach(x =>
             {
                 x.BookNodeUrl = Request.Scheme + "://" + Request.Host + "BookNode/GetData?id=" + x.Id;
-
             });
             //  var model = _bookDirFactory.PrepareBookDirSearchModel(searchModel, new BookDirModel());
           var treeresult =result.ToList();
@@ -49,7 +47,7 @@ namespace Nop.Web.Controllers.Api
             {
                 list.Add(new BookDirTreeModel
                 {
-                   Id=  x.Id,  //章节ID
+                    Id=  x.Id,  //章节ID
                     PId = x.ParentBookDirId, //上级ID
                     IsLock = true,///是否已经购买 解锁
                     BookID= x.BookID, //所属课本ID
@@ -91,6 +89,72 @@ namespace Nop.Web.Controllers.Api
             });
         }
 
+
+
+        public IActionResult GetBookdirClient(int bookid,int bookdirId)
+        {
+            BookDirSearchModel searchModel = new BookDirSearchModel
+            {
+                BookID = bookid,
+                BookDirId = bookdirId
+            };
+            var result = _bookDirService.GetAllBookDirsData("", 0, bookid, bookdirId).ToList();
+            result.ForEach(x =>
+            {
+                x.BookNodeUrl = Request.Scheme + "://" + Request.Host + "BookNode/GetData?id=" + x.Id;
+            });
+            //  var model = _bookDirFactory.PrepareBookDirSearchModel(searchModel, new BookDirModel());
+            var treeresult = result.ToList();
+            var list = new List<BookDirTreeModel>();
+            treeresult.ToList().ForEach(x =>
+            {
+                list.Add(new BookDirTreeModel
+                {
+                    Id = x.Id,  //章节ID
+                    PId = x.ParentBookDirId, //上级ID
+                    IsLock = true,///是否已经购买 解锁
+                    BookID = x.BookID, //所属课本ID
+                    Name = x.Name, //章节名称
+                    IsRead = false,
+                    Description = x.Description,//章节描述
+                    PriceRanges = x.PriceRanges ?? "0",//价格描述  如果为零 则免费 否则展示需要付费的价格
+                    DisplayOrder = x.DisplayOrder,//展示顺序
+                    IsLastNode = x.IsLastNode,  //是否为知识点
+                    ComplexLevel = x.ComplexLevel, //收费费复杂知识点
+                    ImgUrl = "http://arbookresouce.73data.cn/book/img/sy_img_02.png",//封面展示
+                    //获取对应知识点 Url"
+                    BookNodeUrl = "http://www.73data.cn/EduProject/Sports.php?id="+ x.Id
+                                   
+                });
+
+            });
+            var resl = new List<BookDirTreeModel>();
+            var resl1 = SortBookDirsForTree(list, resl, new List<int>(), 0);
+            resl = resl1.ToList();
+
+            return Json(new
+            {
+                code = 0,
+                msg = "获取成功",
+                data = resl
+                //data = treeresult.Select(x=>new
+                //{
+                //    x.Id,  //章节ID
+                //    PId = x.ParentBookDirId, //上级ID
+                //    IsLock = true ,///是否已经购买 解锁
+                //    x.BookID, //所属课本ID
+                //    x.Name, //章节名称
+                //    x.Description,//章节描述
+                //    x.PriceRanges,//价格描述  如果为零 则免费 否则展示需要付费的价格
+                //    x.DisplayOrder,//展示顺序
+                //    x.IsLastNode,  //是否为知识点
+                //    x.ComplexLevel, //收费费复杂知识点
+                //    ImgUrl = "http://arbookresouce.73data.cn/book/img/sy_img_02.png",//封面展示
+                //    x.BookNodeUrl //获取对应知识点 Url 
+                //}).ToList()
+            });
+
+        }
 
         /// <summary>
         /// Sort categories for tree representation

@@ -1,0 +1,14 @@
+﻿@model AiBookModelListView
+
+@using Nop.Web.Areas.Admin.Models.AiBook
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+
+@foreach (var item in Model.Data.ToList())
+{
+    string url = string.Format("http://www.73data.cn/EduProject/Sports.php?id={0}", item.Id);
+
+    <a href="@url">@item.Name</a>
+}

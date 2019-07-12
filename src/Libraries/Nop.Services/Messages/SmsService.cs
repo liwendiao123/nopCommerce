@@ -54,6 +54,7 @@ namespace Nop.Services.Messages
 
         public bool CheckMsgValid(SmsMsgRecord record)
         {
+
             throw new NotImplementedException();
         }
 

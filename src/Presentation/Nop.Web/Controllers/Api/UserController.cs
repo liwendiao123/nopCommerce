@@ -43,6 +43,11 @@ using Nop.Services.Security;
 using Nop.Web.Infrastructure;
 using System.Diagnostics;
 using Nop.Web.Models.AliSms;
+using Nop.Web.Models.Api.Ali;
+using Nop.Core.Domain.Messages.SMS;
+using Nop.Web.Areas.Admin.Models.TableOfContent;
+using Nop.Web.Models.AiBook;
+using Nop.Services.TableOfContent;
 
 namespace Nop.Web.Controllers.Api
 {
@@ -68,6 +73,7 @@ namespace Nop.Web.Controllers.Api
         private readonly ICustomerAttributeService _customerAttributeService;
         private readonly ICustomerModelFactory _customerModelFactory;
         private readonly ISmsService _smsService;
+        private readonly IBookDirService _bookDirService;
        /// private readonly
 
         private readonly ICustomerRegistrationService _customerRegistrationService;
@@ -139,6 +145,7 @@ namespace Nop.Web.Controllers.Api
                     LocalizationSettings localizationSettings,
                     MediaSettings mediaSettings,
                     ISmsService smsService,
+                    IBookDirService bookDirService,
                     StoreInformationSettings storeInformationSettings,
                     TaxSettings taxSettings
             )
@@ -186,7 +193,8 @@ namespace Nop.Web.Controllers.Api
                     _mediaSettings = mediaSettings;
                     _storeInformationSettings = storeInformationSettings;
                     _smsService = smsService;
-                    _taxSettings = taxSettings;                   
+                    _taxSettings = taxSettings;
+                    _bookDirService = bookDirService;
         }
 
 
@@ -728,31 +736,42 @@ namespace Nop.Web.Controllers.Api
         /// </summary>
         /// <param name="phone"></param>
         /// <returns></returns>
-        public async Task<IActionResult> ValidatePhoneAsync(string phone)
+        public async Task<IActionResult> ValidatePhoneAsync(RequestValidCode request)
         {
+            if (request == null || string.IsNullOrEmpty( request.Phone))
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "请求失败,手机号不能为空",
+                    data = false
+                });
+            }
+            var smr = new SmsMsgRecord() {
+                 AppId  = "" 
+            };
 
-
+            //_smsService.CheckMsgValid()
 
             IDictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("code", DateTime.Now.ToString("ffffff"));
+            var randomcode = DateTime.Now.ToString("ffffff");
+            data.Add("code", randomcode);
             var sms = new SmsObject
             {
-                Mobile = phone??"18588276558",
+                Mobile = request.Phone??"18588276558",
                 Signature = "七三科技",
                 TempletKey = "SMS_148990154",
                 Data = data,
                 OutId = "OutId"
-            };
-
-            var res =await  new AliyunSmsSender().Send(sms);
-            Debug.WriteLine($"发送结果：{res.success}");
-            Debug.WriteLine($"Response：{res.response}");
+            };       
+          //  _smsService.CheckMsgValid()
 
 
+            var res =await  new AliyunSmsSender().Send(sms);      
             return Json(new
             {
                 code = 0,
-                msg =""
+                msg = res.response
 
             });
         }
@@ -1052,5 +1071,155 @@ namespace Nop.Web.Controllers.Api
             });
         }
         // public IActionResult Get
+
+        public IActionResult GetMyCollection(string userName)
+        {
+
+            BookDirSearchModel searchModel = new BookDirSearchModel
+            {
+                BookID = 0,
+                BookDirId = 0
+            };
+            var result = _bookDirService.GetAllBookDirsData("", 0, 0, 0).ToList();
+            result.ForEach(x =>
+            {
+                x.BookNodeUrl = Request.Scheme + "://" + Request.Host + "BookNode/GetData?id=" + x.Id;
+            });
+            //  var model = _bookDirFactory.PrepareBookDirSearchModel(searchModel, new BookDirModel());
+            var treeresult = result.ToList();
+            var list = new List<BookDirTreeModel>();
+            treeresult.ToList().ForEach(x =>
+            {
+                list.Add(new BookDirTreeModel
+                {
+                    Id = x.Id,  //章节ID
+                    PId = x.ParentBookDirId, //上级ID
+                    IsLock = true,///是否已经购买 解锁
+                    BookID = x.BookID, //所属课本ID
+                    Name = x.Name, //章节名称
+                    IsRead = false,
+                    Description = x.Description,//章节描述
+                    PriceRanges = x.PriceRanges ?? "0",//价格描述  如果为零 则免费 否则展示需要付费的价格
+                    DisplayOrder = x.DisplayOrder,//展示顺序
+                    IsLastNode = x.IsLastNode,  //是否为知识点
+                    ComplexLevel = x.ComplexLevel, //收费费复杂知识点
+                    ImgUrl = "http://arbookresouce.73data.cn/book/img/sy_img_02.png",//封面展示
+                    //获取对应知识点 Url"
+                    BookNodeUrl = "http://www.73data.cn/EduProject/Sports.php?id=" + x.Id
+
+                });
+
+            });
+            var resl = new List<BookDirTreeModel>();
+            var resl1 = SortBookDirsForTree(list, resl, new List<int>(), 0);
+            resl = resl1.ToList();
+
+
+           var bookid =  treeresult.Select(x => x.BookID).Distinct().ToList();
+
+            var books = result.Where(x => bookid.Contains(x.BookID)).ToList();
+
+
+
+
+            return Json(new
+            {
+                code = 0,
+                msg = "",
+                data = books.Select(x=> new{
+                    Id = x.Id,
+                    Name = x.Name,
+                    BookDir = resl.Where(y=>y.BookID == x.BookID).ToList()
+
+                }).ToList()
+
+            });
+        }
+
+        /// <summary>
+        /// Sort categories for tree representation
+        /// </summary>
+        /// <param name="source">Source</param>
+        /// <param name="parentId">Parent category identifier</param>
+        /// <param name="ignoreCategoriesWithoutExistingParent">A value indicating whether categories without parent category in provided category list (source) should be ignored</param>
+        /// <returns>Sorted categories</returns>
+        public virtual IList<BookDirTreeModel> SortBookDirsForTree(IList<BookDirTreeModel> source, List<BookDirTreeModel> list, List<int> ids, int parentId = 0,
+            bool ignoreCategoriesWithoutExistingParent = false)
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
+            //var result = new List<BookDirTreeModel>();
+            if (list == null)
+            {
+                list = new List<BookDirTreeModel>();
+            }
+
+            if (ids == null)
+            {
+                ids = new List<int>();
+            }
+            var result = source.FirstOrDefault(x => x.Id == parentId);
+            var children = source.Where(c => c.PId == parentId).ToList();
+
+            if (parentId == 0)
+            {
+                children = source.Where(c => c.PId < 1).ToList();
+            }
+            if (result != null)
+            {
+
+                if (!ids.Contains(result.Id))
+                {
+                    list.Add(result);
+                    ids.Add(result.Id);
+                }
+
+                if (children != null && children.Count > 0)
+                {
+
+
+                    // result.Children.AddRange(children);
+                    children.Select(x => x).ToList().ForEach(x =>
+                    {
+
+                        if (!ids.Contains(x.Id))
+                        {
+
+                            ids.Add(x.Id);
+                        }
+
+                        if (!result.Children.Exists(c => c.Id == x.Id))
+                        {
+                            result.Children.Add(x);
+                        }
+
+                    });
+
+
+                }
+
+            }
+            else
+            {
+                //list.AddRange(children);
+                children.Select(x => x).ToList().ForEach(x =>
+                {
+                    if (!ids.Contains(x.Id))
+                    {
+                        ids.Add(x.Id);
+                    }
+                    if (!list.Exists(c => c.Id == x.Id))
+                    {
+                        list.Add(x);
+                    }
+                });
+            }
+            foreach (var cat in children)
+            {
+                SortBookDirsForTree(source, list, ids, cat.Id, true);
+            }
+            return list;
+        }
     }
 }

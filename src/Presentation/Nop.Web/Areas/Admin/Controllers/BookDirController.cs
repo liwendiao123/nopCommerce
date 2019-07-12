@@ -97,14 +97,11 @@ namespace Nop.Web.Areas.Admin.Controllers
         public virtual IActionResult List(BookDirSearchModel searchModel)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCategories))
-                return AccessDeniedDataTablesJson();
-
+                return AccessDeniedDataTablesJson();    
             //prepare model
             var model = _bookDirFactory.PrepareBookDirSearchModel(searchModel,new BookDirModel());
-
             return Json(model);
         }
-
         #endregion
 
 
@@ -281,15 +278,12 @@ namespace Nop.Web.Areas.Admin.Controllers
             return View();
         }
 
-
         public IActionResult GetList(BookDirSearchModel searchModel)
         {
             //prepare model
             var model = _bookDirFactory.PrepareBookDirListModel(searchModel);
-            return Json(model.Data.OrderBy(x=>x.DisplayOrder).ToList());
+            return Json(model);
         }
-
-
         protected virtual void UpdateLocales(BookDir category, BookDirModel model)
         {
             foreach (var localized in model.Locales)
@@ -324,7 +318,6 @@ namespace Nop.Web.Areas.Admin.Controllers
                 //_urlRecordService.SaveSlug(category, seName, localized.LanguageId);
             }
         }
-
         /// <summary>
         /// 获取所属书籍
         /// </summary>

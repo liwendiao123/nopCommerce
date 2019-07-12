@@ -35,6 +35,7 @@ namespace Nop.Web.Areas.Admin.Controllers
         private readonly IProductModelFactory _productModelFactory;
         private readonly IBookNodeFactory _bookNodeFactory;
         private readonly IAiBookService _bookNodeService;
+        
         public BookNodeController(
             IUrlRecordService urlRecordService
             ,IPermissionService permissionService
@@ -77,22 +78,16 @@ namespace Nop.Web.Areas.Admin.Controllers
 
 
         #region List
-
         //public virtual IActionResult Index()
         //{
         //    return RedirectToAction("List");
         //}
-
         public virtual IActionResult List()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.BookModelManage))
                 return AccessDeniedView();
-
-
-                var smodel = new AiBookSearchModelView();
-           
-
-            //prepare model
+                var smodel = new AiBookSearchModelView();           
+           // prepare model
           //  var model = _bookDirFactory.PrepareBookDirSearchModel(new BookDirSearchModel(),new BookDirModel());
             var model = _bookNodeFactory.PrepareBookNodeSearchModel(smodel);
             return View(model);
@@ -128,8 +123,6 @@ namespace Nop.Web.Areas.Admin.Controllers
             var model = _bookNodeFactory.PrepareBookNodeModel(new AiBookModelView(),0);
             return View(model);
         }
-
-
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public IActionResult Create(AiBookModelView  model, bool continueEditing)
         {  if (!_permissionService.Authorize(StandardPermissionProvider.ManageCategories))
@@ -140,6 +133,7 @@ namespace Nop.Web.Areas.Admin.Controllers
                 var category = model.ToEntity<AiBookModel>();
                 category.CreatedOnUtc = DateTime.UtcNow;
                 category.UpdatedOnUtc = DateTime.UtcNow;
+                category.Published = true;
                 //if (string.IsNullOrEmpty(category.PriceRanges))
                 //{
                 //    category.PriceRanges = "0";
