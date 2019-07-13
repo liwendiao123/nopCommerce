@@ -7,12 +7,9 @@ namespace Nop.Services.Messages
 {
    public partial interface ISmsService
     {
-
-        bool SendMsg(SmsMsgRecord record);
-
-        bool CheckMsgValid(SmsMsgRecord record);
-
-        bool ApplySms(SmsMsgRecord record);
+        QSResult<bool> SendMsg(SmsMsgRecord record);
+        QSResult<bool> CheckMsgValid(SmsMsgRecord record);
+        QSResult<bool> ApplySms(SmsMsgRecord record);
 
         
     }

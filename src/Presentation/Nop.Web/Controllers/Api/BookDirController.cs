@@ -153,9 +153,7 @@ namespace Nop.Web.Controllers.Api
                 //    x.BookNodeUrl //获取对应知识点 Url 
                 //}).ToList()
             });
-
         }
-
         /// <summary>
         /// Sort categories for tree representation
         /// </summary>

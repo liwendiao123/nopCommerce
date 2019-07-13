@@ -8,6 +8,7 @@ namespace Nop.Web.Models.AiBook
     public class BookDirTreeModel
     {
 
+        private float _percent = 0.1f;
         public BookDirTreeModel()
         {
 
@@ -76,7 +77,17 @@ namespace Nop.Web.Models.AiBook
         /// </summary>
         public string BookNodeUrl { get; set; } 
 
+        public float Percent
+        {
+            get {
+                return _percent;
+            }
+            set
+            {
+                _percent = value;
+            }
 
+        }
         public List<BookDirTreeModel> Children { get; set; }
     }
 }

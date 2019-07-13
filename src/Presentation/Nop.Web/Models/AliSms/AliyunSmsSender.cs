@@ -53,7 +53,6 @@ namespace Nop.Web.Models.AliSms
             try
             {
                 string url = GetSignUrl(paramers, AccessKeySecret);
-
                 int retryTimes = 1;
                 var reply = await HttpGetAsync(url);
                 while (500 <= reply.StatusCode && AutoRetry && retryTimes < MaxRetryNumber)
@@ -62,7 +61,6 @@ namespace Nop.Web.Models.AliSms
                     reply = await HttpGetAsync(url);
                     retryTimes++;
                 }
-
                 if (!string.IsNullOrEmpty(reply.response))
                 {
                     var res = JsonConvert.DeserializeObject<Dictionary<string, string>>(reply.response);

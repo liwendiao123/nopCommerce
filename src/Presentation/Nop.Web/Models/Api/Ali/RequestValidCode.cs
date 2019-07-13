@@ -9,7 +9,9 @@ namespace Nop.Web.Models.Api.Ali
     {
         public string Phone { get; set; }
 
-
+        /// <summary>
+        /// 注册类型
+        /// </summary>
         public int Type { get; set; }
 
 

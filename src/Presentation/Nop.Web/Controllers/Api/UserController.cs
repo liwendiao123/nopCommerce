@@ -620,13 +620,20 @@ namespace Nop.Web.Controllers.Api
         }
 
         [HttpPost]
-        public IActionResult Login(LoginModel model)
+        public IActionResult Login(string userName,string password)
         {
             //validate CAPTCHA
             //if (_captchaSettings.Enabled && _captchaSettings.ShowOnLoginPage && !captchaValid)
             //{
             //    ModelState.AddModelError("", _localizationService.GetResource("Common.WrongCaptchaMessage"));
             //}
+
+            LoginModel model = new LoginModel()
+            {
+                 Email = "li@163.com",
+                 Username = userName,
+                 Password = password
+            };
 
             Customer _customer = null;
 
@@ -669,7 +676,7 @@ namespace Nop.Web.Controllers.Api
                                     Name ="",
                                     Phone = _customer.Username,
                                     Token = "",
-                                    SchoolName =_customer.Department?.Name,
+                                    SchoolName ="七三科技",//_customer.Department==null ?"": _customer.Department.Name,
                                     DepartmentId = _customer.DepartmentId,
                                     Role =string.Join(",", _customer.CustomerCustomerRoleMappings.Select(x=>x.CustomerRole.Name).ToList())
                                 }
@@ -717,12 +724,8 @@ namespace Nop.Web.Controllers.Api
             });
           //  return View(model);
         }
-
-
         public IActionResult CheckPhone(string phone)
         {
-
-
             return Json(new
             {
                 code = "",
@@ -747,32 +750,87 @@ namespace Nop.Web.Controllers.Api
                     data = false
                 });
             }
-            var smr = new SmsMsgRecord() {
-                 AppId  = "" 
+
+
+            string title = "注册账户验证";
+
+            var smr = new SmsMsgRecord()
+            {
+                AppId = "LTAIgSHNbd8oGL92",
+                Phone = request.Phone,
+                Content = "",
+                TemplateCode = "",
+                IsRead = 0,
+                CreateTime = DateTime.Now,
+                SysName = "Ali",
+                Title = title,
+               
             };
 
-            //_smsService.CheckMsgValid()
+            var sms = new SmsObject
+            {
+                Mobile = request.Phone ?? "18588276558",
+                Signature = "七三科技",
+                TempletKey = "SMS_148990154",
+               // Data = data,
+                OutId = "qskjtoken"
+            };
 
             IDictionary<string, string> data = new Dictionary<string, string>();
             var randomcode = DateTime.Now.ToString("ffffff");
             data.Add("code", randomcode);
-            var sms = new SmsObject
+
+            AliSmsTemp resultem = new AliSmsTemp();
+
+            switch (request.Type)
             {
-                Mobile = request.Phone??"18588276558",
-                Signature = "七三科技",
-                TempletKey = "SMS_148990154",
-                Data = data,
-                OutId = "OutId"
-            };       
-          //  _smsService.CheckMsgValid()
+                case 0:
+                    title = "手机注册验证";
+                    resultem = AliSmsTemplateManager.GetAliSmsTemByType(0);  
+                   
+                    break;
+                case 1:
+                    title = "重置密码";
+                    resultem = AliSmsTemplateManager.GetAliSmsTemByType(1);           
+                    break;
+                case 2:
+                    title = "登录";
+                    resultem = AliSmsTemplateManager.GetAliSmsTemByType(2);
+                    break;
+                case 3:
+                    title = "更新角色";
+                    break;
+            }
+            smr.Title = title;
+            smr.Content = resultem == null ? "" :string.Format( resultem.MsgTemContent,randomcode);
+            smr.Type = resultem == null ? 0 : resultem.Type;
+            sms.TempletKey = resultem == null ? sms.TempletKey : resultem.MsgCode;
+            var result =  _smsService.CheckMsgValid(smr);
 
+            if (result.Code == Core.Infrastructure.ErrorCode.mobile_sms_frequently)
+            {
+                return Json(new
+                {
+                    code = 0,
+                    msg = result.Msg,
+                    data = smr.TemplateCode
 
-            var res =await  new AliyunSmsSender().Send(sms);      
+                });
+            }
+     
+
+            sms.Data = data;
+            var res =await  new AliyunSmsSender().Send(sms);
+
+            if (res.success)
+            {
+                smr.TemplateCode = randomcode;
+               _smsService.SendMsg(smr);
+            }
             return Json(new
             {
                 code = 0,
                 msg = res.response
-
             });
         }
 
@@ -1034,7 +1092,7 @@ namespace Nop.Web.Controllers.Api
             return customers.Any(c => c.Active && c.Id != customer.Id);
         }
 
-
+        [HttpPost]
         public IActionResult ChangePassword(ChangePasswordModel model,string userName)
         {
             //if (!_workContext.CurrentCustomer.IsRegistered())
@@ -1074,12 +1132,13 @@ namespace Nop.Web.Controllers.Api
 
         public IActionResult GetMyCollection(string userName)
         {
-
             BookDirSearchModel searchModel = new BookDirSearchModel
             {
                 BookID = 0,
                 BookDirId = 0
             };
+
+            
             var result = _bookDirService.GetAllBookDirsData("", 0, 0, 0).ToList();
             result.ForEach(x =>
             {
@@ -1113,26 +1172,22 @@ namespace Nop.Web.Controllers.Api
             var resl = new List<BookDirTreeModel>();
             var resl1 = SortBookDirsForTree(list, resl, new List<int>(), 0);
             resl = resl1.ToList();
+            var bookid =  treeresult.Select(x => x.BookID).Distinct().ToList();
 
 
-           var bookid =  treeresult.Select(x => x.BookID).Distinct().ToList();
+            var books = _productService.SearchProducts();
 
-            var books = result.Where(x => bookid.Contains(x.BookID)).ToList();
-
-
-
-
+           var   booklist = books.Where(x => x.Id == 47 || x.Id == 48 || x.Id == 46).ToList();
             return Json(new
             {
                 code = 0,
                 msg = "",
-                data = books.Select(x=> new{
+                data = booklist.Select(x=> new{
                     Id = x.Id,
+                    pecent =0.21,
                     Name = x.Name,
-                    BookDir = resl.Where(y=>y.BookID == x.BookID).ToList()
-
+                    BookDir = resl.Where(y=>y.BookID == x.Id).ToList()
                 }).ToList()
-
             });
         }
 
