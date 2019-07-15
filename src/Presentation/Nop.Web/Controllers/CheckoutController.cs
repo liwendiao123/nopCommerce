@@ -997,11 +997,9 @@ namespace Nop.Web.Controllers
                     NopCustomerDefaults.SelectedShippingOptionAttribute,
                     shippingMethodModel.ShippingMethods.First().ShippingOption,
                     _storeContext.CurrentStore.Id);
-
                 //load next step
                 return OpcLoadStepAfterShippingMethod(cart);
             }
-
             return Json(new
             {
                 update_section = new UpdateSectionJsonModel
@@ -1012,7 +1010,6 @@ namespace Nop.Web.Controllers
                 goto_section = "shipping_method"
             });
         }
-
         protected virtual JsonResult OpcLoadStepAfterShippingMethod(IList<ShoppingCartItem> cart)
         {
             //Check whether payment workflow is required
@@ -1086,10 +1083,8 @@ namespace Nop.Web.Controllers
             {
                 //skip payment info page
                 var paymentInfo = new ProcessPaymentRequest();
-
                 //session save
                 HttpContext.Session.Set("OrderPaymentInfo", paymentInfo);
-
                 var confirmOrderModel = _checkoutModelFactory.PrepareConfirmOrderModel(cart);
                 return Json(new
                 {
@@ -1101,7 +1096,6 @@ namespace Nop.Web.Controllers
                     goto_section = "confirm_order"
                 });
             }
-
             //return payment info page
             var paymenInfoModel = _checkoutModelFactory.PreparePaymentInfoModel(paymentMethod);
             return Json(new

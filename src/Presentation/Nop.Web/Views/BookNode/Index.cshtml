@@ -8,7 +8,7 @@
 
 @foreach (var item in Model.Data.ToList())
 {
-    string url = string.Format("http://www.73data.cn/EduProject/Sports.php?id={0}", item.Id);
+    string url = string.Format("http://www.73data.cn/EduProject/TemplateShow_v0.2.php?id={0}", item.Id);
 
     <a href="@url">@item.Name</a>
 }

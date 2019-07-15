@@ -516,8 +516,10 @@ namespace Nop.Web.Controllers.Api
             //If we got this far, something failed, redisplay form
             model = _customerModelFactory.PrepareRegisterModel(model, true, customerAttributesXml);
         
-            return Json(new {
-
+            return Json(               
+                new {
+                code = 0,
+                msg = "获取信息失败",
                 Id = model.Username,
                 Phone = model.Phone,
                 Name = model.LastName??"",
@@ -806,7 +808,6 @@ namespace Nop.Web.Controllers.Api
             smr.Type = resultem == null ? 0 : resultem.Type;
             sms.TempletKey = resultem == null ? sms.TempletKey : resultem.MsgCode;
             var result =  _smsService.CheckMsgValid(smr);
-
             if (result.Code == Core.Infrastructure.ErrorCode.mobile_sms_frequently)
             {
                 return Json(new
@@ -814,23 +815,30 @@ namespace Nop.Web.Controllers.Api
                     code = 0,
                     msg = result.Msg,
                     data = smr.TemplateCode
-
                 });
             }
-     
-
             sms.Data = data;
-            var res =await  new AliyunSmsSender().Send(sms);
-
+            var res =await new AliyunSmsSender().Send(sms);
             if (res.success)
             {
                 smr.TemplateCode = randomcode;
                _smsService.SendMsg(smr);
             }
+
+            if (!res.success)
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg  = "发送验证码失败：原因："+ res.response
+                });
+            }
+
             return Json(new
             {
                 code = 0,
-                msg = res.response
+                msg = "验证码已发送",
+                data = randomcode
             });
         }
 

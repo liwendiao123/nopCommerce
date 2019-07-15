@@ -11,7 +11,6 @@ namespace Nop.Web.Controllers.Api
     {
 
         private readonly IProductService _productService;
-
         public BookController(IProductService productService)
         {
             _productService = productService;
@@ -20,15 +19,12 @@ namespace Nop.Web.Controllers.Api
         {
             return View();
         }
-
         public IActionResult GetBook(int cateid)
         {
-
             if (cateid < 0)
             {
                 cateid = 14;
             }
-
            var product = _productService.SearchProducts(0, int.MaxValue, new List<int>() {cateid });
 
 

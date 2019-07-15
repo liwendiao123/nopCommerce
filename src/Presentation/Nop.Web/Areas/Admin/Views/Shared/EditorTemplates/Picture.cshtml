@@ -86,7 +86,8 @@
             },
             template: "@(clientId)-qq-template",
             multiple: false
-        }).on("complete", function(event, id, name, responseJSON, xhr) {
+        }).on("complete", function (event, id, name, responseJSON, xhr) {
+            console.log(responseJSON);
             if (responseJSON.success) {
                 $("#@(clientId + "image")").html("<img src='" + responseJSON.imageUrl + "'/>");
                 $("#@(clientId + "value") input").val(responseJSON.pictureId);

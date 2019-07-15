@@ -31,7 +31,6 @@ namespace Nop.Web.Controllers.Api
         {
 
             var result = _aiBookService.GetAiBookModelById(id);
-
             return Json(new
             {
                 code = 0,
@@ -39,6 +38,22 @@ namespace Nop.Web.Controllers.Api
                 data = new
                 {                 
                     strJson = result.StrJson
+                }
+            });
+        }
+
+
+        public IActionResult GetJsonData(int id)
+        {
+
+        //    var result = _aiBookService.GetAiBookModelById(id);
+            return Json(new
+            {
+                code = 0,
+                msg = "已成功",
+                data = new
+                {
+                    strJson = ""
                 }
             });
         }

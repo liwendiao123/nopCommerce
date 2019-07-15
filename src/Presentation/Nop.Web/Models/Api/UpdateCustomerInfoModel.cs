@@ -23,15 +23,16 @@ namespace Nop.Web.Models.Api
         public string Email { get; set; }
 
         [NopResourceDisplayName("Account.Fields.Gender")]
-        public string Gender { get; set; }
-
+         public string Gender { get; set; }
         public int DepId { get; set; }
 
         public int RoleId { get; set; }
 
         public string InviteCode{get;set;}
-
         public int PictureId { get; set; }
-
+        /// <summary>
+        /// 验证码
+        /// </summary>
+        public string Code { get; set; }
     }
 }
