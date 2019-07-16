@@ -85,8 +85,9 @@ namespace Nop.Web.Infrastructure
             builder.RegisterType<WidgetModelFactory>().As<IWidgetModelFactory>().InstancePerLifetimeScope();
             builder.RegisterType<BookDirFactory>().As<IBookDirFactory>().InstancePerLifetimeScope();
             builder.RegisterType<BookNodeFactory>().As<IBookNodeFactory>().InstancePerLifetimeScope();
-            //factories
-            builder.RegisterType<Factories.AddressModelFactory>().As<Factories.IAddressModelFactory>().InstancePerLifetimeScope();
+            builder.RegisterType<DepartmentFactory>().As<IDepartmentFactory>().InstancePerLifetimeScope();
+          //factories
+          builder.RegisterType<Factories.AddressModelFactory>().As<Factories.IAddressModelFactory>().InstancePerLifetimeScope();
             builder.RegisterType<Factories.BlogModelFactory>().As<Factories.IBlogModelFactory>().InstancePerLifetimeScope();
             builder.RegisterType<Factories.CatalogModelFactory>().As<Factories.ICatalogModelFactory>().InstancePerLifetimeScope();
             builder.RegisterType<Factories.CheckoutModelFactory>().As<Factories.ICheckoutModelFactory>().InstancePerLifetimeScope();
@@ -107,7 +108,7 @@ namespace Nop.Web.Infrastructure
             builder.RegisterType<Factories.TopicModelFactory>().As<Factories.ITopicModelFactory>().InstancePerLifetimeScope();
             builder.RegisterType<Factories.VendorModelFactory>().As<Factories.IVendorModelFactory>().InstancePerLifetimeScope();
             builder.RegisterType<Factories.WidgetModelFactory>().As<Factories.IWidgetModelFactory>().InstancePerLifetimeScope();
-            
+          
 
         }
 

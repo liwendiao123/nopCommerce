@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Nop.Core.Domain.Localization;
+using Nop.Core.Domain.Seo;
 
 namespace Nop.Core.Domain.Customers
 {
-   public  class Department : BaseEntity
+   public  class Department : BaseEntity,ILocalizedEntity, ISlugSupported
     {
 
         /// <summary>

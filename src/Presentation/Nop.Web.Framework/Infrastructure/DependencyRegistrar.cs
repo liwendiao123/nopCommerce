@@ -238,6 +238,8 @@ namespace Nop.Web.Framework.Infrastructure
            // builder.RegisterType<BookDirFactory>().As<IBookDirFactory>()
             builder.RegisterType<BookDirService>().As<IBookDirService>().InstancePerLifetimeScope();
             builder.RegisterType<AiBookService>().As<IAiBookService>().InstancePerLifetimeScope();
+            builder.RegisterType<DepartmentService>().As<IDepartmentService>().InstancePerLifetimeScope();
+
             //plugin managers
             builder.RegisterGeneric(typeof(PluginManager<>)).As(typeof(IPluginManager<>)).InstancePerLifetimeScope();
             builder.RegisterType<AuthenticationPluginManager>().As<IAuthenticationPluginManager>().InstancePerLifetimeScope();

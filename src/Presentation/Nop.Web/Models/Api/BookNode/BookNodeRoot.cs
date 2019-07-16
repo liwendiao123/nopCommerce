@@ -63,7 +63,6 @@ namespace Nop.Web.Models.Api.BookNode
         public int y { get; set; }
         public int z { get; set; }
     }
-
     public class ButtonInfo:BaseModel
     {
         public OffsetXY pos { get; set; }

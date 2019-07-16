@@ -55,7 +55,7 @@ namespace Nop.Services.Security
         public static readonly PermissionRecord ManageMaintenance = new PermissionRecord { Name = "Admin area. Manage Maintenance", SystemName = "ManageMaintenance", Category = "Configuration" };
         public static readonly PermissionRecord HtmlEditorManagePictures = new PermissionRecord { Name = "Admin area. HTML Editor. Manage pictures", SystemName = "HtmlEditor.ManagePictures", Category = "Configuration" };
         public static readonly PermissionRecord ManageScheduleTasks = new PermissionRecord { Name = "Admin area. Manage Schedule Tasks", SystemName = "ManageScheduleTasks", Category = "Configuration" };
-        
+
         //public store permissions
         public static readonly PermissionRecord DisplayPrices = new PermissionRecord { Name = "Public store. Display Prices", SystemName = "DisplayPrices", Category = "PublicStore" };
         public static readonly PermissionRecord EnableShoppingCart = new PermissionRecord { Name = "Public store. Enable shopping cart", SystemName = "EnableShoppingCart", Category = "PublicStore" };
@@ -66,10 +66,10 @@ namespace Nop.Services.Security
 
 
         //public bookstore permissions 智慧课堂权限
-        public static readonly PermissionRecord ManagerBook = new PermissionRecord { Name = "Admin area. Manager Book", SystemName = "AiBookManage", Category="AiBook" };
-        public static readonly PermissionRecord BookDirManage = new PermissionRecord {Name= "Admin area. Manager BookWebModel", SystemName= "AiBookDirManage", Category = "AiBook" };
+        public static readonly PermissionRecord ManagerBook = new PermissionRecord { Name = "Admin area. Manager Book", SystemName = "AiBookManage", Category = "AiBook" };
+        public static readonly PermissionRecord BookDirManage = new PermissionRecord { Name = "Admin area. Manager BookWebModel", SystemName = "AiBookDirManage", Category = "AiBook" };
         public static readonly PermissionRecord BookModelManage = new PermissionRecord { Name = "Admin area. ManagerAppModel", SystemName = "AiBookModelManage", Category = "AiBook" };
-       
+        public static readonly PermissionRecord DepartmentManage = new PermissionRecord {Name = "Admin area. ManagerDepartment" ,SystemName = "DepartmentManage",Category = "AiBook" };
         /// <summary>
         /// Get permissions
         /// </summary>
@@ -131,6 +131,7 @@ namespace Nop.Services.Security
                 ManagerBook ,
                 BookDirManage,
                 BookModelManage,
+                DepartmentManage
 
             };
         }
@@ -201,6 +202,7 @@ namespace Nop.Services.Security
                         ManagerBook ,
                         BookDirManage,
                         BookModelManage,
+                        DepartmentManage
                     }
                 },
                 new DefaultPermissionRecord 

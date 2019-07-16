@@ -65,14 +65,11 @@
         /// {0} : system name
         /// </remarks>
         public static string CustomerRolesBySystemNameCacheKey => "Nop.customerrole.systemname-{0}";
-
         /// <summary>
         /// Gets a key pattern to clear cache
         /// </summary>
         public static string CustomerRolesPrefixCacheKey => "Nop.customerrole.";
-
         #endregion
-
         /// <summary>
         /// Gets a key for caching current customer password lifetime
         /// </summary>
@@ -80,20 +77,24 @@
         /// {0} : customer identifier
         /// </remarks>
         public static string CustomerPasswordLifetimeCacheKey => "Nop.customers.passwordlifetime-{0}";
-
         /// <summary>
         /// Gets a password salt key size
         /// </summary>
-        public static int PasswordSaltKeySize => 5;
-        
+        public static int PasswordSaltKeySize => 5;     
         /// <summary>
         /// Gets a max username length
         /// </summary>
         public static int CustomerUsernameLength => 100;
-
         /// <summary>
         /// Gets a default hash format for customer password
         /// </summary>
         public static string DefaultHashedPasswordFormat => "SHA512";
+
+
+        public static string AllDepartmentKey => "Nop.Departments.all";
+
+        public static string DepartmentIdKey => "Nop.Departments-Id-{0}";
+
+        public static string DepartmentPrefixCacheKey => "Nop.Departments";
     }
 }

@@ -41,6 +41,7 @@ using Nop.Web.Areas.Admin.Models.Catalog;
 using Nop.Web.Areas.Admin.Models.Cms;
 using Nop.Web.Areas.Admin.Models.Common;
 using Nop.Web.Areas.Admin.Models.Customers;
+using Nop.Web.Areas.Admin.Models.Departments;
 using Nop.Web.Areas.Admin.Models.Directory;
 using Nop.Web.Areas.Admin.Models.Discounts;
 using Nop.Web.Areas.Admin.Models.ExternalAuthentication;
@@ -108,6 +109,7 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
             CreateWarehouseMaps();
             CreateAiBookMaps();
             CreateAiBookModelMaps();
+            CreateDepartment();
             //add some generic mapping rules
             ForAllMaps((mapConfiguration, map) =>
             {
@@ -1692,6 +1694,18 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
             CreateMap<AiBookModelView, AiBookModel>()
              
                 .ForMember(entity => entity.BookDir, options => options.Ignore());
+        }
+
+
+        protected virtual void CreateDepartment()
+        {
+
+
+            CreateMap<Department, DepartmentModel>()
+                .ForMember(x => x.Locales, options => options.Ignore())
+                .ForMember(x => x.Form, options => options.Ignore())
+                .ForMember(x => x.CustomProperties, options => options.Ignore());
+               // .ForMember(x=>x.)
         }
 
 

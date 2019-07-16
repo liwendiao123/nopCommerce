@@ -335,6 +335,11 @@ namespace Nop.Web.Areas.Admin.Controllers
         }
         public IActionResult GetBookDirByBookId(BookDirSearchModel searchModel)
         {
+
+            //searchModel.PageSize = int.MaxValue;
+
+            searchModel.SetGridPageSize(Int32.MaxValue);
+
             var model = _bookDirFactory.PrepareBookDirListModel(searchModel);
             return Json(model.Data.ToList());
         }
