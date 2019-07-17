@@ -21,6 +21,8 @@ namespace Nop.Web.Models.Api.BookNode
 
     public class ModelBase
     {
+        public List<OpenEventState> closeeventstate { get; set; }
+
         public List<OpenEventState> openeventstate { get; set; }
         public List<ButtonInfo> buttoninfo { get; set; }
         public List<ImageInfo> imageinfo { get; set; }
@@ -76,6 +78,14 @@ namespace Nop.Web.Models.Api.BookNode
         public string key { get; set; }
         public string val { get; set; }
     }
+
+
+    public class TextDic
+    {
+        public string key { get; set; }
+
+        public List<RichText> dic { get; set; }
+    }
     public class ImageInfo:BaseModel
     {
         public ImageInfo()
@@ -96,13 +106,13 @@ namespace Nop.Web.Models.Api.BookNode
         {
             pos = new OffsetXY();
             size = new OffsetXY();
-            dic = new List<Dic>();
+            dic = new List<TextDic>();
         }
         public OffsetXY pos { get; set; }
         public OffsetXY size { get; set; }
     
         public string defaulttext { get; set; }
-        public List<Dic> dic { get; set; }
+        public List<TextDic> dic { get; set; }
     }
 
 
@@ -135,6 +145,18 @@ namespace Nop.Web.Models.Api.BookNode
     public class AudioInfo
     {
         public List<Dic> clips { get; set; }
+    }
+
+
+    public class RichText {
+        public bool b { get; set; }
+        public bool i { get; set; }
+        public int size { get; set; }
+        public string color { get; set; }
+        public string val { get; set;}
+
+       
+        public int sort { get; set; }
     }
 
 }

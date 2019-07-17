@@ -21,13 +21,15 @@
 <div id="@(clientId + "value")">
     <input type="hidden" asp-for="@Model" />
 </div>
-<div class="upload-picture-block">
-    <div class="picture-container">
+<div class="row">
+    <div class="col-md-12">
         <div id="@(clientId + "image")" class="uploaded-image">
-            <img src="@(pictureService.GetPictureUrl(Model, pictureSize, true))"/>
+            <img src="@(pictureService.GetPictureUrl(Model, pictureSize, true))" />
         </div>
     </div>
-    <div class="upload-button-container">
+</div>
+<div class="row">
+    <div class="col-md-12">
         @*fine uploader container*@
         <div id="@clientId" class="upload-image-button pull-left margin-t-5">
             <noscript>
@@ -86,8 +88,7 @@
             },
             template: "@(clientId)-qq-template",
             multiple: false
-        }).on("complete", function (event, id, name, responseJSON, xhr) {
-            console.log(responseJSON);
+        }).on("complete", function(event, id, name, responseJSON, xhr) {
             if (responseJSON.success) {
                 $("#@(clientId + "image")").html("<img src='" + responseJSON.imageUrl + "'/>");
                 $("#@(clientId + "value") input").val(responseJSON.pictureId);
@@ -97,7 +98,6 @@
         $("#@(clientId + "remove")").click(function(e) {
             $("#@(clientId + "image")").html("<img src='@pictureService.GetDefaultPictureUrl(pictureSize)'/>");
             $("#@(clientId + "value") input").val(0);
-            $("#@(clientId) .qq-upload-list-selector").empty();
             $(this).hide();
         });
     });

@@ -220,11 +220,9 @@ namespace Nop.Web.Controllers.Api
             {
                 model.LastName = model.Name;
             }
-
             //check whether registration is allowed
             if (_customerSettings.UserRegistrationType == UserRegistrationType.Disabled)
                 return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.Disabled });
-
             if (_workContext.CurrentCustomer.IsRegistered())
             {
                 //Already registered customer. 
@@ -258,8 +256,6 @@ namespace Nop.Web.Controllers.Api
                 if (_customerSettings.UsernamesEnabled && model.Username != null)
                 {
                     model.Username = model.Username.Trim();
-
-
                 }
                 else if (_customerSettings.UsernamesEnabled)
                 {
@@ -613,14 +609,11 @@ namespace Nop.Web.Controllers.Api
 
             return attributesXml;
         }
-
         #endregion
-
         public IActionResult Login()
         {
             return View();
         }
-
         [HttpPost]
         public IActionResult Login(string userName,string password)
         {
@@ -735,7 +728,6 @@ namespace Nop.Web.Controllers.Api
                 data=new { }
             });
         }
-
         /// <summary>
         /// 短信验证手机号码
         /// </summary>
@@ -841,8 +833,7 @@ namespace Nop.Web.Controllers.Api
                 data = randomcode
             });
         }
-
-    /// <summary>
+       /// <summary>
     /// 获取用户基本信息
     /// </summary>
     /// <param name="userName"></param>
@@ -871,14 +862,12 @@ namespace Nop.Web.Controllers.Api
                
             });
         }
-
         /// <summary>
         /// 获取学习进度
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
         /// 
-
         public IActionResult LearnProgress(string userName)
         {
           var result =   _productService.SearchProducts();
@@ -906,9 +895,6 @@ namespace Nop.Web.Controllers.Api
             });
 
         }
-
-
-
         public IActionResult GetRole()
         {
            var list =  _customerService.GetAllCustomerRoles().ToList();
@@ -928,8 +914,6 @@ namespace Nop.Web.Controllers.Api
 
             });
         }
-
-
         [HttpPost]
         public IActionResult UpdateInfo(UpdateCustomerInfoModel ucim)
         {
@@ -1055,7 +1039,6 @@ namespace Nop.Web.Controllers.Api
                 data = true
             });
         }
-
         /// <summary>
         /// 校验用户角色
         /// </summary>
@@ -1091,15 +1074,12 @@ namespace Nop.Web.Controllers.Api
             //no errors
             return string.Empty;
         }
-
-
         private bool SecondAdminAccountExists(Customer customer)
         {
             var customers = _customerService.GetAllCustomers(customerRoleIds: new[] { _customerService.GetCustomerRoleBySystemName(NopCustomerDefaults.AdministratorsRoleName).Id });
 
             return customers.Any(c => c.Active && c.Id != customer.Id);
         }
-
         [HttpPost]
         public IActionResult ChangePassword(ChangePasswordModel model,string userName)
         {
@@ -1137,7 +1117,6 @@ namespace Nop.Web.Controllers.Api
             });
         }
         // public IActionResult Get
-
         public IActionResult GetMyCollection(string userName)
         {
             BookDirSearchModel searchModel = new BookDirSearchModel
@@ -1198,7 +1177,6 @@ namespace Nop.Web.Controllers.Api
                 }).ToList()
             });
         }
-
         /// <summary>
         /// Sort categories for tree representation
         /// </summary>

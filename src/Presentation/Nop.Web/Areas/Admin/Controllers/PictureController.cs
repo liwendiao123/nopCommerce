@@ -21,12 +21,10 @@ namespace Nop.Web.Areas.Admin.Controllers
         }
 
         #endregion
-
         #region Methods
-
         [HttpPost]
         //do not validate request token (XSRF)
-        //[AdminAntiForgery(true)]
+        [AdminAntiForgery(true)]
         public virtual IActionResult AsyncUpload()
         {
             //if (!_permissionService.Authorize(StandardPermissionProvider.UploadPictures))

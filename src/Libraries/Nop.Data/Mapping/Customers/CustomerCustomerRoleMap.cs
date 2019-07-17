@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Nop.Core.Domain.Customers;
 
@@ -19,25 +19,20 @@ namespace Nop.Data.Mapping.Customers
         {
             builder.ToTable(NopMappingDefaults.CustomerCustomerRoleTable);
             builder.HasKey(mapping => new { mapping.CustomerId, mapping.CustomerRoleId });
-
             builder.Property(mapping => mapping.CustomerId).HasColumnName("Customer_Id");
             builder.Property(mapping => mapping.CustomerRoleId).HasColumnName("CustomerRole_Id");
-
             builder.HasOne(mapping => mapping.Customer)
                 .WithMany(customer => customer.CustomerCustomerRoleMappings)
                 .HasForeignKey(mapping => mapping.CustomerId)
                 .IsRequired();
-
             builder.HasOne(mapping => mapping.CustomerRole)
                 .WithMany()
                 .HasForeignKey(mapping => mapping.CustomerRoleId)
                 .IsRequired();
-
             builder.Ignore(mapping => mapping.Id);
 
             base.Configure(builder);
         }
-
         #endregion
     }
 }
