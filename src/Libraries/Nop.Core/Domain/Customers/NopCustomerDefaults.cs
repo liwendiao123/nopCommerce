@@ -121,6 +121,9 @@ namespace Nop.Core.Domain.Customers
         /// </summary>
         public static string InviteCodeAttribute => "InviteCode";
 
+
+        public static string IdCardImgAttribute => "IdCardImg";
+
         /// <summary>
         /// Gets a name of generic attribute to store the value of 'Fax'
         /// </summary>

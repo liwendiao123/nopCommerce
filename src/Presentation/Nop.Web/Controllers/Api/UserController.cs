@@ -74,6 +74,7 @@ namespace Nop.Web.Controllers.Api
         private readonly ICustomerModelFactory _customerModelFactory;
         private readonly ISmsService _smsService;
         private readonly IBookDirService _bookDirService;
+        private readonly IDepartmentService _departmentService;
        /// private readonly
 
         private readonly ICustomerRegistrationService _customerRegistrationService;
@@ -110,6 +111,7 @@ namespace Nop.Web.Controllers.Api
                     IDownloadService downloadService,
                     ForumSettings forumSettings,
                     GdprSettings gdprSettings,
+                    IDepartmentService departmentService,
                     IAddressAttributeParser addressAttributeParser,
                     IAddressModelFactory addressModelFactory,
                     IAddressService addressService,
@@ -195,6 +197,7 @@ namespace Nop.Web.Controllers.Api
                     _smsService = smsService;
                     _taxSettings = taxSettings;
                     _bookDirService = bookDirService;
+                    _departmentService = departmentService;
         }
 
 
@@ -213,13 +216,116 @@ namespace Nop.Web.Controllers.Api
         //[ValidateCaptcha]
         [ValidateHoneypot]
         [CheckAccessPublicStore(true)]
-        public IActionResult Register(RegisterModel model, string returnUrl, bool captchaValid, IFormCollection form)
+        public IActionResult Register(ApiRegisterModel model, string returnUrl, bool captchaValid, IFormCollection form)
         {
-
+            SmsMsgRecord record = new SmsMsgRecord();
             if (model != null)
             {
                 model.LastName = model.Name;
             }
+
+            if (string.IsNullOrEmpty(model.SmsCode))
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "注册失败:手机验证码不能为空",
+                    data = false
+                });
+            }
+
+            else
+            {
+                 record = new SmsMsgRecord {
+
+                     Phone = model.Phone,
+                      Type = 0,
+                      AppId  = AliSmsManager.accessKeyId,
+                       TemplateCode = model.SmsCode
+                };
+               var result = _smsService.CheckMsgValid(record);
+
+                if (!result.Result)
+                {
+                    return Json(new
+                    {
+                        code = -1,
+                        msg = "注册失败:手机验证码不能为空",
+                        data = false
+                    });
+                }
+            }
+
+            var department = _departmentService.GetDepById(model.DepartmentId);
+
+            string depName = string.Empty;
+
+            if (department == null)
+            {
+
+                if (!string.IsNullOrEmpty(model.SchoolName))
+                {
+                    var dep = new Department()
+                    {
+                        Name = model.SchoolName,
+                        CreatedOnUtc = DateTime.Now,
+                        Desc = "用户输入",
+                        Active = true,
+                        ContactPerson = model.Name,
+                        Tel = model.Phone,
+                        VatCode = Guid.NewGuid().ToString("N"),
+                        UpdatedOnUtc = DateTime.Now
+
+
+                    };
+                    var deps = _departmentService.GetAllDeps(true);
+                    var cschool = deps.FirstOrDefault(x => x.Name.Equals(model.SchoolName));
+                    bool result = false;
+                    if (cschool == null)
+                    {
+                         result = _departmentService.InsertDep(dep);
+                    }
+                    else
+                    {
+                        result = true;
+                    }
+                   
+
+
+                    if (result)
+                    {
+                      
+                        if (cschool == null)
+                        {
+                            return Json(new
+                            {
+                                code = 0,
+                                msg = "注册失败:请指定一个学校",
+                                data = false
+                            });
+                        }
+                        else
+                        {
+                            model.DepartmentId = cschool.Id;
+                        }
+                    }
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        code = 0,
+                        msg = "注册失败:请指定一个学校",
+                        data = false
+                    });
+                }
+      
+            }
+            else
+            {
+                depName = department.Name;
+            }
+
             //check whether registration is allowed
             if (_customerSettings.UserRegistrationType == UserRegistrationType.Disabled)
                 return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.Disabled });
@@ -253,19 +359,19 @@ namespace Nop.Web.Controllers.Api
 
             if (ModelState.IsValid)
             {
-                if (_customerSettings.UsernamesEnabled && model.Username != null)
+                if (_customerSettings.UsernamesEnabled && model.UserName != null)
                 {
-                    model.Username = model.Username.Trim();
+                    model.UserName = model.UserName.Trim();
                 }
                 else if (_customerSettings.UsernamesEnabled)
                 {
                     if (_customerSettings.PhoneEnabled)
                     {
-                        model.Username = model.Phone;
+                        model.UserName = model.Phone;
                     }
                     else
                     {
-                        model.Username = model.Email;
+                        model.UserName = model.Email;
                     }
 
 
@@ -278,13 +384,32 @@ namespace Nop.Web.Controllers.Api
                 var isApproved = _customerSettings.UserRegistrationType == UserRegistrationType.Standard;
                 var registrationRequest = new CustomerRegistrationRequest(customer,
                     model.Email,
-                
-                    _customerSettings.UsernamesEnabled ? model.Username : model.Email,
+
+                    _customerSettings.UsernamesEnabled ? model.UserName : model.Email,
                     model.Password,
                     _customerSettings.DefaultPasswordFormat,
                     _storeContext.CurrentStore.Id,
                     isApproved);
-               
+
+
+                if (model.Occupation == 0)
+                {
+                    registrationRequest.RoleName = "Student";
+                }
+                else if (model.Occupation == 1)
+                {
+                    registrationRequest.RoleName = "Teacher";
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        code = 0,
+                        msg = "注册失败：请明确用户是老师或学生",
+                        data = false
+                    });
+                }
+
                 var registrationResult = _customerRegistrationService.RegisterCustomer(registrationRequest);
                 if (registrationResult.Success)
                 {
@@ -293,101 +418,36 @@ namespace Nop.Web.Controllers.Api
                     {
                         _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.TimeZoneIdAttribute, model.TimeZoneId);
                     }
-                    //VAT number
-                    if (_taxSettings.EuVatEnabled)
-                    {
-                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.VatNumberAttribute, model.VatNumber);
 
-                        var vatNumberStatus = _taxService.GetVatNumberStatus(model.VatNumber, out string _, out string vatAddress);
-                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.VatNumberStatusIdAttribute, (int)vatNumberStatus);
-                        //send VAT number admin notification
-                        if (!string.IsNullOrEmpty(model.VatNumber) && _taxSettings.EuVatEmailAdminWhenNewVatSubmitted)
-                            _workflowMessageService.SendNewVatSubmittedStoreOwnerNotification(customer, model.VatNumber, vatAddress, _localizationSettings.DefaultAdminLanguageId);
-                    }
+
 
                     //form fields
                     if (_customerSettings.GenderEnabled)
                         _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.GenderAttribute, model.Gender);
-                    _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.FirstNameAttribute, model.FirstName);
-                    _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.LastNameAttribute, model.LastName);
-                    if (_customerSettings.DateOfBirthEnabled)
-                    {
-                        var dateOfBirth = model.ParseDateOfBirth();
-                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.DateOfBirthAttribute, dateOfBirth);
-                    }
+                    // _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.FirstNameAttribute, model.FirstName);
+                    _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.LastNameAttribute, model.Name);
+
                     if (_customerSettings.CompanyEnabled)
                         _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.CompanyAttribute, model.Company);
-                    if (_customerSettings.StreetAddressEnabled)
-                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.StreetAddressAttribute, model.StreetAddress);
-                    if (_customerSettings.StreetAddress2Enabled)
-                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.StreetAddress2Attribute, model.StreetAddress2);
-                    if (_customerSettings.ZipPostalCodeEnabled)
-                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.ZipPostalCodeAttribute, model.ZipPostalCode);
-                    if (_customerSettings.CityEnabled)
-                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.CityAttribute, model.City);
-                    if (_customerSettings.CountyEnabled)
-                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.CountyAttribute, model.County);
-                    if (_customerSettings.CountryEnabled)
-                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.CountryIdAttribute, model.CountryId);
-                    if (_customerSettings.CountryEnabled && _customerSettings.StateProvinceEnabled)
-                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.StateProvinceIdAttribute,
-                            model.StateProvinceId);
+                    ///保存电话号码
                     if (_customerSettings.PhoneEnabled)
                         _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.PhoneAttribute, model.Phone);
 
+                    ///保存 邀请码
                     if (_customerSettings.InviteCodeEnabled)
                     {
-                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.InviteCodeAttribute, model.Phone);
+                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.InviteCodeAttribute, model.InviteCode);
                     }
-                    if (_customerSettings.FaxEnabled)
-                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.FaxAttribute, model.Fax);
 
-                    //newsletter
-                    if (_customerSettings.NewsletterEnabled)
+
+                    if (_customerSettings.IdcardImgEnabled)
                     {
-                        //save newsletter value
-                        var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmailAndStoreId(model.Email, _storeContext.CurrentStore.Id);
-                        if (newsletter != null)
-                        {
-                            if (model.Newsletter)
-                            {
-                                newsletter.Active = true;
-                                _newsLetterSubscriptionService.UpdateNewsLetterSubscription(newsletter);
-
-                                //GDPR
-                                if (_gdprSettings.GdprEnabled && _gdprSettings.LogNewsletterConsent)
-                                {
-                                    _gdprService.InsertLog(customer, 0, GdprRequestType.ConsentAgree, _localizationService.GetResource("Gdpr.Consent.Newsletter"));
-                                }
-                            }
-                            //else
-                            //{
-                            //When registering, not checking the newsletter check box should not take an existing email address off of the subscription list.
-                            //_newsLetterSubscriptionService.DeleteNewsLetterSubscription(newsletter);
-                            //}
-                        }
-                        else
-                        {
-                            if (model.Newsletter)
-                            {
-                                _newsLetterSubscriptionService.InsertNewsLetterSubscription(new NewsLetterSubscription
-                                {
-                                    NewsLetterSubscriptionGuid = Guid.NewGuid(),
-                                    Email = model.Email,
-                                    Active = true,
-                                    StoreId = _storeContext.CurrentStore.Id,
-                                    CreatedOnUtc = DateTime.UtcNow
-                                });
-
-                                //GDPR
-                                if (_gdprSettings.GdprEnabled && _gdprSettings.LogNewsletterConsent)
-                                {
-                                    _gdprService.InsertLog(customer, 0, GdprRequestType.ConsentAgree, _localizationService.GetResource("Gdpr.Consent.Newsletter"));
-                                }
-                            }
-                        }
+                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.IdCardImgAttribute, model.ImageUrl);
                     }
 
+
+
+                    ///签订保密协议
                     if (_customerSettings.AcceptPrivacyPolicyEnabled)
                     {
                         //privacy policy is required
@@ -398,70 +458,11 @@ namespace Nop.Web.Controllers.Api
                         }
                     }
 
-                    //GDPR
-                    if (_gdprSettings.GdprEnabled)
-                    {
-                        var consents = _gdprService.GetAllConsents().Where(consent => consent.DisplayDuringRegistration).ToList();
-                        foreach (var consent in consents)
-                        {
-                            var controlId = $"consent{consent.Id}";
-                            var cbConsent = form[controlId];
-                            if (!StringValues.IsNullOrEmpty(cbConsent) && cbConsent.ToString().Equals("on"))
-                            {
-                                //agree
-                                _gdprService.InsertLog(customer, consent.Id, GdprRequestType.ConsentAgree, consent.Message);
-                            }
-                            else
-                            {
-                                //disagree
-                                _gdprService.InsertLog(customer, consent.Id, GdprRequestType.ConsentDisagree, consent.Message);
-                            }
-                        }
-                    }
+
 
                     //save customer attributes
                     _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.CustomCustomerAttributes, customerAttributesXml);
 
-                    //login customer now
-                  //  if (isApproved)
-                      //  _authenticationService.SignIn(customer, true);
-                    //
-                    //insert default address (if possible)
-                    //var defaultAddress = new Address
-                    //{
-                    //    FirstName = _genericAttributeService.GetAttribute<string>(customer, NopCustomerDefaults.FirstNameAttribute),
-                    //    LastName = _genericAttributeService.GetAttribute<string>(customer, NopCustomerDefaults.LastNameAttribute),
-                    //    Email = customer.Email,
-                    //    Company = _genericAttributeService.GetAttribute<string>(customer, NopCustomerDefaults.CompanyAttribute),
-                    //    CountryId = _genericAttributeService.GetAttribute<int>(customer, NopCustomerDefaults.CountryIdAttribute) > 0
-                    //        ? (int?)_genericAttributeService.GetAttribute<int>(customer, NopCustomerDefaults.CountryIdAttribute)
-                    //        : null,
-                    //    StateProvinceId = _genericAttributeService.GetAttribute<int>(customer, NopCustomerDefaults.StateProvinceIdAttribute) > 0
-                    //        ? (int?)_genericAttributeService.GetAttribute<int>(customer, NopCustomerDefaults.StateProvinceIdAttribute)
-                    //        : null,
-                    //    County = _genericAttributeService.GetAttribute<string>(customer, NopCustomerDefaults.CountyAttribute),
-                    //    City = _genericAttributeService.GetAttribute<string>(customer, NopCustomerDefaults.CityAttribute),
-                    //    Address1 = _genericAttributeService.GetAttribute<string>(customer, NopCustomerDefaults.StreetAddressAttribute),
-                    //    Address2 = _genericAttributeService.GetAttribute<string>(customer, NopCustomerDefaults.StreetAddress2Attribute),
-                    //    ZipPostalCode = _genericAttributeService.GetAttribute<string>(customer, NopCustomerDefaults.ZipPostalCodeAttribute),
-                    //    PhoneNumber = _genericAttributeService.GetAttribute<string>(customer, NopCustomerDefaults.PhoneAttribute),
-                    //    FaxNumber = _genericAttributeService.GetAttribute<string>(customer, NopCustomerDefaults.FaxAttribute),
-                    //    CreatedOnUtc = customer.CreatedOnUtc
-                    //};
-                    //if (_addressService.IsAddressValid(defaultAddress))
-                    //{
-                    //    //some validation
-                    //    if (defaultAddress.CountryId == 0)
-                    //        defaultAddress.CountryId = null;
-                    //    if (defaultAddress.StateProvinceId == 0)
-                    //        defaultAddress.StateProvinceId = null;
-                    //    //set default address
-                    //    //customer.Addresses.Add(defaultAddress);
-                    //    customer.CustomerAddressMappings.Add(new CustomerAddressMapping { Address = defaultAddress });
-                    //    customer.BillingAddress = defaultAddress;
-                    //    customer.ShippingAddress = defaultAddress;
-                    //    _customerService.UpdateCustomer(customer);
-                    //}
 
                     //notifications
                     if (_customerSettings.NotifyNewCustomerRegistration)
@@ -507,21 +508,45 @@ namespace Nop.Web.Controllers.Api
                 //errors
                 foreach (var error in registrationResult.Errors)
                     ModelState.AddModelError("", error);
+
+
+                if (registrationResult.Errors.Count > 0)
+                {
+                    return Json(new
+                    {
+                        code = 0,
+                        msg = string.Join(",", registrationResult.Errors)
+
+                    });
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "未按照要求填写注册信息",
+                    data= false
+
+                });
             }
 
+            _smsService.ApplySms(record);
+
             //If we got this far, something failed, redisplay form
-            model = _customerModelFactory.PrepareRegisterModel(model, true, customerAttributesXml);
+          //  model = _customerModelFactory.PrepareRegisterModel(model, true, customerAttributesXml);
         
             return Json(               
                 new {
                 code = 0,
-                msg = "获取信息失败",
-                Id = model.Username,
+                msg = "信息获取成功",
+                Id = model.UserName,
                 Phone = model.Phone,
                 Name = model.LastName??"",
                 Email = model.Email??"",
-                Occupation = "学生",
-                SchoolName ="三中"
+                Occupation =model.Occupation == 0?  "学生": "老师",
+                SchoolName =depName,
+                DepId=model.DepartmentId
             });
 
             //return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.Disabled });
@@ -612,7 +637,7 @@ namespace Nop.Web.Controllers.Api
         #endregion
         public IActionResult Login()
         {
-            return View();
+           return View();
         }
         [HttpPost]
         public IActionResult Login(string userName,string password)
@@ -1261,6 +1286,37 @@ namespace Nop.Web.Controllers.Api
                 SortBookDirsForTree(source, list, ids, cat.Id, true);
             }
             return list;
+        }
+
+
+
+        public virtual IActionResult ValidInviteCode(string code)
+        {
+
+
+           ///
+
+
+            if (code.Equals("001"))
+            {
+
+                return Json(new
+                {
+                    code = 0,
+                    msg = "验证成功",
+                    data = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "邀请码不存在",
+                    data = false
+                });
+            }
+                
         }
     }
 }

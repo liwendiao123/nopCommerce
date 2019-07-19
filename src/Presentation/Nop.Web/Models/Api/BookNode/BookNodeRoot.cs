@@ -14,6 +14,13 @@ namespace Nop.Web.Models.Api.BookNode
 {
     public class BookNodeRoot
     {
+
+
+        public BookNodeRoot()
+        {
+            Base = new ModelBase();
+        }
+
         public int code { get; set; }   
         public ModelBase Base{get;set;}
     }
@@ -21,11 +28,45 @@ namespace Nop.Web.Models.Api.BookNode
 
     public class ModelBase
     {
+
+
+        public ModelBase()
+        {
+            closeeventstate = new List<OpenEventState>();
+            openeventstate = new List<OpenEventState>();
+            buttoninfo = new List<ButtonInfo>();
+            imageinfo = new List<ImageInfo>();
+            textinfo = new List<TextInfo>();
+            modelInfo = new List<ModelInfo>();
+            cameraInfo = new List<CameraInfo>();
+            audioinfo = new List<AudioInfo>();
+
+
+        }
+
+        /// <summary>
+        ///  关闭事件
+        /// </summary>
         public List<OpenEventState> closeeventstate { get; set; }
 
+        /// <summary>
+        /// 打开事件
+        /// </summary>
         public List<OpenEventState> openeventstate { get; set; }
+
+        /// <summary>
+        /// 按钮信息
+        /// </summary>
         public List<ButtonInfo> buttoninfo { get; set; }
+
+        /// <summary>
+        /// 图片信息
+        /// </summary>
         public List<ImageInfo> imageinfo { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public List<TextInfo> textinfo { get; set; }
         public List<ModelInfo> modelInfo { get; set; }
         public List<CameraInfo> cameraInfo { get; set;}
@@ -46,6 +87,11 @@ namespace Nop.Web.Models.Api.BookNode
 
     public class OpenEventState
     {
+
+        public OpenEventState()
+        {
+            objectids = new List<string>();
+        }
         public int enventid { get; set; }
         public List<string> objectids { get; set; }
     }
@@ -67,6 +113,13 @@ namespace Nop.Web.Models.Api.BookNode
     }
     public class ButtonInfo:BaseModel
     {
+
+        public ButtonInfo()
+        {
+            pos = new OffsetXY();
+            size = new OffsetXY();
+        }
+
         public OffsetXY pos { get; set; }
         public OffsetXY size { get; set; }
         public string eventid { get; set; }
@@ -80,8 +133,14 @@ namespace Nop.Web.Models.Api.BookNode
     }
 
 
-    public class TextDic
+    public class TextDic:BaseModel
     {
+
+        public TextDic()
+        {
+            dic = new List<RichText>();
+        }
+
         public string key { get; set; }
 
         public List<RichText> dic { get; set; }
@@ -101,7 +160,6 @@ namespace Nop.Web.Models.Api.BookNode
     }
     public class TextInfo : BaseModel
     {
-
         public TextInfo()
         {
             pos = new OffsetXY();
@@ -110,21 +168,18 @@ namespace Nop.Web.Models.Api.BookNode
         }
         public OffsetXY pos { get; set; }
         public OffsetXY size { get; set; }
-    
         public string defaulttext { get; set; }
         public List<TextDic> dic { get; set; }
     }
-
-
     public class ModelInfo:BaseModel
     {
-
         public ModelInfo()
         {
             pos = new OffsetXYZ();
-            rot = new OffsetXYZ();         
+            rot = new OffsetXYZ();
+            scale = new OffsetXYZ();
+            clips = new List<Dic>();
         }
-
         public OffsetXYZ pos { get; set; }
         public OffsetXYZ rot { get; set; }
         public OffsetXYZ scale { get; set; }
@@ -137,13 +192,20 @@ namespace Nop.Web.Models.Api.BookNode
         public CameraInfo()
         {
             pos = new OffsetXYZ();
+            rot = new OffsetXYZ();
+            scale = new OffsetXYZ();
         }
         public OffsetXYZ pos { get; set; }
         public OffsetXYZ rot { get; set; }   
         public OffsetXYZ scale { get; set; }
     }
-    public class AudioInfo
+    public class AudioInfo:BaseModel
     {
+
+        public AudioInfo()
+        {
+            clips = new List<Dic>();
+        }
         public List<Dic> clips { get; set; }
     }
 

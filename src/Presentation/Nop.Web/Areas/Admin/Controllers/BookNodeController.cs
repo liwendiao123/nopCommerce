@@ -209,6 +209,41 @@ namespace Nop.Web.Areas.Admin.Controllers
 
         }
 
+
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        public IActionResult Edit(AiBookModelView model, bool continueEditing)
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManagerBook))
+            {
+                return AccessDeniedView();
+            }
+            try
+            {
+                var result = _bookNodeService.GetAiBookModelById(model.Id);
+                ///检验 该知识点是否存在
+                if (result == null || result.Deleted)
+                {
+                    return RedirectToAction("Index");
+                }    
+                model.CreatedOnUtc = result.CreatedOnUtc;
+                model.UpdatedOnUtc = DateTime.Now;
+                result = model.ToEntity(result);
+                _bookNodeService.UpdateAiBookModel(result);
+                //_bookDirService.UpdateBookDir(category);
+                //search engine name
+                //result.SeName = _urlRecordService.ValidateSeName(category, model.SeName, category.Name, true);
+                //_urlRecordService.SaveSlug(category, model.SeName, 0);
+            }
+            catch (Exception ex)
+            {
+                var msg = ex.Message;
+                return RedirectToAction("Index");
+            }
+           var model1 = _bookNodeFactory.PrepareBookNodeModel(model, 0);
+           return View(model1);
+
+        }
+        
         public IActionResult Delete(int id)
         {
 

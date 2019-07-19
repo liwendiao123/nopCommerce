@@ -32,15 +32,40 @@ namespace Nop.Web.Controllers.Api
         {
 
             var result = _aiBookService.GetAiBookModelById(id);
-            return Json(new
+            if (result == null)
             {
-                code = 0,
-                msg = "已成功",
-                data = new
-                {                 
-                    strJson = result.StrJson
+                return Json( new List<string>()
+                );
+            }
+            if (!string.IsNullOrEmpty(result.StrJson))
+            {
+
+                try
+                {
+                    var je = Newtonsoft.Json.JsonConvert.DeserializeObject(result.StrJson);
+                    return Json(je);
                 }
-            });
+                catch (Exception ex)
+                {
+                    return Json( new List<string>());
+                }
+
+         
+
+              
+
+            }
+            else
+            {
+                return Json(new
+                {
+                    //code =-1,
+                    //msg = "json解析失败",
+                    data = new List<string>()
+                });
+
+            }
+          
         }
 
 
@@ -325,8 +350,6 @@ namespace Nop.Web.Controllers.Api
 
                 };
             }
-
-
             return root;
             // return View();
 

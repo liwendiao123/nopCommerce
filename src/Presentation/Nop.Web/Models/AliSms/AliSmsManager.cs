@@ -12,9 +12,10 @@ namespace Nop.Web.Models.AliSms
         //// 产品域名,开发者无需替换
         //const string DOMAIN = "dysmsapi.aliyuncs.com";
 
-        //const String accessKeyId = "";
+       public const String accessKeyId = "LTAIgSHNbd8oGL92";
         //const String accessKeySecret = "";
 
+       
 
     }
 }

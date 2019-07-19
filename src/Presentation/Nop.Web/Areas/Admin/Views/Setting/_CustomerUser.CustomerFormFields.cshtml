@@ -16,7 +16,8 @@
         $("#@Html.IdFor(model => model.CustomerSettings.FaxEnabled)").click(toggleCustomerRequiredFormField);
         $("#@Html.IdFor(model => model.CustomerSettings.NewsletterEnabled)").click(toggleNewsletterEnabledField);
         $("#@Html.IdFor(model => model.CustomerSettings.HideNewsletterBlock)").click(toggleHideNewsletterBlock);
-
+        $("#@Html.IdFor(model=>model.CustomerSettings.InviteCodeEnabled)").click(toggleCustomerRequiredFormField);
+         $("#@Html.IdFor(model=>model.CustomerSettings.IdCardImgEnabled)").click(toggleCustomerRequiredFormField);
         toggleCustomerCountryFormField();
         toggleCustomerStateProvinceFormField();
         toggleCustomerRequiredFormField();
@@ -106,6 +107,12 @@
             $('#pnlCustomerInviteCodeRequired').show();
         } else {
             $('#pnlCustomerInviteCodeRequired').hide();
+        }
+
+      if ($('#@Html.IdFor(model => model.CustomerSettings.IdCardImgEnabled)').is(':checked')) {
+          $('#pnlCustomerIdCardImgRequired').show();
+        } else {
+          $('#pnlCustomerIdCardImgRequired').hide();
         }
         if ($('#@Html.IdFor(model => model.CustomerSettings.FaxEnabled)').is(':checked')) {
             $('#pnlCustomerFaxRequired').show();
@@ -380,6 +387,31 @@
             </div>
         </nop-nested-setting>
 
+
+
+        <div class="form-group">
+            <div class="col-md-3">
+                <nop-label asp-for="CustomerSettings.IdCardImgEnabled" />
+            </div>
+            <div class="col-md-9">
+                <nop-editor asp-for="CustomerSettings.IdCardImgEnabled" />
+                <span asp-validation-for="CustomerSettings.IdCardImgEnabled"></span>
+            </div>
+        </div>
+        <nop-nested-setting asp-for="CustomerSettings.IdCardImgEnabled">
+            <div class="form-group" id="pnlCustomerIdCardImgRequired">
+                <div class="col-md-3">
+                    <nop-label asp-for="CustomerSettings.IdCardImgRequired" />
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="CustomerSettings.IdCardImgRequired" />
+                    <span asp-validation-for="CustomerSettings.IdCardImgRequired"></span>
+                </div>
+            </div>
+        </nop-nested-setting>
+
+
+    
         <div class="form-group">
             <div class="col-md-3">
                 <nop-label asp-for="CustomerSettings.FaxEnabled" />

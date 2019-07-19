@@ -14,14 +14,8 @@ namespace Nop.Web.Controllers.Api
 
      
         #region Fields
-
         private readonly IPictureService _pictureService;
-
-
-
         #endregion
-
-
         public MediaController(IPictureService pictureService)
         {
             _pictureService = pictureService;
@@ -30,8 +24,6 @@ namespace Nop.Web.Controllers.Api
         {
             return View();
         }
-
-
         public IActionResult Test()
         {
             return Json(new

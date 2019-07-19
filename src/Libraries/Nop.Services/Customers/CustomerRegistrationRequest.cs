@@ -62,6 +62,9 @@ namespace Nop.Services.Customers
         /// </summary>
         public int StoreId { get; set; }
 
+
+        public string RoleName { get; set; }
+
         /// <summary>
         /// Is approved
         /// </summary>

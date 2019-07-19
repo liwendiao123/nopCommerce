@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Nop.Web.Framework.Models;
 using Nop.Web.Framework.Mvc.ModelBinding;
+using Nop.Web.Models.Api.BookNode;
 
 namespace Nop.Web.Areas.Admin.Models.AiBook
 {
@@ -27,6 +28,7 @@ namespace Nop.Web.Areas.Admin.Models.AiBook
             AvailableCategories = new List<SelectListItem>();
             AvailableBooks = new List<SelectListItem>();
             AvailableBookDirs = new List<SelectListItem>();
+            BookNodeRoot = new BookNodeRoot();
         }
         #endregion
 
@@ -92,6 +94,10 @@ namespace Nop.Web.Areas.Admin.Models.AiBook
         /// </summary>
         [NopResourceDisplayName("Admin.AiBook.BookModel.List.AvailableBookDirs")]
         public IList<SelectListItem> AvailableBookDirs { get; set; }
+
+
+
+        public BookNodeRoot BookNodeRoot { get; set; }
         #endregion
     }
 

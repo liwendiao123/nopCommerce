@@ -1686,9 +1686,8 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
               .ForMember(entity => entity.AvailableBookDirs, options => options.Ignore())
               .ForMember(entity => entity.AvailableCategories, options => options.Ignore())
               .ForMember(entity => entity.CateId, options => options.Ignore())
-              .ForMember(entity => entity.BookId, options => options.Ignore())
-                
-             .ForMember(entity => entity.AvailableBooks, options => options.Ignore());
+              .ForMember(entity => entity.BookId, options => options.Ignore())          
+              .ForMember(entity => entity.BookNodeRoot, options => options.Ignore());
 
 
             CreateMap<AiBookModelView, AiBookModel>()

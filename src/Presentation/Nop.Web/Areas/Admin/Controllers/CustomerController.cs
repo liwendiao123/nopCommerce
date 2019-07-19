@@ -789,9 +789,8 @@ namespace Nop.Web.Areas.Admin.Controllers
             if (changePassResult.Success)
                 _notificationService.SuccessNotification(_localizationService.GetResource("Admin.Customers.Customers.PasswordChanged"));
             else
-                foreach (var error in changePassResult.Errors)
+               foreach (var error in changePassResult.Errors)
                     _notificationService.ErrorNotification(error);
-
             return RedirectToAction("Edit", new { id = customer.Id });
         }
 

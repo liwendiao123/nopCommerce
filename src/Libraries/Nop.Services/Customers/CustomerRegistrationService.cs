@@ -229,7 +229,7 @@ namespace Nop.Services.Customers
             }
             if (request.Customer.IsRegistered())
             {
-                result.AddError("Current customer is already registered");
+                result.AddError("该账号已经注册");
                 return result;
             }
 
@@ -300,6 +300,13 @@ namespace Nop.Services.Customers
             request.Customer.Active = request.IsApproved;
 
             //add to 'Registered' role
+
+            string roleName = NopCustomerDefaults.RegisteredRoleName;
+
+            if (!string.IsNullOrEmpty(request.RoleName))
+            {
+                roleName = request.RoleName;
+            }
             var registeredRole = _customerService.GetCustomerRoleBySystemName(NopCustomerDefaults.RegisteredRoleName);
             if (registeredRole == null)
                 throw new NopException("'Registered' role could not be loaded");

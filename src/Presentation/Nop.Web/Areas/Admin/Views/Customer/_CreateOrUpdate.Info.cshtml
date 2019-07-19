@@ -1,5 +1,4 @@
 ﻿@model CustomerModel
-
 @using Newtonsoft.Json
 @if (Model.CountryEnabled && Model.StateProvinceEnabled)
 {
@@ -8,12 +7,10 @@
             $("#@Html.IdFor(model => model.CountryId)").change(function() {
                 var selectedItem = $(this).val();
                 var ddlStates = $("#@Html.IdFor(model => model.StateProvinceId)");
-
                 var postData = {
                     countryId: selectedItem,
                     addSelectStateItem: "true"
                 };
-
                 $.ajax({
                     cache: false,
                     type: "GET",

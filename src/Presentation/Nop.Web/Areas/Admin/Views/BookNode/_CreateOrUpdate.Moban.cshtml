@@ -1,0 +1,107 @@
+﻿@model AiBookModelView
+
+<div class="nav-tabs-custom">
+    <ul class="nav nav-tabs">
+
+        <li class="">
+            <a href="#tab_1" data-toggle="tab" aria-expanded="true">
+                按钮信息
+            </a>
+        </li>
+        <li class="">
+            <a href="#tab_2" data-toggle="tab" aria-expanded="false">
+                图片信息
+            </a>
+        </li>
+        <li class="">
+            <a href="#tab_3" data-toggle="tab" aria-expanded="false">
+                文本信息
+            </a>
+        </li>
+        <li class="active">
+            <a href="#tab_4" data-toggle="tab" aria-expanded="true">
+                模型信息
+            </a>
+        </li>
+
+        <li class="">
+            <a href="#tab_5" data-toggle="tab" aria-expanded="false">
+                相机信息
+            </a>
+        </li>
+        <li class="active">
+            <a href="#tab_6" data-toggle="tab" aria-expanded="true">
+                音频信息
+            </a>
+        </li>
+
+        <li class="active">
+            <a href="#tab_7" data-toggle="tab" aria-expanded="false">
+                打开事件
+            </a>
+        </li>
+        <li class="">
+            <a href="#tab_8" data-toggle="tab" aria-expanded="false">
+                关闭事件
+            </a>
+        </li>
+
+
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane" id="tab_1">
+
+            <div class="form-group">
+                <div class="col-md-3">
+                    <nop-label asp-for="WebBinUrl" />
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="WebBinUrl" />
+                    <span asp-validation-for="WebBinUrl"></span>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.tab-pane -->
+        <div class="tab-pane" id="tab_2">
+            22222222222222222
+        </div>
+        <!-- /.tab-pane -->
+        <div class="tab-pane active" id="tab_3">
+            333333333333333
+        </div>
+        <div class="tab-pane" id="tab_4">
+            4444444444444444
+        </div>
+        <!-- /.tab-pane -->
+        <div class="tab-pane" id="tab_5">
+            55555555555555555
+        </div>
+        <!-- /.tab-pane -->
+        <div class="tab-pane active" id="tab_6">
+            666666666666666666
+        </div>
+        <!-- /.tab-pane -->
+
+        <div class="tab-pane" id="tab_7">
+            <div class="form-group">
+                <div class="col-md-3">
+                    <div class="label-wrapper">
+                        <label class="control-label" for="enventid">
+                            时间Id
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="Published" />
+                    <span asp-validation-for="Published"></span>
+                </div>
+            </div>
+        </div>
+        <!-- /.tab-pane -->
+        <div class="tab-pane active" id="tab_8">
+            888888888888
+        </div>
+    </div>
+    <!-- /.tab-content -->
+</div>
