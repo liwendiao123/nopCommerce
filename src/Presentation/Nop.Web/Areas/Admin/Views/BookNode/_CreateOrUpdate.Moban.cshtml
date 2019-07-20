@@ -1,9 +1,37 @@
 ﻿@model AiBookModelView
+<style>
+    .btninfo input.control-label,.imginfo input.control-label {
+        text-align: left;
+    }
+    .fengexian {
+        width: 100%;
+        height: auto;
+        font-size:1.2em;
+        border-top: solid 1px #0094ff;
+        /*border-bottom: solid 1px #0094ff;
+        border-right: solid 1px #0094ff;*/
+        margin-top: 0.5em;
+        margin-bottom: 0.5em;
+        margin-left:0.5em;
+    }
 
+    .text-event {
+        border: solid 1px #eee;
+        padding-bottom: 1em;
+    }
+        .text-event.row, .text-event.row > div {
+            margin-top: 10px;
+            margin-bottom:10px;
+        }
+    .tab-content .active .resourceadd {
+        color: beige !important;
+    }
+
+</style>
 <div class="nav-tabs-custom">
     <ul class="nav nav-tabs">
 
-        <li class="">
+        <li class="active">
             <a href="#tab_1" data-toggle="tab" aria-expanded="true">
                 按钮信息
             </a>
@@ -18,8 +46,8 @@
                 文本信息
             </a>
         </li>
-        <li class="active">
-            <a href="#tab_4" data-toggle="tab" aria-expanded="true">
+        <li class="">
+            <a href="#tab_4" data-toggle="tab" aria-expanded="false">
                 模型信息
             </a>
         </li>
@@ -29,13 +57,13 @@
                 相机信息
             </a>
         </li>
-        <li class="active">
-            <a href="#tab_6" data-toggle="tab" aria-expanded="true">
+        <li class="">
+            <a href="#tab_6" data-toggle="tab" aria-expanded="false">
                 音频信息
             </a>
         </li>
 
-        <li class="active">
+        <li class="">
             <a href="#tab_7" data-toggle="tab" aria-expanded="false">
                 打开事件
             </a>
@@ -49,59 +77,1092 @@
 
     </ul>
     <div class="tab-content">
-        <div class="tab-pane" id="tab_1">
+        <div class="tab-pane active" id="tab_1">
 
-            <div class="form-group">
-                <div class="col-md-3">
-                    <nop-label asp-for="WebBinUrl" />
+            <div class="row">
+                <div class="col-md-4 modelel">
+                    <div class="panel panel-info btninfo">
+                        <div class="panel-heading clearfix">
+                            按钮1
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">平面坐标</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-x" />
+                                    </div>
+
+
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-y" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">按钮尺寸</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-y" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-y" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
+                                    <nop-select asp-for="PrefabPath" asp-items="Model.PrefabPathList" />
+                                    <span asp-validation-for="PrefabPath"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制Url</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 ">
+                                    <input type="url" value="" class="btn-prefab-url control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源名称（需与Url文件名称一致）</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="btn-prefab-name control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
+                                    <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">知识点ID</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="btn-id control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">按钮背景图</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="btn-bgimg control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">按钮文字</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="btn-txt control-label" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
-                <div class="col-md-9">
-                    <nop-editor asp-for="WebBinUrl" />
-                    <span asp-validation-for="WebBinUrl"></span>
+            </div> 
+            <div class="row">
+                <span class="btn bg-blue resourceadd">
+                    <i class="fa fa-plus-square"></i>
+                    @T("Admin.Common.AddNew")
+                    @*@T("Admin.Common.Delete")*@
+                </span>
+                <span class="btn bg-red resourcedel">
+                    <i class="fa fa-trash-o"></i>
+                    @T("Admin.Common.Delete")
+                </span>
+            </div>
+        </div>
+        <!-- /.tab-pane -->
+        <div class="tab-pane" id="tab_2">
+
+            <div class="row imginfo">
+                <div class="col-md-4 modelel">
+                    <div class="panel panel-info imgiteminfo">
+                        <div class="panel-heading clearfix">
+                            图片信息1
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">平面坐标</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-x" />
+                                    </div>
+
+
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-y" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">按钮尺寸</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-y" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-y" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
+                                    <nop-select asp-for="PrefabPath" asp-items="Model.PrefabPathList" />
+                                    <span asp-validation-for="PrefabPath"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">默认Url地址</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 ">
+                                    <input type="url" value="" class="btn-prefab-defaulturl control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制Url</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 ">
+                                    <input type="url" value="" class="btn-prefab-url control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源名称</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="btn-prefab-name control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
+                                    <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源ID</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="btn-id control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group fengexian"></div>
+                            <ul class="timeline">
+                                <!-- timeline time label -->
+                                <li class="time-label">
+                                    <span class="bg-red">
+                                        图片响应事件
+                                    </span>
+                                </li>
+                                <!-- /.timeline-label -->
+                                <!-- timeline item -->
+                                <li>
+                                    <!-- timeline icon -->
+                                    <i class="fa fa-envelope bg-blue"></i>
+                                    <div class="timeline-item">
+                                        <span class="time">@*<i class="fa fa-clock-o"></i> 12:05*@</span>
+
+                                        <h3 class="timeline-header"><a href="#">事件1</a> </h3>
+
+                                        <div class="timeline-body">
+
+                                            <div class="form-group">
+                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
+                                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
+                                                    <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">图片路径ID</label>
+                                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                                    <input type="text" value="" class="btn-id control-label" />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="timeline-footer">
+
+                                        </div>
+                                    </div>
+
+                                </li>
+                                <li>
+                                    <!-- timeline icon -->
+                                    <i class="fa fa-envelope bg-blue"></i>
+                                    <div class="timeline-item">
+                                        <span class="time">@*<i class="fa fa-clock-o"></i> 12:05*@</span>
+
+                                        <h3 class="timeline-header"><a href="#">事件1</a> </h3>
+
+                                        <div class="timeline-body">
+
+                                            <div class="form-group">
+                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
+                                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
+                                                    <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">图片路径ID</label>
+                                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                                    <input type="text" value="" class="btn-id control-label" />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="timeline-footer">
+
+                                        </div>
+                                    </div>
+
+
+                                </li>
+                                <!-- END timeline item -->
+
+                            </ul>
+                            <div>
+                                <span id="customer-delete" class="btn bg-blue">
+                                    <i class="fa fa-plus-square"></i>
+                                    @T("Admin.Common.AddNew")
+                                    @*@T("Admin.Common.Delete")*@
+                                </span>
+                                <span id="customer-delete" class="btn bg-red">
+                                    <i class="fa fa-trash-o"></i>
+                                    @T("Admin.Common.Delete")
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
+            </div>
+            <div class="row">
+                <span class="btn bg-blue resourceadd">
+                    <i class="fa fa-plus-square"></i>
+                    @T("Admin.Common.AddNew")
+                    @*@T("Admin.Common.Delete")*@
+                </span>
+                <span class="btn bg-red resourcedel">
+                    <i class="fa fa-trash-o"></i>
+                    @T("Admin.Common.Delete")
+                </span>
             </div>
 
         </div>
         <!-- /.tab-pane -->
-        <div class="tab-pane" id="tab_2">
-            22222222222222222
-        </div>
-        <!-- /.tab-pane -->
-        <div class="tab-pane active" id="tab_3">
-            333333333333333
+        <div class="tab-pane " id="tab_3">
+            <div class="row textinfo">
+                <div class="col-md-4 modelel">
+                    <div class="panel panel-info imgiteminfo">
+                        <div class="panel-heading clearfix">
+                            文字信息1
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">平面坐标</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-x" />
+                                    </div>
+
+
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-y" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">按钮尺寸</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-y" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-y" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
+                                    <nop-select asp-for="PrefabPath" asp-items="Model.PrefabPathList" />
+                                    <span asp-validation-for="PrefabPath"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">默认Url地址</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 ">
+                                    <input type="url" value="" class="btn-prefab-defaulturl control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制Url</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 ">
+                                    <input type="url" value="" class="btn-prefab-url control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源名称</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="btn-prefab-name control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
+                                    <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源ID</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="btn-id control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group fengexian"></div>
+                            <ul class="timeline">
+                                <!-- timeline time label -->
+                                <li class="time-label">
+                                    <span class="bg-red">
+                                        文字响应事件
+                                    </span>
+                                </li>
+                                <!-- /.timeline-label -->
+                                <!-- timeline item -->
+                                <li>
+                                    <!-- timeline icon -->
+                                    <i class="fa fa-envelope bg-blue"></i>
+                                    <div class="timeline-item">
+                                        <span class="time">@*<i class="fa fa-clock-o"></i> 12:05*@</span>
+
+                                        <h3 class="timeline-header"><a href="#">事件1</a> </h3>
+
+                                        <div class="timeline-body">
+
+                                            <div class="form-group">
+                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
+                                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
+                                                    <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-lg-12 col-xs-12 col-sm-12 col-md-12 control-label text-left" style="text-align:left">文字信息</label>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="row text-event">
+                                                    <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
+                                                        <input type="checkbox" name="b" />是否粗体
+                                                    </div>
+                                                    <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
+                                                        <input type="checkbox" name="b" />是否斜体体
+                                                    </div>
+                                                    <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
+                                                        <input type="number" name="b" />字体大小
+                                                    </div>
+                                                    <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
+                                                        <input type="text" name="b" />字体颜色
+                                                    </div>
+                                                    <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
+                                                        <input type="text" name="b" />文字信息
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <span class="btn font-add bg-blue">
+                                                        <i class="fa fa-plus-square"></i>
+                                                        @T("Admin.Common.AddNew")
+                                                        @*@T("Admin.Common.Delete")*@
+                                                    </span>
+                                                    <span class="btn bg-red font-delete">
+                                                        <i class="fa fa-trash-o"></i>
+                                                        @T("Admin.Common.Delete")
+                                                    </span>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="timeline-footer">
+
+                                        </div>
+                                    </div>
+
+                                </li>
+                                <li>
+                                    <!-- timeline icon -->
+                                    <i class="fa fa-envelope bg-blue"></i>
+                                    <div class="timeline-item">
+                                        <span class="time">@*<i class="fa fa-clock-o"></i> 12:05*@</span>
+
+                                        <h3 class="timeline-header"><a href="#">事件1</a> </h3>
+
+                                        <div class="timeline-body">
+
+                                            <div class="form-group">
+                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
+                                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
+                                                    <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-lg-12 col-xs-12 col-sm-12 col-md-12 control-label text-left" style="text-align:left">文字信息</label>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="row text-event">
+                                                    <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
+                                                        <input type="checkbox" name="b" />是否粗体
+                                                    </div>
+                                                    <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
+                                                        <input type="checkbox" name="b" />是否斜体体
+                                                    </div>
+                                                    <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
+                                                        <input type="number" name="b" />字体大小
+                                                    </div>
+                                                    <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
+                                                        <input type="text" name="b" />字体颜色
+                                                    </div>
+                                                    <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
+                                                        <input type="text" name="b" />文字信息
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <span class="btn font-add bg-blue">
+                                                        <i class="fa fa-plus-square"></i>
+                                                        @T("Admin.Common.AddNew")
+                                                        @*@T("Admin.Common.Delete")*@
+                                                    </span>
+                                                    <span class="btn bg-red font-delete">
+                                                        <i class="fa fa-trash-o"></i>
+                                                        @T("Admin.Common.Delete")
+                                                    </span>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="timeline-footer">
+
+                                        </div>
+                                    </div>
+
+                                </li>
+
+                                <!-- END timeline item -->
+
+                            </ul>
+                            <div>
+                                <span id="customer-delete" class="btn bg-blue">
+                                    <i class="fa fa-plus-square"></i>
+                                    @T("Admin.Common.AddNew")
+                                    @*@T("Admin.Common.Delete")*@
+                                </span>
+                                <span id="customer-delete" class="btn bg-red">
+                                    <i class="fa fa-trash-o"></i>
+                                    @T("Admin.Common.Delete")
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row">
+                <span class="btn bg-blue resourceadd">
+                    <i class="fa fa-plus-square"></i>
+                    @T("Admin.Common.AddNew")
+                    @*@T("Admin.Common.Delete")*@
+                </span>
+                <span class="btn bg-red resourcedel">
+                    <i class="fa fa-trash-o"></i>
+                    @T("Admin.Common.Delete")
+                </span>
+            </div>
         </div>
         <div class="tab-pane" id="tab_4">
-            4444444444444444
+            <div class="row modelinfo modelel">
+                <div class="col-md-4">
+                    <div class="panel panel-info imgiteminfo">
+                        <div class="panel-heading clearfix">
+                            模型信息1
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">默认三维空间向量</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-x" />
+                                    </div>
+
+
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-y" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Z:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-z" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">空间三维旋转向量</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-rot-x" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-rot-y" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Z:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-rot-z" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">默认的缩放值</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-scale-x" />
+                                    </div>
+
+
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-scale-y" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Z:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-scale-z" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
+                                    <nop-select asp-for="PrefabPath" asp-items="Model.PrefabPathList" />
+                                    <span asp-validation-for="PrefabPath"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">默认Url地址</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 ">
+                                    <input type="url" value="" class="btn-prefab-defaulturl control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制Url</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 ">
+                                    <input type="url" value="" class="btn-prefab-url control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源名称</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="btn-prefab-name control-label" />
+                                </div>
+                            </div>
+                            @*<div class="form-group">
+                            <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
+                            <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
+                                <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                            </div>
+                        </div>*@
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源ID</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="btn-id control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group fengexian"></div>
+                            <ul class="timeline">
+                                <!-- timeline time label -->
+                                <li class="time-label">
+                                    <span class="bg-red">
+                                        模型响应事件
+                                    </span>
+                                </li>
+                                <!-- /.timeline-label -->
+                                <!-- timeline item -->
+                                <li>
+                                    <!-- timeline icon -->
+                                    <i class="fa fa-envelope bg-blue"></i>
+                                    <div class="timeline-item">
+                                        <span class="time">@*<i class="fa fa-clock-o"></i> 12:05*@</span>
+
+                                        <h3 class="timeline-header"><a href="#">事件1</a> </h3>
+
+                                        <div class="timeline-body">
+
+                                            <div class="form-group">
+                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
+                                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
+                                                    <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">模型动画名称</label>
+                                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                                    <input type="text" value="" class="btn-id control-label" />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="timeline-footer">
+
+                                        </div>
+                                    </div>
+
+                                </li>
+                                <li>
+                                    <!-- timeline icon -->
+                                    <i class="fa fa-envelope bg-blue"></i>
+                                    <div class="timeline-item">
+                                        <span class="time">@*<i class="fa fa-clock-o"></i> 12:05*@</span>
+
+                                        <h3 class="timeline-header"><a href="#">事件2</a> </h3>
+
+                                        <div class="timeline-body">
+
+                                            <div class="form-group">
+                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
+                                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
+                                                    <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">模型动画名称</label>
+                                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                                    <input type="text" value="" class="btn-id control-label" />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="timeline-footer">
+
+                                        </div>
+                                    </div>
+
+
+                                </li>
+                                <!-- END timeline item -->
+
+                            </ul>
+                            <div>
+                                <span id="customer-delete" class="btn bg-blue">
+                                    <i class="fa fa-plus-square"></i>
+                                    @T("Admin.Common.AddNew")
+                                    @*@T("Admin.Common.Delete")*@
+                                </span>
+                                <span id="customer-delete" class="btn bg-red">
+                                    <i class="fa fa-trash-o"></i>
+                                    @T("Admin.Common.Delete")
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <span class="btn bg-blue resourceadd">
+                    <i class="fa fa-plus-square"></i>
+                    @T("Admin.Common.AddNew")
+                    @*@T("Admin.Common.Delete")*@
+                </span>
+                <span class="btn bg-red resourcedel">
+                    <i class="fa fa-trash-o"></i>
+                    @T("Admin.Common.Delete")
+                </span>
+            </div>
         </div>
         <!-- /.tab-pane -->
         <div class="tab-pane" id="tab_5">
-            55555555555555555
+            <div class="row camerainfo modelel">
+                <div class="col-md-4">
+                    <div class="panel panel-info camerainfo">
+                        <div class="panel-heading clearfix">
+                            相机信息1
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">默认三维空间向量</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-x" />
+                                    </div>
+
+
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-y" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Z:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-z" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">空间三维旋转向量</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-rot-x" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-rot-y" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Z:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-rot-z" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">默认的缩放值</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-scale-x" />
+                                    </div>
+
+
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-scale-y" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Z:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-scale-z" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
+                                    <nop-select asp-for="PrefabPath" asp-items="Model.PrefabPathList" />
+                                    <span asp-validation-for="PrefabPath"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">默认Url地址</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 ">
+                                    <input type="url" value="" class="btn-prefab-defaulturl control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制Url</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 ">
+                                    <input type="url" value="" class="btn-prefab-url control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源名称</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="btn-prefab-name control-label" />
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源ID</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="btn-id control-label" />
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <span class="btn bg-blue resourceadd">
+                    <i class="fa fa-plus-square"></i>
+                    @T("Admin.Common.AddNew")
+                    @*@T("Admin.Common.Delete")*@
+                </span>
+                <span class="btn bg-red resourcedel">
+                    <i class="fa fa-trash-o"></i>
+                    @T("Admin.Common.Delete")
+                </span>
+            </div>
         </div>
         <!-- /.tab-pane -->
-        <div class="tab-pane active" id="tab_6">
-            666666666666666666
+        <div class="tab-pane " id="tab_6">
+            <div class="row audioinfo modelel">
+                <div class="col-md-4">
+                    <div class="panel panel-info camerainfo">
+                        <div class="panel-heading clearfix">
+                            音频信息1
+                        </div>
+                        <div class="panel-body">
+
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
+                                    <nop-select asp-for="PrefabPath" asp-items="Model.PrefabPathList" />
+                                    <span asp-validation-for="PrefabPath"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制Url</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 ">
+                                    <input type="url" value="" class="btn-prefab-url control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源名称</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="btn-prefab-name control-label" />
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源ID</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="btn-id control-label" />
+                                </div>
+                            </div>
+
+                            <div class="form-group fengexian"></div>
+                            <ul class="timeline">
+                                <!-- timeline time label -->
+                                <li class="time-label">
+                                    <span class="bg-red">
+                                        模型响应事件
+                                    </span>
+                                </li>
+                                <!-- /.timeline-label -->
+                                <!-- timeline item -->
+                                <li>
+                                    <!-- timeline icon -->
+                                    <i class="fa fa-envelope bg-blue"></i>
+                                    <div class="timeline-item">
+                                        <span class="time">@*<i class="fa fa-clock-o"></i> 12:05*@</span>
+
+                                        <h3 class="timeline-header"><a href="#">事件1</a> </h3>
+
+                                        <div class="timeline-body">
+
+                                            <div class="form-group">
+                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
+                                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
+                                                    <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">音效地址</label>
+                                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                                    <input type="text" value="" class="btn-id control-label" />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="timeline-footer">
+
+                                        </div>
+                                    </div>
+
+                                </li>
+                                <li>
+                                    <!-- timeline icon -->
+                                    <i class="fa fa-envelope bg-blue"></i>
+                                    <div class="timeline-item">
+                                        <span class="time">@*<i class="fa fa-clock-o"></i> 12:05*@</span>
+
+                                        <h3 class="timeline-header"><a href="#">事件2</a> </h3>
+
+                                        <div class="timeline-body">
+
+                                            <div class="form-group">
+                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
+                                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
+                                                    <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">音效地址</label>
+                                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                                    <input type="text" value="" class="btn-id control-label" />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="timeline-footer">
+
+                                        </div>
+                                    </div>
+
+
+                                </li>
+                                <!-- END timeline item -->
+
+                            </ul>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <span class="btn bg-blue resourceadd">
+                    <i class="fa fa-plus-square"></i>
+                    @T("Admin.Common.AddNew")
+                    @*@T("Admin.Common.Delete")*@
+                </span>
+                <span class="btn bg-red resourcedel">
+                    <i class="fa fa-trash-o"></i>
+                    @T("Admin.Common.Delete")
+                </span>
+            </div>
         </div>
         <!-- /.tab-pane -->
 
         <div class="tab-pane" id="tab_7">
-            <div class="form-group">
-                <div class="col-md-3">
-                    <div class="label-wrapper">
-                        <label class="control-label" for="enventid">
-                            时间Id
-                        </label>
+            <div class="row openeventinfo modelel">
+                <div class="col-md-4">
+                    <div class="panel panel-info openeventiteminfo">
+                        <div class="panel-heading clearfix">
+                            打开时间基本信息
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">事件ID</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="btn-id control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">事件名称</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="btn-id control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">关联资源信息</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
+                                    <nop-select asp-for="PrefabPath" asp-items="Model.PrefabPathList" />
+                                    <span asp-validation-for="PrefabPath"></span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-9">
-                    <nop-editor asp-for="Published" />
-                    <span asp-validation-for="Published"></span>
-                </div>
+
+            </div>
+            <div class="row">
+                <span class="btn bg-blue resourceadd">
+                    <i class="fa fa-plus-square"></i>
+                    @T("Admin.Common.AddNew")
+                    @*@T("Admin.Common.Delete")*@
+                </span>
+                <span class="btn bg-red resourcedel">
+                    <i class="fa fa-trash-o"></i>
+                    @T("Admin.Common.Delete")
+                </span>
             </div>
         </div>
         <!-- /.tab-pane -->
-        <div class="tab-pane active" id="tab_8">
-            888888888888
+        <div class="tab-pane" id="tab_8">
+            <div class="row closedeventinfo modelel">
+                <div class="col-md-4">
+                    <div class="panel panel-info closedeventiteminfo">
+                        <div class="panel-heading clearfix">
+                            打开时间基本信息
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">事件ID</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="btn-id control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">事件名称</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="btn-id control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">关联资源信息</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
+                                    <nop-select asp-for="PrefabPath" asp-items="Model.PrefabPathList" />
+                                    <span asp-validation-for="PrefabPath"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              
+            </div>
         </div>
     </div>
     <!-- /.tab-content -->
 </div>
+
+
+<script>
+
+    $(function () {
+
+        $('.tab-content .tab-pane .resourceadd').on("click", function () {
+
+            alert("ok");
+
+            var modelel = $(this).parent().find('.modelel').first();
+            console.log(modelel);
+            var modelelparent = modelel.parent().append(modelel);
+        })
+
+
+    })
+</script>

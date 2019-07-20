@@ -28,7 +28,9 @@ namespace Nop.Web.Areas.Admin.Models.AiBook
             AvailableCategories = new List<SelectListItem>();
             AvailableBooks = new List<SelectListItem>();
             AvailableBookDirs = new List<SelectListItem>();
+            PrefabPathList = new List<SelectListItem>();
             BookNodeRoot = new BookNodeRoot();
+            EventIdList = new List<SelectListItem>();
         }
         #endregion
 
@@ -36,6 +38,12 @@ namespace Nop.Web.Areas.Admin.Models.AiBook
         #region 属性
         [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.CateName")]
         public int CateId { get; set; }
+
+        [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.PrefabPath")]
+        public string PrefabPath { get; set; }
+        [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.EventId")]
+        public string EventId { get; set; }
+
         [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.Book")]
         public int BookId { get; set; }
         [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.BookDir")]
@@ -95,8 +103,18 @@ namespace Nop.Web.Areas.Admin.Models.AiBook
         [NopResourceDisplayName("Admin.AiBook.BookModel.List.AvailableBookDirs")]
         public IList<SelectListItem> AvailableBookDirs { get; set; }
 
+        [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.PrefabPathList")]
+        /// <summary>
+        /// 预制路径集合
+        /// </summary>
+        public IList<SelectListItem> PrefabPathList { get; set; }
 
+        [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.EventIdList")]
 
+        /// <summary>
+        /// 事件ID集合
+        /// </summary>
+        public IList<SelectListItem> EventIdList { get; set; }
         public BookNodeRoot BookNodeRoot { get; set; }
         #endregion
     }

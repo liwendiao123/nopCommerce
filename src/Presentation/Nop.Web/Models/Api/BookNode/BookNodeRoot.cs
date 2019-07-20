@@ -20,7 +20,6 @@ namespace Nop.Web.Models.Api.BookNode
         {
             Base = new ModelBase();
         }
-
         public int code { get; set; }   
         public ModelBase Base{get;set;}
     }
