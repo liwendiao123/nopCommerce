@@ -78,7 +78,19 @@ namespace Nop.Web.Controllers.Api
                 code = 0,
                 msg = "已成功",
                 data = new
-                {
+                { 
+                    complexLevel = 0,
+                    appointStrJson = new {
+
+                        keyname = "ZiXingChe",
+                        head = "127.0.0.1/LuaUpdata/",
+                        lua = "127.0.0.1/LuaUpdata/LuaScripts/ZiXingChe.lua",
+                        assetbundle = new List<string> {
+
+                            "127.0.0.1/LuaUpdata/assetbundle/front.unity3d",
+                            "127.0.0.1/LuaUpdata/assetbundle/zixingche.unity3d"
+                        }
+                    },
                     strJson = Init()
                 }
             });
@@ -89,57 +101,105 @@ namespace Nop.Web.Controllers.Api
 
             var root = new BookNodeRoot();
             root.code = 1;
-            if (root.Base == null)
+            // if (root.Base == null)
+            //{
+            root.Base = new ModelBase
             {
-                root.Base = new ModelBase
-                {
-                    openeventstate = new List<OpenEventState> {
+                openeventstate = new List<OpenEventState> {
 
                          new OpenEventState{
                               enventid = 0,
                               objectids = new List<string>{
 
-                                  "1","4","5","6"
+                               "1001", "1002", "1003", "2000", "4001"
                               }
                          },  new OpenEventState{
                               enventid = 1,
                               objectids = new List<string>{
 
-                                  "2", "3", "4"
+                                "2001"
                               }
                          }, new OpenEventState{
                               enventid = 2,
                               objectids = new List<string>{
-                                  "1"
+                                "2002"
                               }
                          }, new OpenEventState{
                             enventid =3,
                             objectids = new List<string>{
 
-                                "4"
+                               "2003"
                             }
                         },
                     },
-                    closeeventstate = new List<OpenEventState> {
-
+                closeeventstate = new List<OpenEventState> {
                             new OpenEventState{
-                              enventid = 0,
-                              objectids = new List<string>{
-                                 "2","3"
-                              }
-                         },  new OpenEventState{
                               enventid = 1,
                               objectids = new List<string>{
-                                "1"
+                               "2000", "2002", "2003"
                               }
-                         }, new OpenEventState{
+                         },  new OpenEventState{
                               enventid = 2,
                               objectids = new List<string>{
-                                    "2", "4"
+                               "2000", "2001", "2002"
                               }
                          }
 
                     },
+                buttoninfo = new List<ButtonInfo> {
+                          new ButtonInfo{
+                              pos = new OffsetXY{
+                                  x = 750,
+                                 y = 430
+                              },
+                              size = new OffsetXY{
+                                  x = 160,
+                                  y = 30
+                              },
+                              path = "/k/Button/Button",
+                              url = string.Empty,
+                              name = string.Empty,
+                              eventid = "1",
+                              id = "1001",
+                              bg = string.Empty,
+                              text = "海陆间循环"
+                          },
+                          new ButtonInfo{
+                              pos = new OffsetXY{
+                                  x = 750,
+                                 y = 0
+                              },
+                              size = new OffsetXY{
+                                  x = 200,
+                                  y = 100
+                              },
+                              path = "/k/Button/Button",
+                              url = string.Empty,
+                              name = string.Empty,
+                              eventid = "2",
+                              id = "1002",
+                              bg = string.Empty,
+                              text = "海上内循环"
+                          },
+                           new ButtonInfo{
+                              pos = new OffsetXY{
+                                  x = 750,
+                                 y =-150
+                              },
+                              size = new OffsetXY{
+                                  x = 200,
+                                  y = 100
+                              },
+                              path = "/k/Button/Button",
+                              url = string.Empty,
+                              name = string.Empty,
+                              eventid = "3",
+                              id = "1003",
+                              bg = string.Empty,
+                              text = "内陆循环"
+                          }
+
+                     },
                     modelInfo = new List<ModelInfo> {
                         new ModelInfo{
                              pos = new OffsetXYZ{
@@ -160,63 +220,51 @@ namespace Nop.Web.Controllers.Api
                             },
                              clips = new List<Dic>{
                                   new Dic{
-                                      key= "1",
-                                      val= "1"
+                                      key= "0",
+                                      val= "初始动画"
                                   },
                                    new Dic {
+                                      key= "1",
+                                      val= "海陆间循环"
+                                   },
+                                    new Dic {
                                       key= "2",
-                                      val= "2"
-                                   }
+                                      val= "海上内循环"
+                                   },
+                                     new Dic {
+                                      key= "3",
+                                      val= "内陆循环"
+                                   },
                              },
-                            path= "K/Image",
-                            url= "/",
-                            name= "dixing",
+                            path= "",
+                            url= "http://arbookresouce.73data.cn/test/sxh.unity3d",
+                            name= "SXH",
                             id= "6"
 
                         }
 
                     },
                     imageinfo = new List<ImageInfo> {
-                         new ImageInfo{
-                              pos = new OffsetXY{
-                                  x= -800,
-                                  y= 250
-                              },
-                              size =  new OffsetXY{
-                                  x= 250,
-                                  y= 300
-                              },
-                            defaultURL= "K/sy_img_04",
-                            path= "K/Image",
-                            url= "",
-                            name= "",
-                            id= "4",
-                            dic = new List<Dic>{
-
-                                 new Dic{
-                                     key= "1",
-                                     val= "K/sy_img_03"
-                                 },
-                                 new Dic{
-                                     key= "2",
-                                     val= "K/sy_img_02"
-                                 }
-                            }
-
-
-                         }
+                        
 
 
                      },
                     textinfo = new List<TextInfo> {
                        new TextInfo{
+                           pos = new OffsetXY{
+                               x= -167,
+                               y=-412
+                           },
+                           size = new OffsetXY{
+                               x=584,
+                               y =219
+                           },
                             path= "K/Image",
                             url= "",
                             name= "",
-                            defaulttext= "我是天才",
-                            id= "5",
+                            defaulttext= "/K/Text/Text",
+                            id= "2000",
                             dic = new List<TextDic>{
-
                             new TextDic{
                                      key= "0",
                                      //val= "<color=#123456>天霸动霸tua</color>"
@@ -224,88 +272,82 @@ namespace Nop.Web.Controllers.Api
                                           new RichText{
                                                b = false,
                                                i = false,
-                                               size=11,
-                                               color ="000000",
-                                               val = "我"
-                                          },
-                                          new RichText{
-                                               b = true,
-                                               i = false,
-                                               size=16,
-                                               color ="ffffff",
-                                               val = "是"
-                                          },
-                                          new RichText{
-                                               b = true,
-                                               i = true,
                                                size=32,
-                                               color ="cacaca",
-                                               val = "天\n才"
-                                          }
-
-
+                                               color ="000000",
+                                               val = "水循环是指自然界的水在水圈、大气圈、岩石圈、生物圈四大圈层中通过各个环节连续运动的过程。自然界的水循环运动时刻都在全球范围内进行着，它发生的领域有：海洋与陆地之间，陆地与陆地上空之间，海洋与海洋上空之间。"
+                                          }                                      
                                      }
-
-                                 },
-
-                                 new TextDic{
+                                 }                       
+                          
+                            }
+                       },
+                          new TextInfo{
+                          pos = new OffsetXY{
+                               x= -617,
+                               y=-412
+                           },
+                           size = new OffsetXY{
+                               x=584,
+                               y =219
+                           },
+                            path= "K/Image",
+                            url= "",
+                            name= "",
+                            defaulttext= "/K/Text/Text",
+                            id= "2001",
+                            dic = new List<TextDic>{
+                            new TextDic{
                                      key= "1",
                                      //val= "<color=#123456>天霸动霸tua</color>"
                                      dic = new List<RichText>{
                                           new RichText{
-                                                b= true,
-                                                i= false,
-                                                size= 11,
-                                                color= "000000",
-                                                val= "天霸"
-                                          },
-                                          new RichText{
-                                                b= false,
-                                                i= false,
-                                                size= 16,
-                                                color= "ffffff",
-                                                val= "动//n霸"
+                                               b = false,
+                                               i = false,
+                                               size=32,
+                                               color ="000000",
+                                               val = "在太阳辐射能的作用下，从海陆表面蒸发的水分，上升到大气中；随着大气的运动和在一定的热力条件下，水汽凝结为液态水降落至地球表面；一部分降水可被植被拦截或被植物散发，降落到地面的水可以形成地表径流；渗入地下的水一部分从表层壤中流和地下径流形式进入河道，成为河川径流的一部分；贮于地下的水，一部分上升至地表供蒸发，一部分向深层渗透，在一定的条件下溢出成为不同形式的泉水；地表水和返回地面的地下水，最终都流入海洋或蒸发到大气中。"
                                           }
-
-
-                                     }
-                                      
-                                 },
-                                 new TextDic{
-                                     key= "2",
-                                     dic= new List<RichText>{// "<color=#ffffff>天上地下唯我独尊</color>"
-                                         new RichText{
-                                                b= false,
-                                                i= false,
-                                                size= 32,
-                                                color= "cacaca",
-                                                val= "tua"
-                                         },
-                                           new RichText{
-                                                b= false,
-                                                i= false,
-                                                size= 16,
-                                                color= "ffffff",
-                                                val= "要"
-                                         },
-                                         new RichText{
-                                                b= true,
-                                                i= true,
-                                                size= 32,
-                                                color= "cacaca",
-                                                val= "转正"
-                                         }
                                      }
                                  }
+
                             }
                        },
 
+                       new TextInfo{
+
+                        pos= new OffsetXY {
+                                x= -617,
+                                y= -412
+                            },
+                            size= new OffsetXY{
+                                x= -584,
+                                y= 219
+                                
+                            },
+                path = "/K/Text/Text",
+                            url= "",
+                            name= "",
+                            defaulttext= "我是天才",
+                            id= "2002",
+                            dic = new List<TextDic>{
+                            new TextDic{
+                                     key= "2",
+                                     //val= "<color=#123456>天霸动霸tua</color>"
+                                     dic = new List<RichText>{
+                                          new RichText{
+                                               b = false,
+                                               i = false,
+                                               size=32,
+                                               color ="000000",
+                                               val = "海上内循环是指海洋面上的水蒸发形成水汽，进入大气后在海洋上空凝结，形成降水，又降落到海面的过程。"
+                                          }
+                                     }
+                                 }
+                            }
+                       }
                     },
                     cameraInfo = new List<CameraInfo> {
-
-
                          new CameraInfo{
-
                                 path= "k/Camera",
                                 url="",
                                 name= "",
@@ -324,12 +366,14 @@ namespace Nop.Web.Controllers.Api
                                        x= 0,
                                        y= 0,
                                         z= 0
+                                },
+                                centerpos = new OffsetXYZ{
+                                      x= 0,
+                                      y= 0,
+                                      z= 0
                                 }
                          }
-
-
                     },
-
                     audioinfo = new List<AudioInfo>() {
                           new AudioInfo{
                                clips = new List<Dic>{
@@ -342,14 +386,11 @@ namespace Nop.Web.Controllers.Api
                                        val= "http://gylm.73cloud.top/html/library/thirdjs/audio/fhyf.mp3"
                                    }
                                },
-
-
                           }
 
                      }
-
                 };
-            }
+           // }
             return root;
             // return View();
 

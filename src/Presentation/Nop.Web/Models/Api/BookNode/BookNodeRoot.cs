@@ -39,6 +39,8 @@ namespace Nop.Web.Models.Api.BookNode
             modelInfo = new List<ModelInfo>();
             cameraInfo = new List<CameraInfo>();
             audioinfo = new List<AudioInfo>();
+            videoinfo = new List<VideoInfo>();
+            clickinfo = new List<ClickInfo>();
 
 
         }
@@ -62,7 +64,6 @@ namespace Nop.Web.Models.Api.BookNode
         /// 图片信息
         /// </summary>
         public List<ImageInfo> imageinfo { get; set; }
-
         /// <summary>
         /// 
         /// </summary>
@@ -71,6 +72,9 @@ namespace Nop.Web.Models.Api.BookNode
         public List<CameraInfo> cameraInfo { get; set;}
         public List<AudioInfo> audioinfo { get; set; }
 
+        public List<VideoInfo> videoinfo { get; set; }
+
+        public List<ClickInfo> clickinfo { get; set; }
 
     }
 
@@ -193,10 +197,14 @@ namespace Nop.Web.Models.Api.BookNode
             pos = new OffsetXYZ();
             rot = new OffsetXYZ();
             scale = new OffsetXYZ();
+            centerpos = new OffsetXYZ();
+            rect = new Rect();
         }
         public OffsetXYZ pos { get; set; }
         public OffsetXYZ rot { get; set; }   
         public OffsetXYZ scale { get; set; }
+        public OffsetXYZ centerpos { get; set; }
+        public Rect rect { get; set; }
     }
     public class AudioInfo:BaseModel
     {
@@ -207,8 +215,6 @@ namespace Nop.Web.Models.Api.BookNode
         }
         public List<Dic> clips { get; set; }
     }
-
-
     public class RichText {
         public bool b { get; set; }
         public bool i { get; set; }
@@ -220,4 +226,46 @@ namespace Nop.Web.Models.Api.BookNode
         public int sort { get; set; }
     }
 
+
+    public class Rect
+    {
+        public int x { get; set; }
+
+        public int y { get; set; }
+
+        public int w { get; set; }
+        public int h { get; set; }
+
+    }
+
+
+    public class VideoInfo
+    {
+
+        public VideoInfo()
+        {
+            pos = new OffsetXYZ();
+            size = new OffsetXY();
+            dic = new List<Dic>();
+        }
+
+        public OffsetXYZ pos { get; set; }
+        public OffsetXY size { get; set; }   
+
+        public string path { get; set; }
+
+        public string id { get; set; }
+
+        public List<Dic> dic { get; set; }
+
+    }
+
+    public class ClickInfo {
+        public string name { get; set; }
+
+        public string id { get; set; }
+    }
+
+
+   
 }
