@@ -218,6 +218,12 @@ namespace Nop.Web.Controllers.Api
         [CheckAccessPublicStore(true)]
         public IActionResult Register(ApiRegisterModel model, string returnUrl, bool captchaValid, IFormCollection form)
         {
+
+            if (string.IsNullOrEmpty(model.Email))
+            {
+                model.Email = Guid.NewGuid().ToString("N") + "@163.com";
+            }
+
             SmsMsgRecord record = new SmsMsgRecord();
             if (model != null)
             {
@@ -239,9 +245,9 @@ namespace Nop.Web.Controllers.Api
                  record = new SmsMsgRecord {
 
                      Phone = model.Phone,
-                      Type = 0,
-                      AppId  = AliSmsManager.accessKeyId,
-                       TemplateCode = model.SmsCode
+                     Type = 0,
+                     AppId  = AliSmsManager.accessKeyId,
+                     TemplateCode = model.SmsCode
                 };
                var result = _smsService.CheckMsgValid(record);
 
@@ -342,7 +348,6 @@ namespace Nop.Web.Controllers.Api
             }
             var customer = _workContext.CurrentCustomer;
             customer.RegisteredInStoreId = _storeContext.CurrentStore.Id;
-
             //custom customer attributes
             var customerAttributesXml = ParseCustomCustomerAttributes(form);
             var customerAttributeWarnings = _customerAttributeParser.GetAttributeWarnings(customerAttributesXml);
@@ -350,13 +355,11 @@ namespace Nop.Web.Controllers.Api
             {
                 ModelState.AddModelError("", error);
             }
-
             //validate CAPTCHA
             if (_captchaSettings.Enabled && _captchaSettings.ShowOnRegistrationPage && !captchaValid)
             {
                 ModelState.AddModelError("", _localizationService.GetResource("Common.WrongCaptchaMessage"));
             }
-
             if (ModelState.IsValid)
             {
                 if (_customerSettings.UsernamesEnabled && model.UserName != null)
@@ -373,30 +376,21 @@ namespace Nop.Web.Controllers.Api
                     {
                         model.UserName = model.Email;
                     }
-
-
                 }
-
-
-
-
-
+                customer.SystemName = "ApiRegister";
                 var isApproved = _customerSettings.UserRegistrationType == UserRegistrationType.Standard;
                 var registrationRequest = new CustomerRegistrationRequest(customer,
-                    model.Email,
-
+                    model.Email,                    
                     _customerSettings.UsernamesEnabled ? model.UserName : model.Email,
                     model.Password,
                     _customerSettings.DefaultPasswordFormat,
                     _storeContext.CurrentStore.Id,
                     isApproved);
-
-
-                if (model.Occupation == 0)
+                if (model.Occupation == 7)
                 {
                     registrationRequest.RoleName = "Student";
                 }
-                else if (model.Occupation == 1)
+                else if (model.Occupation == 6)
                 {
                     registrationRequest.RoleName = "Teacher";
                 }
@@ -404,7 +398,7 @@ namespace Nop.Web.Controllers.Api
                 {
                     return Json(new
                     {
-                        code = 0,
+                        code = -1,
                         msg = "注册失败：请明确用户是老师或学生",
                         data = false
                     });
@@ -432,21 +426,15 @@ namespace Nop.Web.Controllers.Api
                     ///保存电话号码
                     if (_customerSettings.PhoneEnabled)
                         _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.PhoneAttribute, model.Phone);
-
                     ///保存 邀请码
                     if (_customerSettings.InviteCodeEnabled)
                     {
                         _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.InviteCodeAttribute, model.InviteCode);
                     }
-
-
                     if (_customerSettings.IdcardImgEnabled)
                     {
                         _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.IdCardImgAttribute, model.ImageUrl);
                     }
-
-
-
                     ///签订保密协议
                     if (_customerSettings.AcceptPrivacyPolicyEnabled)
                     {
@@ -457,9 +445,6 @@ namespace Nop.Web.Controllers.Api
                             _gdprService.InsertLog(customer, 0, GdprRequestType.ConsentAgree, _localizationService.GetResource("Gdpr.Consent.PrivacyPolicy"));
                         }
                     }
-
-
-
                     //save customer attributes
                     _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.CustomCustomerAttributes, customerAttributesXml);
 
@@ -514,8 +499,9 @@ namespace Nop.Web.Controllers.Api
                 {
                     return Json(new
                     {
-                        code = 0,
-                        msg = string.Join(",", registrationResult.Errors)
+                        code = -1,
+                        msg = string.Join(",", registrationResult.Errors),
+                        data = false
 
                     });
                 }
@@ -540,13 +526,17 @@ namespace Nop.Web.Controllers.Api
                 new {
                 code = 0,
                 msg = "信息获取成功",
-                Id = model.UserName,
-                Phone = model.Phone,
-                Name = model.LastName??"",
-                Email = model.Email??"",
-                Occupation =model.Occupation == 0?  "学生": "老师",
-                SchoolName =depName,
-                DepId=model.DepartmentId
+
+                data=new{
+                    Id = model.UserName,
+                    Phone = model.Phone,
+                    Name = model.LastName ?? "",
+                    Email = model.Email ?? "",
+                    Occupation = model.Occupation == 7 ? "学生" : "老师",
+                    SchoolName = depName,
+                    DepId = model.DepartmentId
+                }
+              
             });
 
             //return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.Disabled });
@@ -932,9 +922,8 @@ namespace Nop.Web.Controllers.Api
                 data = list.Where(x => !x.IsSystemRole).Select(x=> new {
                     Id = x.Id,
                     Name = x.Name,
-                    SystemName = x.SystemName
-
-
+                    SystemName = x.SystemName,
+                    IsTeacher = x.Id == 6
                 }).ToList()
 
             });
@@ -981,8 +970,6 @@ namespace Nop.Web.Controllers.Api
                 });
                 //_notificationService.ErrorNotification(customerRolesError);
             }
-
-
             // Ensure that valid email address is entered if Registered role is checked to avoid registered customers with empty email address
             if (newCustomerRoles.Any() && newCustomerRoles.FirstOrDefault(c => c.SystemName == NopCustomerDefaults.RegisteredRoleName) != null &&
                 !CommonHelper.IsValidEmail(ucim.Email))
@@ -998,7 +985,6 @@ namespace Nop.Web.Controllers.Api
 
                 //  _notificationService.ErrorNotification(_localizationService.GetResource("Admin.Customers.Customers.ValidEmailRequiredRegisteredRole"));
             }
-
             //username
             if (_customerSettings.UsernamesEnabled)
             {
@@ -1006,8 +992,7 @@ namespace Nop.Web.Controllers.Api
                     _customerRegistrationService.SetUsername(customer, ucim.Username);
                 else
                     customer.Username = ucim.Username;
-            }
-     
+            }     
             //email
             if (!string.IsNullOrWhiteSpace(ucim.Email))
                 _customerRegistrationService.SetEmail(customer, ucim.Email, false);

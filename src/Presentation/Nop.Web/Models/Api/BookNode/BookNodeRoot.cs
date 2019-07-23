@@ -36,8 +36,8 @@ namespace Nop.Web.Models.Api.BookNode
             buttoninfo = new List<ButtonInfo>();
             imageinfo = new List<ImageInfo>();
             textinfo = new List<TextInfo>();
-            modelInfo = new List<ModelInfo>();
-            cameraInfo = new List<CameraInfo>();
+            modelinfo = new List<ModelInfo>();
+            camerainfo = new List<CameraInfo>();
             audioinfo = new List<AudioInfo>();
             videoinfo = new List<VideoInfo>();
             clickinfo = new List<ClickInfo>();
@@ -68,8 +68,8 @@ namespace Nop.Web.Models.Api.BookNode
         /// 
         /// </summary>
         public List<TextInfo> textinfo { get; set; }
-        public List<ModelInfo> modelInfo { get; set; }
-        public List<CameraInfo> cameraInfo { get; set;}
+        public List<ModelInfo> modelinfo { get; set; }
+        public List<CameraInfo> camerainfo { get; set;}
         public List<AudioInfo> audioinfo { get; set; }
 
         public List<VideoInfo> videoinfo { get; set; }
@@ -136,7 +136,7 @@ namespace Nop.Web.Models.Api.BookNode
     }
 
 
-    public class TextDic:BaseModel
+    public class TextDic
     {
 
         public TextDic()
@@ -171,7 +171,7 @@ namespace Nop.Web.Models.Api.BookNode
         }
         public OffsetXY pos { get; set; }
         public OffsetXY size { get; set; }
-        public string defaulttext { get; set; }
+      //  public string defaulttext { get; set; }
         public List<TextDic> dic { get; set; }
     }
     public class ModelInfo:BaseModel

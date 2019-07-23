@@ -1,6 +1,6 @@
 ﻿@model AiBookModelView
 <style>
-    .btninfo input.control-label,.imginfo input.control-label {
+    .btninfo input.control-label, .imginfo input.control-label, .openeventinfo input.control-label {
         text-align: left;
     }
     .fengexian {
@@ -124,13 +124,13 @@
                                 <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
                                     <div class="row">
                                         <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
-                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-y" />
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-size-x" />
                                     </div>
                                 </div>
                                 <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
                                     <div class="row">
                                         <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
-                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-y" />
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-size-y" />
                                     </div>
                                 </div>
                             </div>
@@ -160,7 +160,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">知识点ID</label>
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源ID</label>
                                 <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
                                     <input type="text" value="" class="btn-id control-label" />
                                 </div>
@@ -209,13 +209,13 @@
                                 <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
                                     <div class="row">
                                         <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
-                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-x" />
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-pos-x" />
                                     </div>
                                 </div>
                                 <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
                                     <div class="row">
                                         <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
-                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-y" />
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-pos-y" />
                                     </div>
                                 </div>
                             </div>
@@ -224,13 +224,13 @@
                                 <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
                                     <div class="row">
                                         <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
-                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-y" />
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-pos-y" />
                                     </div>
                                 </div>
                                 <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
                                     <div class="row">
                                         <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
-                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-y" />
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-pos-y" />
                                     </div>
                                 </div>
                             </div>
@@ -297,7 +297,7 @@
                                             <div class="form-group">
                                                 <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">图片路径ID</label>
                                                 <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
-                                                    <input type="text" value="" class="btn-id control-label" />
+                                                    <input type="text" value="" class="imgevent-url control-label" />
                                                 </div>
                                             </div>
                                         </div>
@@ -353,7 +353,7 @@
                                 <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
                                     <div class="row">
                                         <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
-                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-x" />
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-pos-x" />
                                     </div>
 
 
@@ -361,7 +361,7 @@
                                 <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
                                     <div class="row">
                                         <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
-                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-y" />
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-pos-y" />
                                     </div>
                                 </div>
                             </div>
@@ -370,13 +370,13 @@
                                 <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
                                     <div class="row">
                                         <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
-                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-y" />
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-size-x" />
                                     </div>
                                 </div>
                                 <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
                                     <div class="row">
                                         <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
-                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-y" />
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-size-y" />
                                     </div>
                                 </div>
                             </div>
@@ -390,19 +390,19 @@
                             <div class="form-group">
                                 <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">默认Url地址</label>
                                 <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 ">
-                                    <input type="url" value="" class="btn-prefab-defaulturl control-label" />
+                                    <input type="url" value="" class="txt-prefab-defaulturl control-label" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制Url</label>
                                 <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 ">
-                                    <input type="url" value="" class="btn-prefab-url control-label" />
+                                    <input type="url" value="" class="txt-prefab-url control-label" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源名称</label>
                                 <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
-                                    <input type="text" value="" class="btn-prefab-name control-label" />
+                                    <input type="text" value="" class="txt-prefab-name control-label" />
                                 </div>
                             </div>
                             <div class="form-group">
@@ -414,7 +414,7 @@
                             <div class="form-group">
                                 <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源ID</label>
                                 <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
-                                    <input type="text" value="" class="btn-id control-label" />
+                                    <input type="text" value="" class="txt-id control-label" />
                                 </div>
                             </div>
                             <div class="form-group fengexian"></div>
@@ -440,27 +440,12 @@
                                                     <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
                                                 </div>
                                             </div>
+
                                             <div class="form-group">
                                                 <label class="col-lg-12 col-xs-12 col-sm-12 col-md-12 control-label text-left" style="text-align:left">文字信息</label>
                                             </div>
+
                                             <div class="form-group font-item">
-                                                <div class="row text-event text-eventitemmodel">
-                                                    <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
-                                                        <input type="checkbox" name="b" />是否粗体
-                                                    </div>
-                                                    <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
-                                                        <input type="checkbox" name="b" />是否斜体体
-                                                    </div>
-                                                    <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
-                                                        <input type="number" name="b" />字体大小
-                                                    </div>
-                                                    <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
-                                                        <input type="text" name="b" />字体颜色
-                                                    </div>
-                                                    <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
-                                                        <input type="text" name="b" />文字信息
-                                                    </div>
-                                                </div>
                                                 <div class="row">
                                                     <span class="btn font-add bg-blue">
                                                         <i class="fa fa-plus-square"></i>
@@ -472,10 +457,27 @@
                                                         @T("Admin.Common.Delete")
                                                     </span>
                                                 </div>
+                                                <div class="row text-event text-eventfontitemmodel">
+                                                    <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
+                                                        <input type="checkbox" class="unitybold" />是否粗体
+                                                    </div>
+                                                    <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
+                                                        <input type="checkbox" name="unityi" />是否斜体体
+                                                    </div>
+                                                    <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
+                                                        <input type="number" name="unitysize" />字体大小
+                                                    </div>
+                                                    <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
+                                                        <input type="text" name="unitycolor" />字体颜色
+                                                    </div>
+                                                    <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
+                                                        <input type="text" name="unitytxt" />文字信息
+                                                    </div>
+                                                </div>
+
                                             </div>
                                         </div>
-                                        <div class="timeline-footer">
-
+                                        <div class="timeline-footer">                                       
                                         </div>
                                     </div>
 
@@ -633,16 +635,13 @@
                                 </li>
                                 <!-- /.timeline-label -->
                                 <!-- timeline item -->
-                                <li>
+                                <li class="modeleventitemel">
                                     <!-- timeline icon -->
                                     <i class="fa fa-envelope bg-blue"></i>
                                     <div class="timeline-item">
                                         <span class="time">@*<i class="fa fa-clock-o"></i> 12:05*@</span>
-
                                         <h3 class="timeline-header"><a href="#">事件1</a> </h3>
-
                                         <div class="timeline-body">
-
                                             <div class="form-group">
                                                 <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                                 <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
@@ -663,47 +662,17 @@
                                     </div>
 
                                 </li>
-                                <li>
-                                    <!-- timeline icon -->
-                                    <i class="fa fa-envelope bg-blue"></i>
-                                    <div class="timeline-item">
-                                        <span class="time">@*<i class="fa fa-clock-o"></i> 12:05*@</span>
-
-                                        <h3 class="timeline-header"><a href="#">事件2</a> </h3>
-
-                                        <div class="timeline-body">
-
-                                            <div class="form-group">
-                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
-                                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
-                                                    <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">模型动画名称</label>
-                                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
-                                                    <input type="text" value="" class="btn-id control-label" />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="timeline-footer">
-
-                                        </div>
-                                    </div>
-
-
-                                </li>
+                           
                                 <!-- END timeline item -->
 
                             </ul>
-                            <div>
-                                <span id="customer-delete" class="btn bg-blue">
+                            <div class="">
+                                <span  class="btn bg-blue modeladd">
                                     <i class="fa fa-plus-square"></i>
                                     @T("Admin.Common.AddNew")
                                     @*@T("Admin.Common.Delete")*@
                                 </span>
-                                <span id="customer-delete" class="btn bg-red">
+                                <span class="btn bg-red modeldel">
                                     <i class="fa fa-trash-o"></i>
                                     @T("Admin.Common.Delete")
                                 </span>
@@ -800,6 +769,55 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">镜头截切面</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-rot-x" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-rot-y" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">W:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-rot-z" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">H:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-rot-z" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">凝视中心点</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-scale-x" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-scale-y" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Z:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-scale-z" />
+                                    </div>
+                                </div>
+                            </div>
                             <div class="form-group">
                                 <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
                                 <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
@@ -825,7 +843,6 @@
                                     <input type="text" value="" class="btn-prefab-name control-label" />
                                 </div>
                             </div>
-
                             <div class="form-group">
                                 <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源ID</label>
                                 <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
@@ -897,7 +914,7 @@
                                 </li>
                                 <!-- /.timeline-label -->
                                 <!-- timeline item -->
-                                <li>
+                                <li class="audioeventmodelel">
                                     <!-- timeline icon -->
                                     <i class="fa fa-envelope bg-blue"></i>
                                     <div class="timeline-item">
@@ -927,41 +944,21 @@
                                     </div>
 
                                 </li>
-                                <li>
-                                    <!-- timeline icon -->
-                                    <i class="fa fa-envelope bg-blue"></i>
-                                    <div class="timeline-item">
-                                        <span class="time">@*<i class="fa fa-clock-o"></i> 12:05*@</span>
 
-                                        <h3 class="timeline-header"><a href="#">事件2</a> </h3>
-
-                                        <div class="timeline-body">
-
-                                            <div class="form-group">
-                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
-                                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
-                                                    <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">音效地址</label>
-                                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
-                                                    <input type="text" value="" class="btn-id control-label" />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="timeline-footer">
-
-                                        </div>
-                                    </div>
-
-
-                                </li>
                                 <!-- END timeline item -->
 
                             </ul>
-
+                            <div>
+                                <span class="btn bg-blue audioeventadd">
+                                    <i class="fa fa-plus-square"></i>
+                                    @T("Admin.Common.AddNew")
+                                    @*@T("Admin.Common.Delete")*@
+                                </span>
+                                <span class="btn bg-red audioeventdel">
+                                    <i class="fa fa-trash-o"></i>
+                                    @T("Admin.Common.Delete")
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -991,13 +988,13 @@
                             <div class="form-group">
                                 <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">事件ID</label>
                                 <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
-                                    <input type="text" value="" class="btn-id control-label" />
+                                    <input type="text" value="" class="openevent-id control-label" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">事件名称</label>
                                 <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
-                                    <input type="text" value="" class="btn-id control-label" />
+                                    <input type="text" value="" class="openevent-name control-label" />
                                 </div>
                             </div>
                             <div class="form-group">
@@ -1030,19 +1027,19 @@
                 <div class="col-md-4 modelel">
                     <div class="panel panel-info closedeventiteminfo">
                         <div class="panel-heading clearfix">
-                            打开时间基本信息
+                            关闭事件基本信息
                         </div>
                         <div class="panel-body">
                             <div class="form-group">
                                 <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">事件ID</label>
                                 <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
-                                    <input type="text" value="" class="btn-id control-label" />
+                                    <input type="text" value="" class="closeevent-id control-label" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">事件名称</label>
                                 <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
-                                    <input type="text" value="" class="btn-id control-label" />
+                                    <input type="text" value="" class="closeevent-name control-label" />
                                 </div>
                             </div>
                             <div class="form-group">
@@ -1118,9 +1115,9 @@
 
         <div id="tab_10" class="tab-pane" >
 
-            <div class="row imginfo">
+            <div class="row videoinfo">
                 <div class="col-md-4 modelel">
-                    <div class="panel panel-info imgiteminfo">
+                    <div class="panel panel-info videoiteminfo">
                         <div class="panel-heading clearfix">
                             视频信息
                         </div>
@@ -1141,7 +1138,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">按钮尺寸</label>
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">视频尺寸</label>
                                 <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
                                     <div class="row">
                                         <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
@@ -1162,24 +1159,8 @@
                                     <span asp-validation-for="PrefabPath"></span>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">默认Url地址</label>
-                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 ">
-                                    <input type="url" value="" class="btn-prefab-defaulturl control-label" />
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制Url</label>
-                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 ">
-                                    <input type="url" value="" class="btn-prefab-url control-label" />
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源名称</label>
-                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
-                                    <input type="text" value="" class="btn-prefab-name control-label" />
-                                </div>
-                            </div>
+                  
+                       
                             <div class="form-group">
                                 <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                 <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
@@ -1266,6 +1247,14 @@
 
         </div>
     </div>
+
+    <div class="gen">
+
+        <span class="btn bg-gray code-gen">
+            <i class="fa fa-plus-square"></i>
+                "生成JSON"         
+        </span>
+    </div>
     <!-- /.tab-content -->
 </div>
 
@@ -1301,7 +1290,7 @@
             }
         });
         ///3.0 选项选择
-        $(document).on("click", '.modelelcc,.imgeventitemmodelcc,.textevent-itemmodelcc', function () {
+        $(document).on("click", '.modelelcc,.imgeventitemmodelcc,.textevent-itemmodelcc,.text-eventfontitemmodelcc,.modeleventitemelcc,.audioeventmodelelcc', function () {
             if ($(this).hasClass('itemselected')) {
                 $(this).removeClass("itemselected");
             }
@@ -1314,7 +1303,7 @@
         $(document).on("click", '.img-add', function () {
             var modelel = $(this).parent().parent().find(".imgeventitemmodel");
             if (modelel && modelel.length > 0) {
-                alert("ok");
+              //  alert("ok");
                 console.log(modelel[0].outerHTML);
                 var modelelcc = modelel.clone()
                     .removeClass("imgeventitemmodel")
@@ -1327,8 +1316,6 @@
                 alert("failed");
             }
         })
-
-
         ///5.0 图片删除事件
         $(document).on('click', '.img-del', function () {
             var imgeventitemcc = $(this).parent().parent().find('.imgeventitemmodelcc');   
@@ -1344,8 +1331,6 @@
                 alert("failed");
             }
         })
-
-
         //6.0 字体时间添加 
         $(document).on('click', '.fonteventadd', function () {
             var modelel = $(this).parent().parent().find(".textevent-itemmodel");
@@ -1355,6 +1340,52 @@
                 var modelelcc = modelel.clone()
                     .removeClass("textevent-itemmodel")
                     .addClass("textevent-itemmodelcc");
+
+                console.log(modelelcc[0].outerHTML);
+
+                $(this).parent().parent().find(".timeline").append(modelelcc[0].outerHTML);
+            }
+            else {
+                alert("failed");
+            }
+        })
+        //7.0添加字体项
+        $(document).on('click', '.font-add', function () {
+            var el = $(this).parent().parent().find('.text-eventfontitemmodel');//v
+            alert("ok")
+            if (el && el.length > 0)
+            {
+                var elmodelclone = el.first().clone();
+                if (elmodelclone)
+                {
+                    elmodelclone.removeClass("text-eventfontitemmodel").addClass("text-eventfontitemmodelcc");
+                    $(this).parent().parent().append(elmodelclone[0].outerHTML);
+                }
+            }
+        })
+        //8.0 删除字体项
+        $(document).on('click', '.font-del', function () {
+            var imgeventitemcc = $(this).parent().parent().find('.text-eventfontitemmodelcc');
+            if (imgeventitemcc && imgeventitemcc.length > 0) {
+                imgeventitemcc.each(function () {
+                    if ($(this).hasClass("itemselected")) {
+                        $(this).remove();
+                    }
+                })
+            }
+            else {
+                alert("failed");
+            }
+        })
+        //9.0  模型事件添加
+        $(document).on("click", ".modeladd", function () {
+            var modelel = $(this).parent().parent().find(".modeleventitemel");
+            if (modelel && modelel.length > 0) {
+               // alert("ok");
+                console.log(modelel[0].outerHTML);
+                var modelelcc = modelel.clone()
+                    .removeClass("modeleventitemel")
+                    .addClass("modeleventitemelcc");
                 console.log(modelelcc[0].outerHTML);
                 $(this).parent().parent().find(".timeline").append(modelelcc[0].outerHTML);
             }
@@ -1362,11 +1393,244 @@
                 alert("failed");
             }
         })
-        $(document).on('click', '.font-add', function () {
-          var el =  $(this).parent().parent().find('.text-eventitemmodel');//v
+        //10.0模型事件删除
+        $(document).on("click", '.modeldel', function () {
+            var imgeventitemcc = $(this).parent().parent().find('.modeleventitemelcc');
+            if (imgeventitemcc && imgeventitemcc.length > 0) {
+                imgeventitemcc.each(function () {
+                    if ($(this).hasClass("itemselected")) {
+                        $(this).remove();
+                    }
+                })
+            }
+            else {
+                alert("failed");
+            }
+
         })
 
 
+        //11.0 音频事件添加
+        $(document).on("click", '.audioeventadd', function () {
+            var modelel = $(this).parent().parent().find(".audioeventmodelel");
+            if (modelel && modelel.length > 0) {
+                console.log(modelel[0].outerHTML);
+                var modelelcc = modelel.clone()
+                    .removeClass("audioeventmodelel")
+                    .addClass("audioeventmodelelcc");
+                console.log(modelelcc[0].outerHTML);
+                $(this).parent().parent().find(".timeline").append(modelelcc[0].outerHTML);
+            }
+            else {
+                alert("failed");
+            }
 
+        })
+
+        //12.0 音频时间删除
+        $(document).on("click", '.audioeventdel', function () {
+
+            var imgeventitemcc = $(this).parent().parent().find('.audioeventmodelelcc');
+            if (imgeventitemcc && imgeventitemcc.length > 0) {
+                imgeventitemcc.each(function () {
+                    if ($(this).hasClass("itemselected")) {
+                        $(this).remove();
+                    }
+                })
+            }
+            else {
+                alert("failed");
+            }
+
+        })
+
+        $(document).on("click", ".code-gen", function () {
+
+            var root = new Object();
+            
+            //1.0添加打开事件信息
+            var openeventstate = new Array();       
+            var openevitems = $('#tab_7 .modelel,#tab_7 .modelelcc');
+            if (openevitems && openevitems.length > 0) {
+                openevitems.each(function (el) {
+                    var openeven = new Object();
+                    var id = $(this).find('.openevent-id').first().val();
+                    var name = $(this).find('.openevent-name').first().val();
+                    openeven.enventid = id;
+                    openeven.name = name;
+                    var objectids = new Array();
+                    ///待补充  添加事件 
+                    openeven.objectids = objectids; 
+                    openeventstate.push(openeven);
+                })
+                root.openeventstate = openeventstate;
+            }
+            else
+            {
+                root.openeventstate = openeventstate;
+            }
+            //******************添加打开事件结束*********************//
+
+            //2.0添加关闭事件信息
+            var closeeventstate = new Array();
+            var closeeventitems = $('#tab_8 .modelel,#tab_8 .modelelcc');
+            if (closeeventitems && closeeventitems.length > 0) {
+                closeeventitems.each(function (el) {
+                    var openeven = new Object();
+                    var id = $(this).find('.closeevent-id').first().val();
+
+                    var name = $(this).find('.closeevent-name').first().val();
+                    openeven.enventid = id;
+                    openeven.name = name;
+                    var objectids = new Array();
+                    ///待补充  添加事件 
+
+                    openeven.objectids = objectids;
+                    closeeventstate.push(openeven);
+                })
+                root.closeeventstate = closeeventstate;
+            }
+            else {
+                root.closeeventstate = closeeventstate;
+            }
+            //******************添加关闭事件结束*********************//
+            //3.0 添加按钮信息
+            var btnarray = new Array();
+            var btnitems = $('#tab_1 .modelel,#tab_1 .modelelcc');
+            if (btnitems && btnitems.length > 0) {
+                btnitems.each(function () {
+                    var btninfo = new Object();
+                    var pos = new Object();
+                    pos.x = $(this).find('.btn-pos-x').first().val();
+                    pos.y = $(this).find('.btn-pos-y').first().val();
+                    var size = new Object();
+                    size.x = $(this).find('.btn-size-x').first().val();
+                    size.y = $(this).find('.btn-size-x').first().val();            
+                    ///按钮平面坐标
+                    btninfo.pos = pos;
+                    ///按钮尺寸
+                    btninfo.size = size;
+                    btninfo.path = $(this).find('.btn-prefab-defaulturl').first().val();
+                    btninfo.name = $(this).find('.btn-prefab-name').first().val();
+                    btninfo.url = $(this).find('.btn-prefab-url').first().val();                   
+                    btninfo.id = $(this).find('.btn-id').first().val();
+                    btninfo.eventid = $(this).find('#EventId').first().val();
+                    btninfo.bg = $(this).find('.btn-bgimg').first().val();
+                    btninfo.text = $(this).find('.btn-txt').first().val();
+
+                    btnarray.push(btninfo);
+                    root.buttoninfo = btnarray;
+
+                })
+            }
+            else
+            {
+                root.buttoninfo = btnarray;
+            }
+            ///4.0 添加图片信息
+            imageinfo = new Array();
+            var imgitems = $('#tab_2 .modelel,#tab_2 .modelelcc');
+            if (imgitems && imgitems.length > 0)
+            {
+                imgitems.each(function () {
+                   var  imginfo = new Object();
+                    var pos = new Object();
+                    pos.x = $(this).find('.btn-pos-x').first().val();
+                    pos.y = $(this).find('.btn-pos-y').first().val();
+                    var size = new Object();
+                    size.x = $(this).find('.btn-size-x').first().val();
+                    size.y = $(this).find('.btn-size-x').first().val();   
+                    imginfo.pos = pos;
+                    imginfo.size = size;
+                    imginfo.defaultURL = $(this).find('').first().val();
+                    imginfo.path = $(this).find('').first().val();
+                    imginfo.url = $(this).find('').first().val();
+                    imginfo.name = $(this).find('').first().val();
+                    imginfo.id = $(this).find('').first().val();
+                    var dics = new Array();
+                    var dicitems = $('#tab_2 .imgeventitemmodel,#tab_2 .imgeventitemmodelcc');                   
+                    dicitems.each(function () {
+                        var dicitem = new Object();
+ 
+                        dicitem.key = $(this).find('#EventId').first().val();
+                        dicitem.val = $(this).find('.imgevent-url').first().val();
+                    });
+                    imginfo.dic = dics;
+                    imageinfo.push(imginfo);
+                })
+            }
+
+            root.imageinfo = imageinfo
+          ///结束添加图片信息
+         ///添加文本事件
+            var textinfoes = new Array();
+           
+            var textitems = $('#tab_3 .modelel,#tab_3 .modelelcc');
+
+
+            textitems.each(function () {
+                var textinfo = new Object();
+                pos.x = $(this).find('.txt-pos-x').first().val();
+                pos.y = $(this).find('.txt-pos-y').first().val();
+                var size = new Object();
+                size.x = $(this).find('.txt-size-x').first().val();
+                size.y = $(this).find('.txt-size-y').first().val();
+                textinfo.pos = pos;
+                textinfo.size = size;
+                textinfo.path = "";
+                textinfo.url = "";
+                textinfo.name = "";
+                textinfo.id = "";
+             
+                texteventdic = new Array();
+                $(this).find('.textevent-itemmodel,.textevent-itemmodelcc').each(function () {
+                    var dicobj = new Object();
+                    dicobj.key = $(this).find('#EventId').first().val(); 
+
+                    var txtobjarray = new Array();
+                         
+                         
+                    $(this).find('.text-eventfontitemmodel,.text-eventfontitemmodelcc')
+                        .each(function () {
+                            var txtobj = new Object();
+
+                            var b = $(this).find('.unitybold').first().val();
+                            var i = $(this).find('.unityi').first().val();
+                            var size = $(this).find('.unitysize').first().val();
+                            var color = $(this).find('.unitycolor').first().val();
+                            var text = $(this).find('.unitytxt').first().val();
+
+                            txtobj.b = b;
+                            txtobj.i = i;
+                            txtobj.size = size;
+                            txtobj.val = text;
+                            txtobjarray.push(txtobj);
+                        })
+                    dicobj.dic = txtobjarray;                    
+                    texteventdic.push(dicobj);
+                     
+                })
+
+                textinfo.dic = texteventdic;
+
+             
+
+            })
+       
+
+
+
+          
+
+
+          
+
+
+
+
+
+         ///结束添加文本事件
+            
+        })
     })
 </script>

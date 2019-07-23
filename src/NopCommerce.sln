@@ -65,7 +65,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nop.Plugin.Payments.AliPay"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nop.Plugin.Api", "Plugins\Nop.Plugin.Api\Nop.Plugin.Api.csproj", "{BBC4F177-3C0B-423C-A5DF-0330EC91C72C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nop.Plugin.Sms.AliyunSMS", "Nop.Plugin.Sms.AliyunSMS\Nop.Plugin.Sms.AliyunSMS.csproj", "{AAFC6B66-1FBB-41CB-BF6A-565B8050D4CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nop.Plugin.Sms.AliyunSMS", "Nop.Plugin.Sms.AliyunSMS\Nop.Plugin.Sms.AliyunSMS.csproj", "{AAFC6B66-1FBB-41CB-BF6A-565B8050D4CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

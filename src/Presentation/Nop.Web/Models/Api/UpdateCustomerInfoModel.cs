@@ -28,6 +28,8 @@ namespace Nop.Web.Models.Api
 
         public int RoleId { get; set; }
 
+
+        public string Imgurl { get; set; }
         public string InviteCode{get;set;}
         public int PictureId { get; set; }
         /// <summary>

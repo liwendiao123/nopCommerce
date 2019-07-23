@@ -156,7 +156,7 @@ namespace Nop.Web.Controllers.Api
                                   x = 160,
                                   y = 30
                               },
-                              path = "/k/Button/Button",
+                              path = "K/Button/Button",
                               url = string.Empty,
                               name = string.Empty,
                               eventid = "1",
@@ -173,7 +173,7 @@ namespace Nop.Web.Controllers.Api
                                   x = 200,
                                   y = 100
                               },
-                              path = "/k/Button/Button",
+                              path = "K/Button/Button",
                               url = string.Empty,
                               name = string.Empty,
                               eventid = "2",
@@ -190,7 +190,7 @@ namespace Nop.Web.Controllers.Api
                                   x = 200,
                                   y = 100
                               },
-                              path = "/k/Button/Button",
+                              path = "K/Button/Button",
                               url = string.Empty,
                               name = string.Empty,
                               eventid = "3",
@@ -200,7 +200,7 @@ namespace Nop.Web.Controllers.Api
                           }
 
                      },
-                    modelInfo = new List<ModelInfo> {
+                    modelinfo = new List<ModelInfo> {
                         new ModelInfo{
                              pos = new OffsetXYZ{
 
@@ -259,10 +259,10 @@ namespace Nop.Web.Controllers.Api
                                x=584,
                                y =219
                            },
-                            path= "K/Image",
+                            path= "K/Text/Text",
                             url= "",
                             name= "",
-                            defaulttext= "/K/Text/Text",
+                           // defaulttext= "/K/Text/Text",
                             id= "2000",
                             dic = new List<TextDic>{
                             new TextDic{
@@ -290,10 +290,10 @@ namespace Nop.Web.Controllers.Api
                                x=584,
                                y =219
                            },
-                            path= "K/Image",
+                            path= "K/Text/Text",
                             url= "",
                             name= "",
-                            defaulttext= "/K/Text/Text",
+                           // defaulttext= "/K/Text/Text",
                             id= "2001",
                             dic = new List<TextDic>{
                             new TextDic{
@@ -324,10 +324,10 @@ namespace Nop.Web.Controllers.Api
                                 y= 219
                                 
                             },
-                path = "/K/Text/Text",
+                            path = "K/Text/Text",
                             url= "",
                             name= "",
-                            defaulttext= "我是天才",
+                            //defaulttext= "我是天才",
                             id= "2002",
                             dic = new List<TextDic>{
                             new TextDic{
@@ -346,9 +346,9 @@ namespace Nop.Web.Controllers.Api
                             }
                        }
                     },
-                    cameraInfo = new List<CameraInfo> {
+                    camerainfo = new List<CameraInfo> {
                          new CameraInfo{
-                                path= "k/Camera",
+                                path= "K/Camera/DefaultCamera",
                                 url="",
                                 name= "",
                                 id="10086",
@@ -371,22 +371,28 @@ namespace Nop.Web.Controllers.Api
                                       x= 0,
                                       y= 0,
                                       z= 0
+                                },
+                                rect = new Rect{
+                                         x = 0,
+                                         y=0,
+                                         h = 0,
+                                          w = 0
                                 }
                          }
                     },
                     audioinfo = new List<AudioInfo>() {
-                          new AudioInfo{
-                               clips = new List<Dic>{
-                                    new Dic{
-                                       key="1",
-                                       val="http://gylm.73cloud.top/html/library/thirdjs/audio/fdjj.mp3"
-                                    },
-                                   new Dic{
-                                       key= "2",
-                                       val= "http://gylm.73cloud.top/html/library/thirdjs/audio/fhyf.mp3"
-                                   }
-                               },
-                          }
+                          //new AudioInfo{
+                          //     clips = new List<Dic>{
+                          //          new Dic{
+                          //             key="1",
+                          //             val="http://gylm.73cloud.top/html/library/thirdjs/audio/fdjj.mp3"
+                          //          },
+                          //         new Dic{
+                          //             key= "2",
+                          //             val= "http://gylm.73cloud.top/html/library/thirdjs/audio/fhyf.mp3"
+                          //         }
+                          //     },
+                          //}
 
                      }
                 };
