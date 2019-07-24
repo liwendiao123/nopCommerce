@@ -13,13 +13,9 @@ namespace Nop.Core.Domain.AIBookModel
         /// <summary>
         /// 知识点ID
         /// </summary>
-        public int BookDirID { get; set; }
-
-
-        public string Name { get; set; }
-        
-        public string Desc { get; set; }
-        
+        public int BookDirID { get; set; }   
+        public string Name { get; set; }       
+        public string Desc { get; set; }        
         /// <summary>
         /// 目录标识
         /// </summary>
@@ -49,6 +45,10 @@ namespace Nop.Core.Domain.AIBookModel
         /// </summary>
         public string StrJson { get; set; }
 
+        /// <summary>
+        ///  获取unity json数据
+        /// </summary>
+        public string UnityStrJson { get; set; }
 
         /// <summary>
         /// 是否为特例

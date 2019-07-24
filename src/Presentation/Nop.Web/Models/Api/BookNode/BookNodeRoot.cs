@@ -20,7 +20,7 @@ namespace Nop.Web.Models.Api.BookNode
         {
             Base = new ModelBase();
         }
-        public int code { get; set; }   
+        public string code { get; set; }   
         public ModelBase Base{get;set;}
     }
 
@@ -95,24 +95,26 @@ namespace Nop.Web.Models.Api.BookNode
         {
             objectids = new List<string>();
         }
-        public int enventid { get; set; }
+        public string enventid { get; set; }
+
+        public string name { get; set; }
         public List<string> objectids { get; set; }
     }
 
 
     public class OffsetXY
     {
-        public int x { get; set; }
+        public string x { get; set; }
 
-        public int y { get; set; }
+        public string y { get; set; }
     }
 
 
     public class OffsetXYZ
     {
-        public int x { get; set; }
-        public int y { get; set; }
-        public int z { get; set; }
+        public string x { get; set; }
+        public string y { get; set; }
+        public string z { get; set; }
     }
     public class ButtonInfo:BaseModel
     {
@@ -218,23 +220,23 @@ namespace Nop.Web.Models.Api.BookNode
     public class RichText {
         public bool b { get; set; }
         public bool i { get; set; }
-        public int size { get; set; }
+        public string size { get; set; }
         public string color { get; set; }
         public string val { get; set;}
 
        
-        public int sort { get; set; }
+        public string sort { get; set; }
     }
 
 
     public class Rect
     {
-        public int x { get; set; }
+        public string x { get; set; }
 
-        public int y { get; set; }
+        public string y { get; set; }
 
-        public int w { get; set; }
-        public int h { get; set; }
+        public string w { get; set; }
+        public string h { get; set; }
 
     }
 

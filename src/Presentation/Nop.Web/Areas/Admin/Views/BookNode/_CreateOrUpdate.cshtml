@@ -37,6 +37,11 @@
                 <nop-panel asp-name="category-seo" asp-icon="fa fa-search-plus" asp-title="@T("Admin.Common.SEO")" asp-hide-block-attribute-name="@hideSeoBlockAttributeName" asp-hide="@hideSeoBlock" asp-advanced="true">@await Html.PartialAsync("_CreateOrUpdate.Seo", Model)</nop-panel>
                 <nop-panel asp-name="category-products" asp-icon="fa fa-th-list" asp-title="@T("Admin.Catalog.Categories.Products")" asp-hide-block-attribute-name="@hideProductsBlockAttributeName" asp-hide="@hideProductsBlock" asp-advanced="true">@await Html.PartialAsync("_CreateOrUpdate.Products", Model)</nop-panel>*@
 
+            @{ 
+                if (Model.BookNodeRoot != null && Model.BookNodeRoot.Base != null && Model.BookNodeRoot.Base.buttoninfo != null && Model.BookNodeRoot.Base.buttoninfo.Count() > 0)
+                {
+                }
+            }
             @await Component.InvokeAsync("AdminWidget", new { widgetZone = AdminWidgetZones.CategoryDetailsBlock, additionalData = Model })
         </nop-panels>
     </div>

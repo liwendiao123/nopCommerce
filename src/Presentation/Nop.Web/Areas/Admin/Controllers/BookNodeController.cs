@@ -18,6 +18,8 @@ using Nop.Core.Domain.TableOfContent;
 using Nop.Services.AIBookModel;
 using Nop.Web.Areas.Admin.Models.AiBook;
 using Nop.Core.Domain.AIBookModel;
+using Newtonsoft.Json;
+using Nop.Web.Models.Api.BookNode;
 
 namespace Nop.Web.Areas.Admin.Controllers
 {
@@ -130,6 +132,23 @@ namespace Nop.Web.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
+
+                if (!string.IsNullOrEmpty(model.UnityStrJson))
+                {
+
+                    try
+                    {
+                        model.BookNodeRoot = JsonConvert.DeserializeObject<BookNodeRoot>(model.UnityStrJson);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.Write(ex.Message);
+                    }
+
+
+                  
+                }
+
                 var category = model.ToEntity<AiBookModel>();
                 category.CreatedOnUtc = DateTime.UtcNow;
                 category.UpdatedOnUtc = DateTime.UtcNow;

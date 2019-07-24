@@ -100,7 +100,7 @@ namespace Nop.Web.Controllers.Api
         {
 
             var root = new BookNodeRoot();
-            root.code = 1;
+            root.code = "1";
             // if (root.Base == null)
             //{
             root.Base = new ModelBase
@@ -108,24 +108,24 @@ namespace Nop.Web.Controllers.Api
                 openeventstate = new List<OpenEventState> {
 
                          new OpenEventState{
-                              enventid = 0,
+                              enventid = "0",
                               objectids = new List<string>{
 
                                "1001", "1002", "1003", "2000", "4001"
                               }
                          },  new OpenEventState{
-                              enventid = 1,
+                              enventid = "1",
                               objectids = new List<string>{
 
                                 "2001"
                               }
                          }, new OpenEventState{
-                              enventid = 2,
+                              enventid = "2",
                               objectids = new List<string>{
                                 "2002"
                               }
                          }, new OpenEventState{
-                            enventid =3,
+                            enventid ="3",
                             objectids = new List<string>{
 
                                "2003"
@@ -134,12 +134,12 @@ namespace Nop.Web.Controllers.Api
                     },
                 closeeventstate = new List<OpenEventState> {
                             new OpenEventState{
-                              enventid = 1,
+                              enventid = "1",
                               objectids = new List<string>{
                                "2000", "2002", "2003"
                               }
                          },  new OpenEventState{
-                              enventid = 2,
+                              enventid ="2",
                               objectids = new List<string>{
                                "2000", "2001", "2002"
                               }
@@ -149,12 +149,12 @@ namespace Nop.Web.Controllers.Api
                 buttoninfo = new List<ButtonInfo> {
                           new ButtonInfo{
                               pos = new OffsetXY{
-                                  x = 750,
-                                 y = 430
+                                  x = "750",
+                                 y = "430"
                               },
                               size = new OffsetXY{
-                                  x = 160,
-                                  y = 30
+                                  x = "160",
+                                  y = "30"
                               },
                               path = "K/Button/Button",
                               url = string.Empty,
@@ -166,12 +166,12 @@ namespace Nop.Web.Controllers.Api
                           },
                           new ButtonInfo{
                               pos = new OffsetXY{
-                                  x = 750,
-                                 y = 0
+                                  x = "750",
+                                 y = "0"
                               },
                               size = new OffsetXY{
-                                  x = 200,
-                                  y = 100
+                                  x = "200",
+                                  y = "100"
                               },
                               path = "K/Button/Button",
                               url = string.Empty,
@@ -183,12 +183,12 @@ namespace Nop.Web.Controllers.Api
                           },
                            new ButtonInfo{
                               pos = new OffsetXY{
-                                  x = 750,
-                                 y =-150
+                                  x = "750",
+                                 y ="-150"
                               },
                               size = new OffsetXY{
-                                  x = 200,
-                                  y = 100
+                                  x = "200",
+                                  y = "100"
                               },
                               path = "K/Button/Button",
                               url = string.Empty,
@@ -204,19 +204,19 @@ namespace Nop.Web.Controllers.Api
                         new ModelInfo{
                              pos = new OffsetXYZ{
 
-                                x=0,
-                                y=-2,
-                                z=10
+                                x="0",
+                                y="-2",
+                                z="10"
                              },
                             scale = new OffsetXYZ{
-                                x=1,
-                                y=1,
-                                z=1
+                                x="1",
+                                y="1",
+                                z="1"
                             },
                             rot = new OffsetXYZ{
-                                 x=0,
-                                y=0,
-                                z=0
+                                x="0",
+                                y="0",
+                                z="0"
                             },
                              clips = new List<Dic>{
                                   new Dic{
@@ -252,12 +252,12 @@ namespace Nop.Web.Controllers.Api
                     textinfo = new List<TextInfo> {
                        new TextInfo{
                            pos = new OffsetXY{
-                               x= -167,
-                               y=-412
+                               x= "-167",
+                               y="-412"
                            },
                            size = new OffsetXY{
-                               x=584,
-                               y =219
+                               x="584",
+                               y ="219"
                            },
                             path= "K/Text/Text",
                             url= "",
@@ -272,7 +272,7 @@ namespace Nop.Web.Controllers.Api
                                           new RichText{
                                                b = false,
                                                i = false,
-                                               size=32,
+                                               size="32",
                                                color ="000000",
                                                val = "水循环是指自然界的水在水圈、大气圈、岩石圈、生物圈四大圈层中通过各个环节连续运动的过程。自然界的水循环运动时刻都在全球范围内进行着，它发生的领域有：海洋与陆地之间，陆地与陆地上空之间，海洋与海洋上空之间。"
                                           }                                      
@@ -283,12 +283,12 @@ namespace Nop.Web.Controllers.Api
                        },
                           new TextInfo{
                           pos = new OffsetXY{
-                               x= -617,
-                               y=-412
+                               x="-617",
+                               y="-412"
                            },
                            size = new OffsetXY{
-                               x=584,
-                               y =219
+                               x="584",
+                               y ="219"
                            },
                             path= "K/Text/Text",
                             url= "",
@@ -303,7 +303,7 @@ namespace Nop.Web.Controllers.Api
                                           new RichText{
                                                b = false,
                                                i = false,
-                                               size=32,
+                                               size="32",
                                                color ="000000",
                                                val = "在太阳辐射能的作用下，从海陆表面蒸发的水分，上升到大气中；随着大气的运动和在一定的热力条件下，水汽凝结为液态水降落至地球表面；一部分降水可被植被拦截或被植物散发，降落到地面的水可以形成地表径流；渗入地下的水一部分从表层壤中流和地下径流形式进入河道，成为河川径流的一部分；贮于地下的水，一部分上升至地表供蒸发，一部分向深层渗透，在一定的条件下溢出成为不同形式的泉水；地表水和返回地面的地下水，最终都流入海洋或蒸发到大气中。"
                                           }
@@ -314,15 +314,13 @@ namespace Nop.Web.Controllers.Api
                        },
 
                        new TextInfo{
-
                         pos= new OffsetXY {
-                                x= -617,
-                                y= -412
+                                x= "-617",
+                                y= "-412"
                             },
                             size= new OffsetXY{
-                                x= -584,
-                                y= 219
-                                
+                                x="-584",
+                                y= "219"                               
                             },
                             path = "K/Text/Text",
                             url= "",
@@ -332,12 +330,12 @@ namespace Nop.Web.Controllers.Api
                             dic = new List<TextDic>{
                             new TextDic{
                                      key= "2",
-                                     //val= "<color=#123456>天霸动霸tua</color>"
+                                    //val= "<color=#123456>天霸动霸tua</color>"
                                      dic = new List<RichText>{
                                           new RichText{
                                                b = false,
                                                i = false,
-                                               size=32,
+                                               size="32",
                                                color ="000000",
                                                val = "海上内循环是指海洋面上的水蒸发形成水汽，进入大气后在海洋上空凝结，形成降水，又降落到海面的过程。"
                                           }
@@ -353,30 +351,30 @@ namespace Nop.Web.Controllers.Api
                                 name= "",
                                 id="10086",
                                  pos = new OffsetXYZ{
-                                        x= 0,
-                                        y= 0,
-                                        z= 0
+                                        x= "0",
+                                        y= "0",
+                                        z= "0"
                                  },
                                 rot = new OffsetXYZ{
-                                        x= 0,
-                                        y= 0,
-                                        z= 0
+                                        x= "0",
+                                        y= "0",
+                                        z= "0"
                                 },
                                 scale = new OffsetXYZ{
-                                       x= 0,
-                                       y= 0,
-                                        z= 0
+                                       x= "0",
+                                       y= "0",
+                                        z= "0"
                                 },
                                 centerpos = new OffsetXYZ{
-                                      x= 0,
-                                      y= 0,
-                                      z= 0
+                                      x= "0",
+                                      y= "0",
+                                      z= "0"
                                 },
                                 rect = new Rect{
-                                         x = 0,
-                                         y=0,
-                                         h = 0,
-                                          w = 0
+                                         x = "0",
+                                         y="0",
+                                         h = "0",
+                                          w = "0"
                                 }
                          }
                     },

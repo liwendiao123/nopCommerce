@@ -1,0 +1,1766 @@
+﻿@model AiBookModelView
+<style>
+    .btninfo input.control-label, .imginfo input.control-label, .openeventinfo input.control-label {
+        text-align: left;
+    }
+    .fengexian {
+        width: 100%;
+        height: auto;
+        font-size:1.2em;
+        border-top: solid 1px #0094ff;
+        /*border-bottom: solid 1px #0094ff;
+        border-right: solid 1px #0094ff;*/
+        margin-top: 0.5em;
+        margin-bottom: 0.5em;
+        margin-left:0.5em;
+    }
+
+    .text-event {
+        border: solid 1px #eee;
+        padding-bottom: 1em;
+    }
+        .text-event.row, .text-event.row > div {
+            margin-top: 10px;
+            margin-bottom:10px;
+        }
+    .tab-content .active .resourceadd {
+        color: beige !important;
+    }
+
+    .itemselected {
+        /*//border:solid 1px red;*/
+
+        background-color:aliceblue;
+    }
+
+
+
+</style>
+<div class="nav-tabs-custom">
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a href="#tab_1" data-toggle="tab" aria-expanded="true">
+                按钮信息
+            </a>
+        </li>
+        <li class="">
+            <a href="#tab_2" data-toggle="tab" aria-expanded="false">
+                图片信息
+            </a>
+        </li>
+        <li class="">
+            <a href="#tab_3" data-toggle="tab" aria-expanded="false">
+                文本信息
+            </a>
+        </li>
+        <li class="">
+            <a href="#tab_4" data-toggle="tab" aria-expanded="false">
+                模型信息
+            </a>
+        </li>
+        <li class="">
+            <a href="#tab_5" data-toggle="tab" aria-expanded="false">
+                相机信息
+            </a>
+        </li>
+        <li class="">
+            <a href="#tab_6" data-toggle="tab" aria-expanded="false">
+                音频信息
+            </a>
+        </li>
+        <li class="">
+            <a href="#tab_7" data-toggle="tab" aria-expanded="false">
+                打开事件
+            </a>
+        </li>
+        <li class="">
+            <a href="#tab_8" data-toggle="tab" aria-expanded="false">
+                关闭事件
+            </a>
+        </li>
+        <li class="">
+            <a href="#tab_9" data-toggle="tab" aria-expanded="false">
+                点击区域信息
+            </a>
+        </li>
+        <li class="">
+            <a href="#tab_10" data-toggle="tab" aria-expanded="false">
+                视频信息
+            </a>
+        </li>
+
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane active" id="tab_1">
+            <div class="row">
+                <div class="col-md-4 modelel">
+                    <div class="panel panel-info btninfo">
+                        <div class="panel-heading clearfix">
+                            按钮
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">平面坐标</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-x" />
+                                    </div>
+
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-y" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">按钮尺寸</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-size-x" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-size-y" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
+                                    <nop-select asp-for="PrefabPath" asp-items="Model.PrefabPathList" />
+                                    <span asp-validation-for="PrefabPath"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制Url</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 ">
+                                    <input type="url" value="" class="btn-prefab-url control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源名称（需与Url文件名称一致）</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="btn-prefab-name control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
+                                    <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源ID</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="btn-id control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">按钮背景图</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="btn-bgimg control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">按钮文字</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="btn-txt control-label" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <span class="btn bg-blue resourceadd">
+                    <i class="fa fa-plus-square"></i>
+                    @T("Admin.Common.AddNew")
+                    @*@T("Admin.Common.Delete")*@
+                </span>
+                <span class="btn bg-red resourcedel">
+                    <i class="fa fa-trash-o"></i>
+                    @T("Admin.Common.Delete")
+                </span>
+            </div>
+        </div>
+        <!-- /.tab-pane -->
+        <div class="tab-pane" id="tab_2">
+            <div class="row imginfo">
+                <div class="col-md-4 modelel">
+                    <div class="panel panel-info imgiteminfo">
+                        <div class="panel-heading clearfix">
+                            图片信息1
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">平面坐标</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-pos-x" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-pos-y" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">按钮尺寸</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-size-x" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-size-y" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
+                                    <nop-select asp-for="PrefabPath" asp-items="Model.PrefabPathList" />
+                                    <span asp-validation-for="PrefabPath"></span>
+                                </div>
+                            </div>
+                            @*<div class="form-group">
+                                    <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">默认Url地址</label>
+                                    <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 ">
+                                        <input type="url" value="" class="img-prefab-defaulturl control-label" />
+                                    </div>
+                                </div>*@
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制Url</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 ">
+                                    <input type="url" value="" class="img-prefab-url control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源名称</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="img-prefab-name control-label" />
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源ID</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="img-id control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group fengexian"></div>
+                            <ul class="timeline img">
+                                <!-- timeline time label -->
+                                <li class="time-label">
+                                    <span class="bg-red">
+                                        图片响应事件
+                                    </span>
+                                </li>
+                                <!-- /.timeline-label -->
+                                <!-- timeline item -->
+                                <li class="imgeventitemmodel">
+                                    <!-- timeline icon -->
+                                    <i class="fa fa-envelope bg-blue"></i>
+                                    <div class="timeline-item">
+                                        <span class="time">@*<i class="fa fa-clock-o"></i> 12:05*@</span>
+                                        <h3 class="timeline-header"><a href="#">事件1</a> </h3>
+                                        <div class="timeline-body">
+                                            <div class="form-group">
+                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
+                                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
+                                                    <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">图片路径ID</label>
+                                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                                    <input type="text" value="" class="imgevent-url control-label" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="timeline-footer">
+                                        </div>
+                                    </div>
+                                </li>
+                                <!-- END timeline item -->
+                            </ul>
+                            <div>
+                                <span class="btn bg-gray img-add">
+                                    <i class="fa fa-plus-square"></i>
+                                    @T("Admin.Common.AddNew")
+                                    @*@T("Admin.Common.Delete")*@
+                                </span>
+                                <span class="btn bg-red img-del">
+                                    <i class="fa fa-trash-o"></i>
+                                    @T("Admin.Common.Delete")
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <span class="btn bg-blue resourceadd">
+                    <i class="fa fa-plus-square"></i>
+                    @T("Admin.Common.AddNew")
+                    @*@T("Admin.Common.Delete")*@
+                </span>
+                <span class="btn bg-red resourcedel">
+                    <i class="fa fa-trash-o"></i>
+                    @T("Admin.Common.Delete")
+                </span>
+            </div>
+        </div>
+        <!-- /.tab-pane -->
+        <div class="tab-pane " id="tab_3">
+            <div class="row textinfo">
+                <div class="col-md-4 modelel">
+                    <div class="panel panel-info textiteminfo">
+                        <div class="panel-heading clearfix">
+                            文字信息1
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">平面坐标</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-pos-x" />
+                                    </div>
+
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-pos-y" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">按钮尺寸</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-size-x" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-size-y" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
+                                    <nop-select asp-for="PrefabPath" asp-items="Model.PrefabPathList" />
+                                    <span asp-validation-for="PrefabPath"></span>
+                                </div>
+                            </div>
+                            @*<div class="form-group">
+                                    <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">默认Url地址</label>
+                                    <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 ">
+                                        <input type="url" value="" class="txt-prefab-defaulturl control-label" />
+                                    </div>
+                                </div>*@
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制Url</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 ">
+                                    <input type="url" value="" class="txt-prefab-url control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源名称</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="txt-prefab-name control-label" />
+                                </div>
+                            </div>
+                            @*<div class="form-group">
+                                    <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
+                                    <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
+                                        <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                    </div>
+                                </div>*@
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源ID</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="txt-id control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group fengexian"></div>
+                            <ul class="timeline">
+                                <!-- timeline time label -->
+                                <li class="time-label">
+                                    <span class="bg-red">
+                                        文字响应事件
+                                    </span>
+                                </li>
+                                <!-- /.timeline-label -->
+                                <!-- timeline item -->
+                                <li class="textevent-item textevent-itemmodel">
+                                    <!-- timeline icon -->
+                                    <i class="fa fa-envelope bg-blue"></i>
+                                    <div class="timeline-item">
+                                        <span class="time">@*<i class="fa fa-clock-o"></i> 12:05*@</span>
+                                        <h3 class="timeline-header"><a href="#">事件1</a> </h3>
+                                        <div class="timeline-body">
+                                            <div class="form-group">
+                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
+                                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
+                                                    <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-lg-12 col-xs-12 col-sm-12 col-md-12 control-label text-left" style="text-align:left">文字信息</label>
+                                            </div>
+                                            <div class="form-group font-item">
+                                                <div class="row">
+                                                    <span class="btn font-add bg-blue">
+                                                        <i class="fa fa-plus-square"></i>
+                                                        @T("Admin.Common.AddNew")
+                                                        @*@T("Admin.Common.Delete")*@
+                                                    </span>
+                                                    <span class="btn bg-red font-delete">
+                                                        <i class="fa fa-trash-o"></i>
+                                                        @T("Admin.Common.Delete")
+                                                    </span>
+                                                </div>
+                                                <div class="row text-event text-eventfontitemmodel">
+                                                    <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
+                                                        <input type="checkbox" class="unitybold" />是否粗体
+                                                    </div>
+                                                    <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
+                                                        <input type="checkbox" name="unityi" class="unityi" />是否斜体体
+                                                    </div>
+                                                    <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
+                                                        <input type="number" name="unitysize" class="unitysize" />字体大小
+                                                    </div>
+                                                    <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
+                                                        <input type="text" name="unitycolor" class="unitycolor" />字体颜色
+                                                    </div>
+                                                    <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
+                                                        <input type="text" name="unitytxt" class="unitytxt" />文字信息
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="timeline-footer">
+                                        </div>
+                                    </div>
+                                </li>
+                                <!-- END timeline item -->
+                            </ul>
+                            <div>
+                                <span class="btn bg-blue fonteventadd">
+                                    <i class="fa fa-plus-square"></i>
+                                    @T("Admin.Common.AddNew")
+                                    @*@T("Admin.Common.Delete")*@
+                                </span>
+                                <span class="btn bg-red fonteventdel">
+                                    <i class="fa fa-trash-o"></i>
+                                    @T("Admin.Common.Delete")
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <span class="btn bg-blue resourceadd">
+                    <i class="fa fa-plus-square"></i>
+                    @T("Admin.Common.AddNew")
+                    @*@T("Admin.Common.Delete")*@
+                </span>
+                <span class="btn bg-red resourcedel">
+                    <i class="fa fa-trash-o"></i>
+                    @T("Admin.Common.Delete")
+                </span>
+            </div>
+        </div>
+        <div class="tab-pane" id="tab_4">
+            <div class="row modelinfo ">
+                <div class="col-md-4 modelel">
+                    <div class="panel panel-info imgiteminfo">
+                        <div class="panel-heading clearfix">
+                            模型信息1
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">默认三维空间向量</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 model-pos-x" />
+                                    </div>
+
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 model-pos-y" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Z:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 model-pos-z" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">空间三维旋转向量</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 model-rot-x" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 model-rot-y" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Z:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 model-rot-z" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">默认的缩放值</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 model-scale-x" />
+                                    </div>
+
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 model-scale-y" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Z:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 model-scale-z" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
+                                    <nop-select asp-for="PrefabPath" asp-items="Model.PrefabPathList" />
+                                    <span asp-validation-for="PrefabPath"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制Url</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 ">
+                                    <input type="url" value="" class="model-prefab-url control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源名称</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="model-prefab-name control-label" />
+                                </div>
+                            </div>
+                            @*<div class="form-group">
+                                    <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
+                                    <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
+                                        <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                    </div>
+                                </div>*@
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源ID</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="model-id control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group fengexian"></div>
+                            <ul class="timeline">
+                                <!-- timeline time label -->
+                                <li class="time-label">
+                                    <span class="bg-red">
+                                        模型响应事件
+                                    </span>
+                                </li>
+                                <!-- /.timeline-label -->
+                                <!-- timeline item -->
+                                <li class="modeleventitemel">
+                                    <!-- timeline icon -->
+                                    <i class="fa fa-envelope bg-blue"></i>
+                                    <div class="timeline-item">
+                                        <span class="time">@*<i class="fa fa-clock-o"></i> 12:05*@</span>
+                                        <h3 class="timeline-header"><a href="#">事件1</a> </h3>
+                                        <div class="timeline-body">
+                                            <div class="form-group">
+                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
+                                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
+                                                    <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">模型动画名称</label>
+                                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                                    <input type="text" value="" class="model-animation-name control-label" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="timeline-footer">
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <!-- END timeline item -->
+                            </ul>
+                            <div class="">
+                                <span class="btn bg-blue modeladd">
+                                    <i class="fa fa-plus-square"></i>
+                                    @T("Admin.Common.AddNew")
+                                    @*@T("Admin.Common.Delete")*@
+                                </span>
+                                <span class="btn bg-red modeldel">
+                                    <i class="fa fa-trash-o"></i>
+                                    @T("Admin.Common.Delete")
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <span class="btn bg-blue resourceadd">
+                    <i class="fa fa-plus-square"></i>
+                    @T("Admin.Common.AddNew")
+                    @*@T("Admin.Common.Delete")*@
+                </span>
+                <span class="btn bg-red resourcedel">
+                    <i class="fa fa-trash-o"></i>
+                    @T("Admin.Common.Delete")
+                </span>
+            </div>
+        </div>
+        <!-- /.tab-pane -->
+        <div class="tab-pane" id="tab_5">
+            <div class="row camerainfo ">
+                <div class="col-md-4 modelel">
+                    <div class="panel panel-info camerainfo">
+                        <div class="panel-heading clearfix">
+                            相机信息1
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">默认三维空间向量</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 camera-pos-x" />
+                                    </div>
+
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 camera-pos-y" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Z:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 camera-pos-z" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">空间三维旋转向量</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 camera-rot-x" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 camera-rot-y" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Z:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 camera-rot-z" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">默认的缩放值</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 camera-scale-x" />
+                                    </div>
+
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 camera-scale-y" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Z:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 camera-scale-z" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">镜头截切面</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 camera-rect-x" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 camera-rect-y" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">W:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 camera-rect-z" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">H:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 camera-rect-h" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">凝视中心点</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 camera-centerpos-x" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 camera-centerpos-y" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Z:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 camera-centerpos-z" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
+                                    <nop-select asp-for="PrefabPath" asp-items="Model.PrefabPathList" />
+                                    <span asp-validation-for="PrefabPath"></span>
+                                </div>
+                            </div>
+                            @*<div class="form-group">
+                                    <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">默认Url地址</label>
+                                    <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 ">
+                                        <input type="url" value="" class="camera-prefab-defaulturl control-label" />
+                                    </div>
+                                </div>*@
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制Url</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 ">
+                                    <input type="url" value="" class="camera-prefab-url control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源名称</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="camera-prefab-name control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源ID</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="camera-id control-label" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <span class="btn bg-blue resourceadd">
+                    <i class="fa fa-plus-square"></i>
+                    @T("Admin.Common.AddNew")
+                    @*@T("Admin.Common.Delete")*@
+                </span>
+                <span class="btn bg-red resourcedel">
+                    <i class="fa fa-trash-o"></i>
+                    @T("Admin.Common.Delete")
+                </span>
+            </div>
+        </div>
+        <!-- /.tab-pane -->
+        <div class="tab-pane " id="tab_6">
+            <div class="row audioinfo ">
+                <div class="col-md-4 modelel">
+                    <div class="panel panel-info audioinfo">
+                        <div class="panel-heading clearfix">
+                            音频信息1
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
+                                    <nop-select asp-for="PrefabPath" asp-items="Model.PrefabPathList" />
+                                    <span asp-validation-for="PrefabPath"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制Url</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 ">
+                                    <input type="url" value="" class="audio-prefab-url control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源名称</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="audio-prefab-name control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源ID</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="audio-id control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group fengexian"></div>
+                            <ul class="timeline">
+                                <!-- timeline time label -->
+                                <li class="time-label">
+                                    <span class="bg-red">
+                                        模型响应事件
+                                    </span>
+                                </li>
+                                <!-- /.timeline-label -->
+                                <!-- timeline item -->
+                                <li class="audioeventmodelel">
+                                    <!-- timeline icon -->
+                                    <i class="fa fa-envelope bg-blue"></i>
+                                    <div class="timeline-item">
+                                        <span class="time">@*<i class="fa fa-clock-o"></i> 12:05*@</span>
+                                        <h3 class="timeline-header"><a href="#">事件1</a> </h3>
+                                        <div class="timeline-body">
+                                            <div class="form-group">
+                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
+                                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
+                                                    <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">音效地址</label>
+                                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                                    <input type="text" value="" class="audio-enventurl control-label" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="timeline-footer">
+                                        </div>
+                                    </div>
+                                </li>
+                                <!-- END timeline item -->
+                            </ul>
+                            <div>
+                                <span class="btn bg-blue audioeventadd">
+                                    <i class="fa fa-plus-square"></i>
+                                    @T("Admin.Common.AddNew")
+                                    @*@T("Admin.Common.Delete")*@
+                                </span>
+                                <span class="btn bg-red audioeventdel">
+                                    <i class="fa fa-trash-o"></i>
+                                    @T("Admin.Common.Delete")
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <span class="btn bg-blue resourceadd">
+                    <i class="fa fa-plus-square"></i>
+                    @T("Admin.Common.AddNew")
+                </span>
+                <span class="btn bg-red resourcedel">
+                    <i class="fa fa-trash-o"></i>
+                    @T("Admin.Common.Delete")
+                </span>
+            </div>
+        </div>
+        <!-- /.tab-pane -->
+        <div class="tab-pane" id="tab_7">
+            <div class="row openeventinfo">
+                <div class="col-md-4 modelel">
+                    <div class="panel panel-info openeventiteminfo">
+                        <div class="panel-heading clearfix">
+                            打开时间基本信息
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">事件ID</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="openevent-id control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">事件名称</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="openevent-name control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">关联资源信息</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
+                                    <nop-select asp-for="PrefabPath" asp-items="Model.PrefabPathList" />
+                                    <span asp-validation-for="PrefabPath"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <span class="btn bg-blue resourceadd">
+                    <i class="fa fa-plus-square"></i>
+                    @T("Admin.Common.AddNew")
+                    @*@T("Admin.Common.Delete")*@
+                </span>
+                <span class="btn bg-red resourcedel">
+                    <i class="fa fa-trash-o"></i>
+                    @T("Admin.Common.Delete")
+                </span>
+            </div>
+        </div>
+        <!-- /.tab-pane -->
+        <div class="tab-pane" id="tab_8">
+            <div class="row closedeventinfo">
+                <div class="col-md-4 modelel">
+                    <div class="panel panel-info closedeventiteminfo">
+                        <div class="panel-heading clearfix">
+                            关闭事件基本信息
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">事件ID</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="closeevent-id control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">事件名称</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="closeevent-name control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">关联资源信息</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
+                                    <nop-select asp-for="PrefabPath" asp-items="Model.PrefabPathList" />
+                                    <span asp-validation-for="PrefabPath"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <span class="btn bg-blue resourceadd">
+                    <i class="fa fa-plus-square"></i>
+                    @T("Admin.Common.AddNew")
+                    @*@T("Admin.Common.Delete")*@
+                </span>
+                <span class="btn bg-red resourcedel">
+                    <i class="fa fa-trash-o"></i>
+                    @T("Admin.Common.Delete")
+                </span>
+            </div>
+        </div>
+        <div class="tab-pane" id="tab_9">
+            <div class="row clickeventinfo">
+                <div class="col-md-4 modelel">
+                    <div class="panel panel-info clickeventiteminfo">
+                        <div class="panel-heading clearfix">
+                            点击区域信息
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">事件ID</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="area-event-id control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">区域名称</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="area-event-name control-label" />
+                                </div>
+                            </div>
+                            @*<div class="form-group">
+                                    <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">关联资源信息</label>
+                                    <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
+                                        <nop-select asp-for="PrefabPath" asp-items="Model.PrefabPathList" />
+                                        <span asp-validation-for="PrefabPath"></span>
+                                    </div>
+                                </div>*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <span class="btn bg-blue resourceadd">
+                    <i class="fa fa-plus-square"></i>
+                    @T("Admin.Common.AddNew")
+                    @*@T("Admin.Common.Delete")*@
+                </span>
+                <span class="btn bg-red resourcedel">
+                    <i class="fa fa-trash-o"></i>
+                    @T("Admin.Common.Delete")
+                </span>
+            </div>
+        </div>
+        <div id="tab_10" class="tab-pane">
+            <div class="row videoinfo">
+                <div class="col-md-4 modelel">
+                    <div class="panel panel-info videoiteminfo">
+                        <div class="panel-heading clearfix">
+                            视频信息
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">平面坐标</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 video-pos-x" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 video-pos-y" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">视频尺寸</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 video-size-x" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                        <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 video-size-y" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
+                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
+                                    <nop-select asp-for="PrefabPath" asp-items="Model.PrefabPathList" />
+                                    <span asp-validation-for="PrefabPath"></span>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源ID</label>
+                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                    <input type="text" value="" class="video-id control-label" />
+                                </div>
+                            </div>
+                            <div class="form-group fengexian"></div>
+                            <ul class="timeline img timeline">
+                                <!-- timeline time label -->
+                                <li class="time-label">
+                                    <span class="bg-red">
+                                        视频响应事件
+                                    </span>
+                                </li>
+                                <!-- /.timeline-label -->
+                                <!-- timeline item -->
+                                <li class="videoeventitemmodel">
+                                    <!-- timeline icon -->
+                                    <i class="fa fa-envelope bg-blue"></i>
+                                    <div class="timeline-item">
+                                        <span class="time">@*<i class="fa fa-clock-o"></i> 12:05*@</span>
+                                        <h3 class="timeline-header"><a href="#">事件1</a> </h3>
+                                        <div class="timeline-body">
+                                            <div class="form-group">
+                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
+                                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
+                                                    <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">视频路径</label>
+                                                <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                                    <input type="text" value="" class="video-url control-label" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="timeline-footer">
+                                        </div>
+                                    </div>
+                                </li>
+                                <!-- END timeline item -->
+                            </ul>
+                            <div>
+                                <span class="btn bg-gray img-add">
+                                    <i class="fa fa-plus-square"></i>
+                                    @T("Admin.Common.AddNew")
+                                    @*@T("Admin.Common.Delete")*@
+                                </span>
+                                <span class="btn bg-red img-del">
+                                    <i class="fa fa-trash-o"></i>
+                                    @T("Admin.Common.Delete")
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <span class="btn bg-blue resourceadd">
+                    <i class="fa fa-plus-square"></i>
+                    @T("Admin.Common.AddNew")
+                    @*@T("Admin.Common.Delete")*@
+                </span>
+                <span class="btn bg-red resourcedel">
+                    <i class="fa fa-trash-o"></i>
+                    @T("Admin.Common.Delete")
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="gen">
+        <span class="btn bg-gray code-gen">
+            <i class="fa fa-plus-square"></i>
+            "生成JSON"
+        </span>
+    </div>
+    <div class="form-group">
+        <div class="col-md-3">
+            <nop-label asp-for="UnityJson" />
+        </div>
+        <div class="col-md-9">
+            <nop-textarea asp-for="UnityJson" />
+            <span asp-validation-for="UnityJson"></span>
+        </div>
+    </div>
+    <!-- /.tab-content -->
+</div>
+
+
+<script>
+
+    $(function () {
+
+        ///1.0 添加资源统一按钮
+        $('.tab-content .tab-pane .resourceadd').on("click", function () {         
+            var modelel = $(this).parent().parent().find('.modelel');
+            if (modelel && modelel.length > 0) {
+            }
+            else
+            {
+                alert("未找到对应的模板");
+            }
+            var clonemodelel = modelel.clone();
+            clonemodelel.removeClass("modelel").addClass('modelelcc');
+            var modelelparent = modelel.parent().append(clonemodelel[0].outerHTML);
+        })
+        ///2.0 删除资源指定项
+        $('.tab-content .tab-pane .resourcedel').click(function () {
+            var modelel = $(this).parent().parent().find('.modelelcc');
+            if (modelel && modelel.length > 0)
+            {
+                modelel.each(function () {
+                    if ($(this).hasClass("itemselected"))
+                    {
+                        $(this).remove();
+                    }                   
+                })
+            }
+        });
+        ///3.0 选项选择
+        $(document).on("click", '.modelelcc,.imgeventitemmodelcc,.textevent-itemmodelcc,.text-eventfontitemmodelcc,.modeleventitemelcc,.audioeventmodelelcc', function () {
+            if ($(this).hasClass('itemselected')) {
+                $(this).removeClass("itemselected");
+            }
+            else
+            {
+                $(this).addClass("itemselected");
+            }
+        }) 
+        ///4.0 图片添加事件
+        $(document).on("click", '.img-add', function () {
+            var modelel = $(this).parent().parent().find(".imgeventitemmodel");
+            if (modelel && modelel.length > 0) {
+              //  alert("ok");
+                console.log(modelel[0].outerHTML);
+                var modelelcc = modelel.clone()
+                    .removeClass("imgeventitemmodel")
+                    .addClass("imgeventitemmodelcc");
+                console.log(modelelcc[0].outerHTML);
+                $(this).parent().parent().find(".timeline").append(modelelcc[0].outerHTML);
+            }
+            else
+            {
+                alert("failed");
+            }
+        })
+        ///5.0 图片删除事件
+        $(document).on('click', '.img-del', function () {
+            var imgeventitemcc = $(this).parent().parent().find('.imgeventitemmodelcc');   
+            if (imgeventitemcc && imgeventitemcc.length > 0) {
+                imgeventitemcc.each(function () {
+                    if ($(this).hasClass("itemselected")) {
+                        $(this).remove();
+                    }
+                })
+            }
+            else
+            {
+                alert("failed");
+            }
+        })
+        //6.0 字体时间添加 
+        $(document).on('click', '.fonteventadd', function () {
+            var modelel = $(this).parent().parent().find(".textevent-itemmodel");
+            if (modelel && modelel.length > 0) {
+                alert("ok");
+                console.log(modelel[0].outerHTML);
+                var modelelcc = modelel.clone()
+                    .removeClass("textevent-itemmodel")
+                    .addClass("textevent-itemmodelcc");
+
+                console.log(modelelcc[0].outerHTML);
+
+                $(this).parent().parent().find(".timeline").append(modelelcc[0].outerHTML);
+            }
+            else {
+                alert("failed");
+            }
+        })
+        //7.0添加字体项
+        $(document).on('click', '.font-add', function () {
+            var el = $(this).parent().parent().find('.text-eventfontitemmodel');//v
+            alert("ok")
+            if (el && el.length > 0)
+            {
+                var elmodelclone = el.first().clone();
+                if (elmodelclone)
+                {
+                    elmodelclone.removeClass("text-eventfontitemmodel").addClass("text-eventfontitemmodelcc");
+                    $(this).parent().parent().append(elmodelclone[0].outerHTML);
+                }
+            }
+        })
+        //8.0 删除字体项
+        $(document).on('click', '.font-del', function () {
+            var imgeventitemcc = $(this).parent().parent().find('.text-eventfontitemmodelcc');
+            if (imgeventitemcc && imgeventitemcc.length > 0) {
+                imgeventitemcc.each(function () {
+                    if ($(this).hasClass("itemselected")) {
+                        $(this).remove();
+                    }
+                })
+            }
+            else {
+                alert("failed");
+            }
+        })
+        //9.0  模型事件添加
+        $(document).on("click", ".modeladd", function () {
+            var modelel = $(this).parent().parent().find(".modeleventitemel");
+            if (modelel && modelel.length > 0) {
+               // alert("ok");
+                console.log(modelel[0].outerHTML);
+                var modelelcc = modelel.clone()
+                    .removeClass("modeleventitemel")
+                    .addClass("modeleventitemelcc");
+                console.log(modelelcc[0].outerHTML);
+                $(this).parent().parent().find(".timeline").append(modelelcc[0].outerHTML);
+            }
+            else {
+                alert("failed");
+            }
+        })
+        //10.0模型事件删除
+        $(document).on("click", '.modeldel', function () {
+            var imgeventitemcc = $(this).parent().parent().find('.modeleventitemelcc');
+            if (imgeventitemcc && imgeventitemcc.length > 0) {
+                imgeventitemcc.each(function () {
+                    if ($(this).hasClass("itemselected")) {
+                        $(this).remove();
+                    }
+                })
+            }
+            else {
+                alert("failed");
+            }
+
+        })
+
+
+        //11.0 音频事件添加
+        $(document).on("click", '.audioeventadd', function () {
+            var modelel = $(this).parent().parent().find(".audioeventmodelel");
+            if (modelel && modelel.length > 0) {
+                console.log(modelel[0].outerHTML);
+                var modelelcc = modelel.clone()
+                    .removeClass("audioeventmodelel")
+                    .addClass("audioeventmodelelcc");
+                console.log(modelelcc[0].outerHTML);
+                $(this).parent().parent().find(".timeline").append(modelelcc[0].outerHTML);
+            }
+            else {
+                alert("failed");
+            }
+
+        })
+
+        //12.0 音频时间删除
+        $(document).on("click", '.audioeventdel', function () {
+
+            var imgeventitemcc = $(this).parent().parent().find('.audioeventmodelelcc');
+            if (imgeventitemcc && imgeventitemcc.length > 0) {
+                imgeventitemcc.each(function () {
+                    if ($(this).hasClass("itemselected")) {
+                        $(this).remove();
+                    }
+                })
+            }
+            else {
+                alert("failed");
+            }
+
+        })
+
+        $(document).on("click", ".code-gen", function () {
+
+            var root = new Object();
+            
+            //1.0添加打开事件信息
+            var openeventstate = new Array();       
+            var openevitems = $('#tab_7 .modelel,#tab_7 .modelelcc');
+            if (openevitems && openevitems.length > 0) {
+                openevitems.each(function (el) {
+                    var openeven = new Object();
+                    var id = $(this).find('.openevent-id').first().val();
+                    var name = $(this).find('.openevent-name').first().val();
+                    openeven.enventid = id;
+                    openeven.name = name;
+                    var objectids = new Array();
+                    ///待补充  添加事件 
+                    openeven.objectids = objectids; 
+                    openeventstate.push(openeven);
+                })
+                root.openeventstate = openeventstate;
+            }
+            else
+            {
+                root.openeventstate = openeventstate;
+            }
+            //******************添加打开事件结束*********************//
+
+            //2.0添加关闭事件信息
+            var closeeventstate = new Array();
+            var closeeventitems = $('#tab_8 .modelel,#tab_8 .modelelcc');
+            if (closeeventitems && closeeventitems.length > 0) {
+                closeeventitems.each(function (el) {
+                    var openeven = new Object();
+                    var id = $(this).find('.closeevent-id').first().val();
+
+                    var name = $(this).find('.closeevent-name').first().val();
+                    openeven.enventid = id;
+                    openeven.name = name;
+                    var objectids = new Array();
+                    ///待补充  添加事件 
+
+                    openeven.objectids = objectids;
+                    closeeventstate.push(openeven);
+                })
+                root.closeeventstate = closeeventstate;
+            }
+            else {
+                root.closeeventstate = closeeventstate;
+            }
+            //******************添加关闭事件结束*********************//
+            //3.0 添加按钮信息
+            var btnarray = new Array();
+            var btnitems = $('#tab_1 .modelel,#tab_1 .modelelcc');
+            if (btnitems && btnitems.length > 0) {
+                btnitems.each(function () {
+                    var btninfo = new Object();
+                    var pos = new Object();
+                    pos.x = $(this).find('.btn-pos-x').first().val();
+                    pos.y = $(this).find('.btn-pos-y').first().val();
+                    var size = new Object();
+                    size.x = $(this).find('.btn-size-x').first().val();
+                    size.y = $(this).find('.btn-size-x').first().val();            
+                    ///按钮平面坐标
+                    btninfo.pos = pos;
+                    ///按钮尺寸
+                    btninfo.size = size;
+                    btninfo.path = $(this).find('.btn-prefab-defaulturl').first().val();
+                    btninfo.name = $(this).find('.btn-prefab-name').first().val();
+                    btninfo.url = $(this).find('.btn-prefab-url').first().val();                   
+                    btninfo.id = $(this).find('.btn-id').first().val();
+                    btninfo.eventid = $(this).find('#EventId').first().val();
+                    btninfo.bg = $(this).find('.btn-bgimg').first().val();
+                    btninfo.text = $(this).find('.btn-txt').first().val();
+
+                    btnarray.push(btninfo);
+                    root.buttoninfo = btnarray;
+
+                })
+            }
+            else
+            {
+                root.buttoninfo = btnarray;
+            }
+            ///4.0 添加图片信息
+            imageinfo = new Array();
+            var imgitems = $('#tab_2 .modelel,#tab_2 .modelelcc');
+            if (imgitems && imgitems.length > 0)
+            {
+                imgitems.each(function () {
+                   var  imginfo = new Object();
+                    var pos = new Object();
+                    pos.x = $(this).find('.img-pos-x').first().val();
+                    pos.y = $(this).find('.img-pos-y').first().val();
+                    var size = new Object();
+                    size.x = $(this).find('.img-size-x').first().val();
+                    size.y = $(this).find('.img-size-y').first().val();   
+                    imginfo.pos = pos;
+                    imginfo.size = size;
+                   // imginfo.defaultURL = $(this).find('.img-prefab-defaulturl').first().val();
+                    imginfo.path = $(this).find('#PrefabPath').first().val();
+                    imginfo.url = $(this).find('.img-prefab-url').first().val();
+                    imginfo.name = $(this).find('.img-prefab-name').first().val();
+                    imginfo.id = $(this).find('.img-id').first().val();
+                    var dics = new Array();
+                    var dicitems = $('#tab_2 .imgeventitemmodel,#tab_2 .imgeventitemmodelcc');                   
+                    dicitems.each(function () {
+                        var dicitem = new Object();
+ 
+                        dicitem.key = $(this).find('#EventId').first().val();
+                        dicitem.val = $(this).find('.imgevent-url').first().val();
+                    });
+                    imginfo.dic = dics;
+                    imageinfo.push(imginfo);
+                })
+            }
+
+            root.imageinfo = imageinfo
+          ///结束添加图片信息
+
+         ///5.0添加文本事件
+            var textinfoes = new Array();    
+            var textitems = $('#tab_3 .modelel,#tab_3 .modelelcc');
+            textitems.each(function () {
+                var textinfo = new Object();
+                var pos = new Object();
+                pos.x = $(this).find('.txt-pos-x').first().val();
+                pos.y = $(this).find('.txt-pos-y').first().val();
+                var size = new Object();
+                size.x = $(this).find('.txt-size-x').first().val();
+                size.y = $(this).find('.txt-size-y').first().val();
+                textinfo.pos = pos;
+                textinfo.size = size;
+                textinfo.path = $(this).find('#PrefabPath').first().val() == null ? "" : $(this).find('#PrefabPath').first().val();
+             //   textinfo.defaultURL = $(this).find('.txt-prefab-defaulturl').first().val();
+                textinfo.url = $(this).find('.txt-prefab-url').first().val();
+                textinfo.name = $(this).find('.txt-prefab-name').first().val();
+             //   textinfo.eventid = $(this).find('#EventId').first().val();
+                textinfo.id = $(this).find('.txt-id').first().val();;
+             
+                texteventdic = new Array();
+                $(this).find('.textevent-itemmodel,.textevent-itemmodelcc').each(function () {
+                    var dicobj = new Object();
+
+                    
+                    dicobj.key = $(this).find('#EventId').first().val(); 
+
+                    var txtobjarray = new Array();
+                         
+                         
+                    $(this).find('.text-eventfontitemmodel,.text-eventfontitemmodelcc')
+                        .each(function () {
+                            var txtobj = new Object();
+
+                            var b = ($(this).find('.unitybold').first().attr('checked') ? true : false);
+                            var i = ($(this).find('.unityi').first().attr('checked') ? true : false);
+                            var size = $(this).find('.unitysize').first().val();
+                            var color = $(this).find('.unitycolor').first().val();
+                            var text = $(this).find('.unitytxt').first().val();
+
+                            txtobj.b = b;
+                            txtobj.i = i;
+                            txtobj.size = size;
+                            txtobj.val = text;
+                            txtobj.color = color;
+                            txtobjarray.push(txtobj);
+                        })
+                    dicobj.dic = txtobjarray;                    
+                    texteventdic.push(dicobj);
+                     
+                })
+                textinfo.dic = texteventdic;
+                textinfoes.push(textinfo);
+            })
+
+            root.textinfo = textinfoes;
+
+         ///结束添加文本事件
+
+
+            ///6.0 添加模型事件
+            var modelinfoes = new Array();
+            var modeltems = $('#tab_4 .modelel,#tab_4 .modelelcc');
+            if (modeltems && modeltems.length > 0) {
+                modeltems.each(function () {
+                    var modelinfo = new Object();
+                    var pos = new Object();
+                    var x = $(this).find('.model-pos-x').first().val();
+                    var y = $(this).find('.model-pos-y').first().val();
+                    var z = $(this).find('.model-pos-z').first().val();
+                    pos.x = x;
+                    pos.y = y;
+                    pos.z = z;
+                    modelinfo.pos = pos;
+                    var rot = new Object();
+                    var x = $(this).find('.model-rot-x').first().val();
+                    var y = $(this).find('.model-rot-y').first().val();
+                    var z = $(this).find('.model-rot-z').first().val();
+                    rot.x = x;
+                    rot.y = y;
+                    rot.z = z;
+                    modelinfo.rot = rot;
+                    var scale = new Object();
+                    var x = $(this).find('.model-scale-x').first().val();
+                    var y = $(this).find('.model-scale-y').first().val();
+                    var z = $(this).find('.model-scale-z').first().val();
+                    scale.x = x;
+                    scale.y = y;
+                    scale.z = z;
+                    modelinfo.scale = scale;
+
+
+                  //  modelinfo.defaultURL = $(this).find('.model-prefab-defaulturl').first().val();
+                    modelinfo.path = $(this).find('#PrefabPath').first().val();
+                    modelinfo.url = $(this).find('.model-prefab-url').first().val();
+                    modelinfo.name = $(this).find('.model-prefab-name').first().val();
+                    modelinfo.id = $(this).find('.model-id').first().val();
+
+                    //动画名称
+                    var clips = new Array();
+                    $(this).find('.modeleventitemel,.modeleventitemelcc').each(function () {
+                        var clipinfo = new Object();
+                        clipinfo.key = $(this).find('#EventId').first().val();
+                        clipinfo.val = $(this).find('.model-animation-name').first().val();
+                        clips.push(clipinfo);
+
+                    })
+                    modelinfo.clips = clips;
+                    modelinfoes.push(modelinfo);
+                })           
+            }         
+                 root.modelinfo = modelinfoes;       
+            ///结束模型事件
+
+
+            ///7.0 添加相机事件
+
+            var camerainfoes = new Array();
+            cameraitems = $('#tab_5 .modelel,#tab_5 .modelelcc');
+            if (cameraitems && cameraitems.length > 0)
+            {
+                cameraitems.each(function () {
+                    var camerainfo = new Object();
+                    var pos = new Object();
+                    var x = $(this).find('.camera-pos-x').first().val();
+                    var y = $(this).find('.camera-pos-y').first().val();
+                    var z = $(this).find('.camera-pos-z').first().val();
+                    pos.x = x;
+                    pos.y = y;
+                    pos.z = z;
+                    camerainfo.pos = pos;
+                    var rot = new Object();
+                    var x = $(this).find('.camera-rot-x').first().val();
+                    var y = $(this).find('.camera-rot-y').first().val();
+                    var z = $(this).find('.camera-rot-z').first().val();
+                    rot.x = x;
+                    rot.y = y;
+                    rot.z = z;
+                    camerainfo.rot = rot;
+                    var scale = new Object();
+                    var x = $(this).find('.camera-scale-x').first().val();
+                    var y = $(this).find('.camera-scale-y').first().val();
+                    var z = $(this).find('.camera-scale-z').first().val();
+                    scale.x = x;
+                    scale.y = y;
+                    scale.z = z;
+                    camerainfo.scale = scale;
+                    var rect = new Object();
+                    var x = $(this).find('.camera-rect-x').first().val();
+                    var y = $(this).find('.camera-rect-y').first().val();
+                    var w = $(this).find('.camera-rect-z').first().val();
+                    var h = $(this).find('.camera-rect-h').first().val();
+                    rect.x = x;
+                    rect.y = y;
+                    rect.w = w;
+                    rect.h = h;
+                    camerainfo.rect = rect;                 
+                    var centerpos = new Object();
+                    var x = $(this).find('.camera-centerpos-x').first().val();
+                    var y = $(this).find('.camera-centerpos-y').first().val();
+                    var z = $(this).find('.camera-centerpos-z').first().val();
+                    centerpos.x = x;
+                    centerpos.y = y;
+                    centerpos.z = z;
+                    camerainfo.centerpos = centerpos;                  
+                    camerainfo.path = $(this).find('#PrefabPath').first().val();
+                    camerainfo.url = $(this).find('.camera-prefab-url').first().val();
+                    camerainfo.name = $(this).find('.camera-prefab-name').first().val();
+                    camerainfo.id = $(this).find('.camera-id').first().val();
+
+                    camerainfoes.push(camerainfo);
+                })
+            }
+            root.cameraInfo = camerainfoes;
+            ///结束添加相机时间
+
+
+            ///8.0 添加音频事件
+            audioarray = new Array();
+            audioitems = $('#tab_6 .modelel,#tab_6 .modelelcc');
+            if (audioitems && audioitems.length > 0)
+            {
+                audioitems.each(function () {
+
+                    audioinfo = new Object();
+                    
+                    var id = $(this).find('.audio-id').first().val();
+                    var url = $(this).find('.audio-prefab-url').first().val();
+                    var name = $(this).find('.audio-prefab-name').first().val();
+                    var path = $(this).find('#PrefabPath').first().val();
+
+                    audioinfo.id = id;
+                    audioinfo.url = url;
+                    audioinfo.name = name;
+                    audioinfo.path = path;
+                   var audioclips = new Array();
+                    $(this).find('.audioeventmodelel,.audioeventmodelelcc').each(function () {
+                        var clipinfo = new Object();
+                        var key = $(this).find('#EventId').first().val();
+                        var val = $(this).find('.audio-enventurl').first().val();
+                        clipinfo.key = key;
+                        clipinfo.val = val;
+                        audioclips.push(clipinfo);
+                        audioinfo.clips = audioclips;
+                    })
+                    audioarray.push(audioinfo);
+                })
+            }
+            root.audioinfo = audioarray;
+            ///结束音频添加事件
+            /// 9.0 添加热区事件信息 
+            clickinfoarray = new Array();
+            clickinfoitems = $('#tab_9 .modelel,#tab_9 .modelelcc');
+            if (clickinfoitems && clickinfoitems.length > 0)
+            {
+                clickinfoitems.each(function () {
+                    var clickinfo = new Object();
+                    clickinfo.eventid = $(this).find('.area-event-id').first().val();
+                    clickinfo.name = $(this).find('.area-event-name').first().val();
+                    clickinfoarray.push(clickinfo);
+                })
+            }
+           root.clickinfo = clickinfoarray;
+            ///结束热区添加事件信息
+            ///10.0  添加视频点击按钮
+            videoinfo = new Array();
+            var videoitems = $('#tab_10 .modelel,#tab_10 .modelelcc');
+            if (videoitems && videoitems.length > 0) {
+                videoitems.each(function () {
+                    var videoinfoitem = new Object();
+                    var pos = new Object();
+                    pos.x = $(this).find('.video-pos-x').first().val();
+                    pos.y = $(this).find('.video-pos-y').first().val();
+                    var size = new Object();
+                    size.x = $(this).find('.video-size-x').first().val();
+                    size.y = $(this).find('.video-size-y').first().val();
+                    videoinfoitem.pos = pos;
+                    videoinfoitem.size = size;
+                   // videoinfo.defaultURL = $(this).find('').first().val();
+                    videoinfoitem.path = $(this).find('#PrefabPath').first().val();
+                   
+                    videoinfoitem.id = $(this).find('.video-id').first().val();
+                    var dics = new Array();
+                    var dicitems = $(this).find(' .videoeventitemmodel,.videoeventitemmodelcc');
+                    dicitems.each(function () {
+                        var dicitem = new Object();
+
+                        dicitem.key = $(this).find('#EventId').first().val();
+                        dicitem.val = $(this).find('.video-url').first().val();
+
+                        dics.push(dicitem);
+                    });
+                    videoinfoitem.dic = dics;
+                    videoinfo.push(videoinfoitem);
+                })
+            }
+            root.videoinfo = videoinfo
+
+
+            var finaldata = new Object();
+
+            finaldata.code = 0;
+            finaldata.Base = root;
+            $('#UnityJson').text(JSON.stringify(finaldata));
+            console.log(JSON.stringify(finaldata));
+            ///结束视频添加事件
+        })
+    })
+</script>

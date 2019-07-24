@@ -31,9 +31,61 @@ namespace Nop.Web.Areas.Admin.Models.AiBook
             PrefabPathList = new List<SelectListItem>();
             BookNodeRoot = new BookNodeRoot();
             EventIdList = new List<SelectListItem>();
+            ResourceList = new List<SelectListItem>();
+            InitPrefabList();
+            InitEventIdList();
         }
         #endregion
+        private void InitPrefabList()
+        {
+            PrefabPathList.Add(new SelectListItem
+            {
+                 Value = @"K/Audio/CKAudio",
+                  Text = @"K/Audio/CKAudio"
+            });
+            PrefabPathList.Add(new SelectListItem
+            {
+                Value= @"K/Button/Button",
+                Text = @"K/Button/Button"
+            });
+            PrefabPathList.Add(new SelectListItem
+            {
+                Value = @"K/Camera/DefaultCamera",
+                Text = @"K/Camera/DefaultCamera"
+            });
+            PrefabPathList.Add(new SelectListItem
+            {
+                Value = @"K/Camera/Camera",
+                Text  = @"K/Camera/Camera"
+            });
+            PrefabPathList.Add(new SelectListItem
+            {
+                Value = @"K/Image/Image",
+                Text = @"K/Image/Image"
+            });
+            PrefabPathList.Add(new SelectListItem
+            {
+                Value = @"K/Text/Text",
+                Text = @"K/Text/Text"
+            });
+            PrefabPathList.Add(new SelectListItem
+            {
+                Value = @"K/Video/VideoPlayer",
+                Text = @"K/Video/VideoPlayer"
+            });
+        }
 
+
+        private void InitEventIdList()
+        {
+            EventIdList.Add(new SelectListItem
+            {
+
+                Value = "-1",
+                 Text = "无效事件"
+
+            });
+        }
 
         #region 属性
         [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.CateName")]
@@ -66,7 +118,13 @@ namespace Nop.Web.Areas.Admin.Models.AiBook
         public string ImgUrl { get; set; }
         [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.StrJson")]
         public string StrJson { get; set; }
+
+        [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.UnityJson")]
+        public string UnityStrJson { get; set; }
         [NopResourceDisplayName("Admin.Catalog.Products.Fields.Published")]
+
+
+     
         public bool Published { get; set; }
         [NopResourceDisplayName("Admin.Catalog.Categories.Fields.Deleted")]
         public bool Deleted { get; set; }
@@ -109,12 +167,24 @@ namespace Nop.Web.Areas.Admin.Models.AiBook
         /// </summary>
         public IList<SelectListItem> PrefabPathList { get; set; }
 
-        [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.EventIdList")]
+
 
         /// <summary>
         /// 事件ID集合
         /// </summary>
+        [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.EventIdList")]
         public IList<SelectListItem> EventIdList { get; set; }
+
+        [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.ResourceList")]
+        public IList<SelectListItem> ResourceList { get; set; }
+        //[NopResourceDisplayName("Admin.AiBook.BookNode.Fields.ButtonPrefabPathList")]
+        //public IList<SelectListItem> ButtonPrefabPathList
+        //{
+        //    get;
+        //    set;
+        //}
+
+
         public BookNodeRoot BookNodeRoot { get; set; }
         #endregion
     }
