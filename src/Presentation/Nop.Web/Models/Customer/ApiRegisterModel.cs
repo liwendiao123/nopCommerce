@@ -38,7 +38,11 @@ namespace Nop.Web.Models.Customer
 
         public int DepartmentId { get; set; }
 
-        public string ImageUrl { get; set; }
+
+      //  [AllowHtml]
+
+      // [DataType(DataType.ImageUrl)]
+        public string ImgUrl { get; set; }
 
         public string InviteCode { get; set; }
 

@@ -264,11 +264,21 @@ namespace Nop.Services.Customers
                 return result;
             }
 
-            if (_customerSettings.UsernamesEnabled && _customerService.GetCustomerByUsername(request.Username) != null)
+
+            var oldCustomer = _customerService.GetCustomerByUsername(request.Username);
+
+            if (_customerSettings.UsernamesEnabled &&(oldCustomer != null && !oldCustomer.Deleted))
             {
                 result.AddError(_localizationService.GetResource("Account.Register.Errors.UsernameAlreadyExists"));
                 return result;
             }
+
+            //if (oldCustomer != null)
+            //{
+            //    _customerService.DeleteCustomer(oldCustomer);
+            //}
+
+            
 
             //at this point request is valid
             request.Customer.Username = request.Username;
@@ -308,10 +318,24 @@ namespace Nop.Services.Customers
                 roleName = request.RoleName;
             }
             var registeredRole = _customerService.GetCustomerRoleBySystemName(NopCustomerDefaults.RegisteredRoleName);
+           
             if (registeredRole == null)
                 throw new NopException("'Registered' role could not be loaded");
             //request.Customer.CustomerRoles.Add(registeredRole);
             request.Customer.AddCustomerRoleMapping(new CustomerCustomerRoleMapping { CustomerRole = registeredRole });
+            if (!roleName.Equals(NopCustomerDefaults.RegisteredRoleName))
+            {
+                var curRole = _customerService.GetCustomerRoleBySystemName(roleName);
+                if (curRole != null)
+                {
+                    request.Customer.AddCustomerRoleMapping(new CustomerCustomerRoleMapping { CustomerRole = curRole });
+                }
+                else
+                {
+                    throw new NopException("指定角色不存在");
+                }
+               
+            }
             //remove from 'Guests' role
             var guestRole = request.Customer.CustomerRoles.FirstOrDefault(cr => cr.SystemName == NopCustomerDefaults.GuestsRoleName);
             if (guestRole != null)

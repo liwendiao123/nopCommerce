@@ -94,8 +94,8 @@
                 {
                     Model.ResourceList.Add(new SelectListItem
                     {
-                        Value = item.id,
-                        Text = item.id
+                        Value = item.eventid,
+                        Text = item.eventid
 
                     });
                 }
@@ -137,7 +137,7 @@
                 foreach (var item in Model.BookNodeRoot.Base.closeeventstate)
                 {
 
-                    var resource = Model.EventIdList.Where(x => x.Value == item.enventid).ToList().FirstOrDefault() ;
+                    var resource = Model.EventIdList.Where(x => x.Value == item.enventid).ToList().FirstOrDefault();
 
                     if (resource == null)
                     {
@@ -149,7 +149,7 @@
                     }
                     else
                     {
-                        //resource.Text = resource.Text + "&" + item.name;
+                        resource.Text = resource.Text + "&" + item.name;
                     }
                 }
             }
@@ -160,8 +160,8 @@
     }
 
 }
-
 <style>
+
 
     .btninfo input.control-label, .imginfo input.control-label, .openeventinfo input.control-label {
         text-align: left;
@@ -199,7 +199,7 @@
     }
 
     .tab-pane select {
-        width:180px;
+        width: 180px;
     }
 </style>
 @{
@@ -221,7 +221,6 @@
     {
         openeventstateexist = true;
 
-
     }
 
 
@@ -239,7 +238,7 @@
     {
         buttonexist = true;
 
-       
+
     }
 
     if (Model.BookNodeRoot != null
@@ -264,7 +263,7 @@
    && Model.BookNodeRoot.Base.modelinfo != null
    && Model.BookNodeRoot.Base.modelinfo.Count() > 0)
     {
-        textexist = true;
+        modelinfoexist = true;
     }
 
     if (Model.BookNodeRoot != null
@@ -351,12 +350,10 @@
                 视频信息
             </a>
         </li>
-
     </ul>
     <div class="tab-content">
         <div class="tab-pane active" id="tab_1">
             <div class="row">
-
                 @if (buttonexist)
                 {
                     for (var i = 0; i < Model.BookNodeRoot.Base.buttoninfo.Count(); i++)
@@ -384,7 +381,6 @@
                                                 <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
                                                 <input type="number" value="@itemdata.pos.x" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-x" />
                                             </div>
-
                                         </div>
                                         <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
                                             <div class="row">
@@ -411,7 +407,11 @@
                                     <div class="form-group">
                                         <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
                                         <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
-                                            <nop-select asp-for="@itemdata.path" asp-for-name="PrefabPath" asp-items="Model.PrefabPathList" />
+
+                                            @{ 
+                                                Model.PrefabPath = itemdata.path;
+                                            }
+                                            <nop-select asp-for="PrefabPath" asp-for-name="PrefabPath" asp-items="Model.PrefabPathList" />
                                             <span asp-validation-for="PrefabPath"></span>
                                         </div>
                                     </div>
@@ -430,7 +430,12 @@
                                     <div class="form-group">
                                         <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                         <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
-                                            <nop-select asp-for="@itemdata.eventid" asp-for-name="EventId" asp-items="Model.EventIdList" />
+
+                                            @{ 
+                                                Model.EventId = itemdata.eventid;
+                                            }
+
+                                            <nop-select asp-for="EventId" asp-for-name="EventId" asp-items="Model.EventIdList" />
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -471,7 +476,6 @@
                                             <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
                                             <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 btn-pos-x" />
                                         </div>
-
                                     </div>
                                     <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
                                         <div class="row">
@@ -543,7 +547,6 @@
                     </div>
                 }
 
-
             </div>
             <div class="row">
                 <span class="btn bg-blue resourceadd">
@@ -560,7 +563,6 @@
         <!-- /.tab-pane -->
         <div class="tab-pane" id="tab_2">
             <div class="row imginfo">
-
                 @if (imginfoexist)
                 {
                     for (var i = 0; i < Model.BookNodeRoot.Base.imageinfo.Count(); i++)
@@ -613,7 +615,12 @@
                                     <div class="form-group">
                                         <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
                                         <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
-                                            <nop-select asp-for="@itemdata.path" asp-for-name="PrefabPath" asp-items="Model.PrefabPathList" />
+
+                                            @{
+                                                Model.PrefabPath = itemdata.path;
+                                            }
+
+                                            <nop-select asp-for="PrefabPath" asp-for-name="PrefabPath" asp-items="Model.PrefabPathList" />
                                             <span asp-validation-for="PrefabPath"></span>
                                         </div>
                                     </div>
@@ -635,7 +642,6 @@
                                             <input type="text" value="@itemdata.name" class="img-prefab-name control-label" />
                                         </div>
                                     </div>
-
                                     <div class="form-group">
                                         <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源ID</label>
                                         <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
@@ -652,7 +658,6 @@
                                         </li>
                                         <!-- /.timeline-label -->
                                         <!-- timeline item -->
-
                                         @if (itemdata.dic != null && itemdata.dic.Count() > 0)
                                         {
                                             for (var j = 0; j < itemdata.dic.Count; j++)
@@ -675,7 +680,10 @@
                                                             <div class="form-group">
                                                                 <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                                                 <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
-                                                                    <nop-select asp-for="@dicitem.key" asp-for-name="EventId" asp-items="Model.EventIdList" />
+                                                                    @{ 
+                                                                        Model.EventId = dicitem.key;
+                                                                    }
+                                                                    <nop-select asp-for="EventId" asp-for-name="EventId" asp-items="Model.EventIdList" />
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
@@ -720,8 +728,6 @@
                                                 </div>
                                             </li>
                                         }
-
-
 
                                         <!-- END timeline item -->
                                     </ul>
@@ -806,7 +812,6 @@
                                         <input type="text" value="" class="img-prefab-name control-label" />
                                     </div>
                                 </div>
-
                                 <div class="form-group">
                                     <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源ID</label>
                                     <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
@@ -865,7 +870,6 @@
                     </div>
                 }
 
-
             </div>
             <div class="row">
                 <span class="btn bg-blue resourceadd">
@@ -882,7 +886,6 @@
         <!-- /.tab-pane -->
         <div class="tab-pane " id="tab_3">
             <div class="row textinfo">
-
                 @if (textexist)
                 {
                     for (var i = 0; i < Model.BookNodeRoot.Base.textinfo.Count; i++)
@@ -906,7 +909,6 @@
                                                 <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
                                                 <input type="number" value="@textinfo.pos.x" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-pos-x" />
                                             </div>
-
                                         </div>
                                         <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
                                             <div class="row">
@@ -933,7 +935,11 @@
                                     <div class="form-group">
                                         <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
                                         <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
-                                            <nop-select asp-for="@textinfo.path" asp-for-name="PrefabPath" asp-items="Model.PrefabPathList" />
+
+                                            @{ 
+                                                Model.PrefabPath = textinfo.path;
+                                            }
+                                            <nop-select asp-for="PrefabPath" asp-for-name="PrefabPath" asp-items="Model.PrefabPathList" />
                                             <span asp-validation-for="PrefabPath"></span>
                                         </div>
                                     </div>
@@ -977,7 +983,6 @@
                                         </li>
                                         <!-- /.timeline-label -->
                                         <!-- timeline item -->
-
                                         @if (textinfo.dic != null && textinfo.dic.Count > 0)
                                         {
 
@@ -1001,7 +1006,13 @@
                                                             <div class="form-group">
                                                                 <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                                                 <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
-                                                                    <nop-select asp-for="@titemdata.key"  asp-for-name="EventId" asp-items="Model.EventIdList" />
+
+                                                                    @{
+                                                                        Model.EventId = titemdata.key;
+
+                                                                    }
+
+                                                                    <nop-select asp-for="EventId" asp-for-name="EventId" asp-items="Model.EventIdList" />
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
@@ -1019,7 +1030,6 @@
                                                                         @T("Admin.Common.Delete")
                                                                     </span>
                                                                 </div>
-
                                                                 @if (titemdata.dic != null && titemdata.dic.Count > 0)
                                                                 {
 
@@ -1044,10 +1054,8 @@
                                                                                 {
                                                                                     <input type="checkbox" class="unitybold" /> <text>是否粗体</text>
                                                                                 }
-
                                                                             </div>
                                                                             <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
-
                                                                                 @if (fontitem.i)
                                                                                 {
                                                                                     <input type="checkbox" name="unityi" checked class="unityi" /><text>是否斜体体</text>
@@ -1056,7 +1064,6 @@
                                                                                 {
                                                                                     <input type="checkbox" name="unityi" class="unityi" /><text>是否斜体体</text>
                                                                                 }
-
                                                                             </div>
                                                                             <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
                                                                                 <input type="number" value="@fontitem.size" name="unitysize" class="unitysize" />字体大小
@@ -1093,7 +1100,6 @@
                                                                         </div>
                                                                     </div>
                                                                 }
-
 
                                                             </div>
                                                         </div>
@@ -1161,7 +1167,6 @@
                                             </li>
 
                                         }
-
                                         <!-- END timeline item -->
                                     </ul>
                                     <div>
@@ -1197,7 +1202,6 @@
                                             <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
                                             <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-pos-x" />
                                         </div>
-
                                     </div>
                                     <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
                                         <div class="row">
@@ -1416,7 +1420,6 @@
                                                 <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
                                                 <input type="number" value="@modelinfo.scale.x" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 model-scale-x" />
                                             </div>
-
                                         </div>
                                         <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
                                             <div class="row">
@@ -1434,7 +1437,14 @@
                                     <div class="form-group">
                                         <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
                                         <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
-                                            <nop-select asp-for="@modelinfo.path"  asp-for-name="PrefabPath" asp-items="Model.PrefabPathList" />
+
+                                            @{ 
+
+                                                Model.PrefabPath = modelinfo.path;
+
+                                            }
+
+                                            <nop-select asp-for="PrefabPath" asp-for-name="PrefabPath" asp-items="Model.PrefabPathList" />
                                             <span asp-validation-for="PrefabPath"></span>
                                         </div>
                                     </div>
@@ -1467,7 +1477,6 @@
                                         <!-- /.timeline-label -->
                                         <!-- timeline item -->
 
-
                                         @if (modelinfo.clips != null && modelinfo.clips.Count > 0)
                                         {
                                             for (var j = 0; j < modelinfo.clips.Count; j++)
@@ -1489,7 +1498,12 @@
                                                             <div class="form-group">
                                                                 <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                                                 <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
-                                                                    <nop-select asp-for="@clipinfo.key" asp-for-name="EventId" asp-items="Model.EventIdList" />
+
+                                                                    @{ 
+
+                                                                        Model.EventId = clipinfo.key;
+                                                                    }
+                                                                    <nop-select asp-for="EventId" asp-for-name="EventId" asp-items="Model.EventIdList" />
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
@@ -1535,8 +1549,6 @@
                                         }
 
 
-
-
                                         <!-- END timeline item -->
                                     </ul>
                                     <div class="">
@@ -1570,7 +1582,6 @@
                                             <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
                                             <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 model-pos-x" />
                                         </div>
-
                                     </div>
                                     <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
                                         <div class="row">
@@ -1613,7 +1624,6 @@
                                             <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
                                             <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 model-scale-x" />
                                         </div>
-
                                     </div>
                                     <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
                                         <div class="row">
@@ -1631,11 +1641,10 @@
                                 <div class="form-group">
                                     <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
                                     <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
-                                        <nop-select asp-for="PrefabPath"  asp-items="Model.PrefabPathList" />
+                                        <nop-select asp-for="PrefabPath" asp-items="Model.PrefabPathList" />
                                         <span asp-validation-for="PrefabPath"></span>
                                     </div>
                                 </div>
-
                                 <div class="form-group">
                                     <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制Url</label>
                                     <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 ">
@@ -1680,7 +1689,7 @@
                                                 <div class="form-group">
                                                     <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                                     <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
-                                                        <nop-select asp-for="EventId"  asp-items="Model.EventIdList" />
+                                                        <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
@@ -1694,7 +1703,6 @@
                                             </div>
                                         </div>
                                     </li>
-
                                     <!-- END timeline item -->
                                 </ul>
                                 <div class="">
@@ -1713,7 +1721,6 @@
                     </div>
                 }
 
-
             </div>
             <div class="row">
                 <span class="btn bg-blue resourceadd">
@@ -1730,7 +1737,6 @@
         <!-- /.tab-pane -->
         <div class="tab-pane" id="tab_5">
             <div class="row camerainfo ">
-
                 @if (camerainfoexist)
                 {
                     for (var i = 0; i < Model.BookNodeRoot.Base.camerainfo.Count; i++)
@@ -1757,7 +1763,6 @@
                                                 <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
                                                 <input type="number" value="@camerainfo.pos.x" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 camera-pos-x" />
                                             </div>
-
                                         </div>
                                         <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
                                             <div class="row">
@@ -1800,7 +1805,6 @@
                                                 <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
                                                 <input type="number" value="@camerainfo.scale.x" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 camera-scale-x" />
                                             </div>
-
                                         </div>
                                         <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
                                             <div class="row">
@@ -1866,7 +1870,11 @@
                                     <div class="form-group">
                                         <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
                                         <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
-                                            <nop-select asp-for="@camerainfo.path" asp-for-name="PrefabPath" asp-items="Model.PrefabPathList" />
+
+                                            @{ 
+                                                Model.PrefabPath = camerainfo.path;
+                                            }
+                                            <nop-select asp-for="PrefabPath" asp-for-name="PrefabPath" asp-items="Model.PrefabPathList" />
                                             <span asp-validation-for="PrefabPath"></span>
                                         </div>
                                     </div>
@@ -1915,7 +1923,6 @@
                                             <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
                                             <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 camera-pos-x" />
                                         </div>
-
                                     </div>
                                     <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
                                         <div class="row">
@@ -1958,7 +1965,6 @@
                                             <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
                                             <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 camera-scale-x" />
                                         </div>
-
                                     </div>
                                     <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
                                         <div class="row">
@@ -2057,7 +2063,6 @@
                     </div>
                 }
 
-
             </div>
             <div class="row">
                 <span class="btn bg-blue resourceadd">
@@ -2074,7 +2079,6 @@
         <!-- /.tab-pane -->
         <div class="tab-pane " id="tab_6">
             <div class="row audioinfo ">
-
                 @if (audioinfoinfoexist)
                 {
                     for (var i = 0; i < Model.BookNodeRoot.Base.audioinfo.Count; i++)
@@ -2097,7 +2101,12 @@
                                     <div class="form-group">
                                         <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
                                         <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
-                                            <nop-select asp-for="@audioinfo.path" asp-for-name="PrefabPath" asp-items="Model.PrefabPathList" />
+                                            @{ 
+
+                                                Model.PrefabPath = audioinfo.path;
+                                            }
+
+                                            <nop-select asp-for="PrefabPath" asp-for-name="PrefabPath" asp-items="Model.PrefabPathList" />
                                             <span asp-validation-for="PrefabPath"></span>
                                         </div>
                                     </div>
@@ -2129,7 +2138,6 @@
                                         </li>
                                         <!-- /.timeline-label -->
                                         <!-- timeline item -->
-
                                         @if (audioinfo != null && audioinfo.clips.Count > 0)
                                         {
                                             var clipclassitem = "audioeventmodelelcc";
@@ -2153,7 +2161,11 @@
                                                             <div class="form-group">
                                                                 <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                                                 <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
-                                                                    <nop-select asp-for="@clipinfo.key" asp-for-name="EventId" asp-items="Model.EventIdList" />
+                                                                    @{
+
+                                                                        Model.EventId = clipinfo.key;
+                                                                    }
+                                                                    <nop-select asp-for="EventId" asp-for-name="EventId" asp-items="Model.EventIdList" />
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
@@ -2196,7 +2208,6 @@
                                                 </div>
                                             </li>
                                         }
-
 
                                         <!-- END timeline item -->
                                     </ul>
@@ -2301,7 +2312,6 @@
                     </div>
                 }
 
-
             </div>
             <div class="row">
                 <span class="btn bg-blue resourceadd">
@@ -2318,62 +2328,60 @@
         <div class="tab-pane" id="tab_7">
             <div class="row openeventinfo">
 
-
                 @if (openeventstateexist)
-                 {
-                                var className = "modelelcc";
-                                for (var i = 0; i < Model.BookNodeRoot.Base.openeventstate.Count; i++)
-                                {
-                                    if (i == 0)
-                                    {
-                                        className = "modelel";
-                                    }
+                {
+                    var className = "modelelcc";
+                    for (var i = 0; i < Model.BookNodeRoot.Base.openeventstate.Count; i++)
+                    {
+                        if (i == 0)
+                        {
+                            className = "modelel";
+                        }
 
-                             var openeventInfoes = Model.BookNodeRoot.Base.openeventstate[0];
-                    
-                             <div class="col-md-4 @className">
-                                <div class="panel panel-info openeventiteminfo">
-                                    <div class="panel-heading clearfix">
-                                        打开时间基本信息
+                        var openeventInfoes = Model.BookNodeRoot.Base.openeventstate[i];
+
+                        <div class="col-md-4 @className">
+                            <div class="panel panel-info openeventiteminfo">
+                                <div class="panel-heading clearfix">
+                                    打开时间基本信息
+                                </div>
+                                <div class="panel-body">
+                                    <div class="form-group">
+                                        <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">事件ID</label>
+                                        <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                            <input type="text" value="@openeventInfoes.enventid" class="openevent-id control-label" />
+                                        </div>
                                     </div>
-                                    <div class="panel-body">
-                                        <div class="form-group">
-                                            <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">事件ID</label>
-                                            <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
-                                                <input type="text" value="@openeventInfoes.enventid" class="openevent-id control-label" />
-                                            </div>
+                                    <div class="form-group">
+                                        <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">事件名称</label>
+                                        <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                            <input type="text" value="@openeventInfoes.name" class="openevent-name control-label" />
                                         </div>
-                                        <div class="form-group">
-                                            <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">事件名称</label>
-                                            <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
-                                                <input type="text" value="@openeventInfoes.name" class="openevent-name control-label" />
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">关联资源信息</label>
-                                            <div class="col-lg-9 col-xs-12 col-sm-12 col-md-9">
-                                                @*<nop-select asp-for="@openeventInfoes.objectids" asp-for-name="PrefabPath"  asp-items="Model.ResourceList" />
-            <span asp-validation-for="PrefabPath"></span>*@
-
-                                                @foreach (var item in Model.ResourceList)
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">关联资源信息</label>
+                                        <div class="col-lg-9 col-xs-12 col-sm-12 col-md-9">
+                                            @*<nop-select asp-for="@openeventInfoes.objectids" asp-for-name="PrefabPath"  asp-items="Model.ResourceList" />
+                                                <span asp-validation-for="PrefabPath"></span>*@
+                                            @foreach (var item in Model.ResourceList)
+                                            {
+                                                if (openeventInfoes.objectids.Contains(item.Value))
                                                 {
-                                                    if (openeventInfoes.objectids.Contains(item.Value))
-                                                    {
-                                                        <input type="checkbox" class="resourcelist" checked value="@item.Value" data-id="@item.Value" /> <text> @item.Text </text>
-                                                    }
-                                                    else
-                                                    {
-                                                        <input type="checkbox" class="resourcelist" value="@item.Value" data-id="@item.Value" /> <text> @item.Text </text>
-                                                    }
+                                                    <input type="checkbox" class="resourcelist" checked value="@item.Value" data-id="@item.Value" /> <text> @item.Text </text>
                                                 }
-                                            </div>
+                                                else
+                                                {
+                                                    <input type="checkbox" class="resourcelist" value="@item.Value" data-id="@item.Value" /> <text> @item.Text </text>
+                                                }
+                                            }
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                                }
+                        </div>
+                    }
                 }
-                
+
                 else
                 {
                     <div class="col-md-4 modelel">
@@ -2400,7 +2408,7 @@
                                         @foreach (var item in Model.ResourceList)
                                         {
 
-                                            <input type="checkbox" class="resourcelist"  value="@item.Value"  data-id="@item.Value"/><text> @item.Text </text>
+                                            <input type="checkbox" class="resourcelist" value="@item.Value" data-id="@item.Value" /><text> @item.Text </text>
 
                                         }
                                     </div>
@@ -2409,8 +2417,6 @@
                         </div>
                     </div>
                 }
-
-
 
             </div>
             <div class="row">
@@ -2428,7 +2434,6 @@
         <!-- /.tab-pane -->
         <div class="tab-pane" id="tab_8">
             <div class="row closedeventinfo">
-
                 @if (closeeventstateexist)
                 {
                     var className = "modelelcc";
@@ -2441,7 +2446,7 @@
                             className = "modelel";
                         }
 
-                        var openeventInfoes = Model.BookNodeRoot.Base.closeeventstate[0];
+                        var openeventInfoes = Model.BookNodeRoot.Base.closeeventstate[i];
                         <div class="col-md-4 @className">
                             <div class="panel panel-info closedeventiteminfo">
                                 <div class="panel-heading clearfix">
@@ -2451,7 +2456,7 @@
                                     <div class="form-group">
                                         <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">事件ID</label>
                                         <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
-                                            <input type="text" value="@openeventInfoes.enventid"  class="closeevent-id control-label" />
+                                            <input type="text" value="@openeventInfoes.enventid" class="closeevent-id control-label" />
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -2464,17 +2469,16 @@
                                         <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">关联资源信息</label>
                                         <div class="col-lg-9 col-xs-12 col-sm-12 col-md-9">
                                             @*<nop-select asp-for="@openeventInfoes.objectids" asp-for-name="PrefabPath" asp-items="Model.ResourceList" />
-                                            <span asp-validation-for="PrefabPath"></span>*@
-
+                                                <span asp-validation-for="PrefabPath"></span>*@
                                             @foreach (var item in Model.ResourceList)
                                             {
                                                 if (openeventInfoes.objectids.Contains(item.Value))
                                                 {
-                                                    <input type="checkbox" class="resourcelist" checked  value="@item.Value" data-id="@item.Value"/> <text> @item.Text </text>
+                                                    <input type="checkbox" class="resourcelist" checked value="@item.Value" data-id="@item.Value" /> <text> @item.Text </text>
                                                 }
                                                 else
                                                 {
-                                                    <input type="checkbox" class="resourcelist"  data-id="@item.Value" value="@item.Value" /><text> @item.Text </text>
+                                                    <input type="checkbox" class="resourcelist" data-id="@item.Value" value="@item.Value" /><text> @item.Text </text>
                                                 }
                                             }
                                         </div>
@@ -2510,8 +2514,8 @@
                                     <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">关联资源信息</label>
                                     <div class="col-lg-9 col-xs-12 col-sm-12 col-md-9">
                                         @foreach (var item in Model.ResourceList)
-                                        {                                          
-                                             <input type="checkbox" value="@item.Value" data-id="@item.Value" class="resourcelist" /><text> @item.Text </text>                                            
+                                        {
+                                            <input type="checkbox" value="@item.Value" data-id="@item.Value" class="resourcelist" /><text> @item.Text </text>
                                         }
                                     </div>
                                 </div>
@@ -2519,7 +2523,6 @@
                         </div>
                     </div>
                 }
-
 
             </div>
             <div class="row">
@@ -2536,7 +2539,6 @@
         </div>
         <div class="tab-pane" id="tab_9">
             <div class="row clickeventinfo">
-
                 @if (clickinfoexist)
                 {
                     for (var i = 0; i < Model.BookNodeRoot.Base.clickinfo.Count; i++)
@@ -2560,7 +2562,7 @@
                                     <div class="form-group">
                                         <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">事件ID</label>
                                         <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
-                                            <input type="text" value="@clickinfoitem.id" class="area-event-id control-label" />
+                                            <input type="text" value="@clickinfoitem.eventid" class="area-event-id control-label" />
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -2614,7 +2616,6 @@
                     </div>
                 }
 
-
             </div>
             <div class="row">
                 <span class="btn bg-blue resourceadd">
@@ -2630,7 +2631,6 @@
         </div>
         <div id="tab_10" class="tab-pane">
             <div class="row videoinfo">
-
                 @if (videoinfexist)
                 {
                     for (var i = 0; i < Model.BookNodeRoot.Base.videoinfo.Count; i++)
@@ -2683,12 +2683,13 @@
                                     <div class="form-group">
                                         <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
                                         <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
-                                            <nop-select asp-for="@videoiteminfo.path" asp-items="Model.PrefabPathList" />
+                                            @{ 
+                                                Model.PrefabPath = videoiteminfo.path;
+                                            }
+                                            <nop-select asp-for="PrefabPath" asp-items="Model.PrefabPathList" />
                                             <span asp-validation-for="PrefabPath"></span>
                                         </div>
                                     </div>
-
-
                                     <div class="form-group">
                                         <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源ID</label>
                                         <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
@@ -2705,18 +2706,13 @@
                                         </li>
                                         <!-- /.timeline-label -->
                                         <!-- timeline item -->
-
                                         @if (videoiteminfo.dic != null && videoiteminfo.dic.Count > 0)
                                         {
-
                                             var vitemclassName = "videoeventitemmodelcc";
-
                                             for (var j = 0; j < videoiteminfo.dic.Count; j++)
                                             {
                                                 vitemclassName = "videoeventitemmodel";
-
-                                               var  vdicinfo = videoiteminfo.dic[0];
-                                               
+                                                var vdicinfo = videoiteminfo.dic[i];
                                                 <li class="@vitemclassName">
                                                     <!-- timeline icon -->
                                                     <i class="fa fa-envelope bg-blue"></i>
@@ -2727,7 +2723,12 @@
                                                             <div class="form-group">
                                                                 <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                                                 <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
-                                                                    <nop-select asp-for="@vdicinfo.key" asp-items="Model.EventIdList" />
+
+                                                                    @{ 
+                                                                        Model.PrefabPath = vdicinfo.key;
+                                                                    }
+
+                                                                    <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
@@ -2741,10 +2742,7 @@
                                                         </div>
                                                     </div>
                                                 </li>
-
                                             }
-
-
 
                                         }
                                         else
@@ -2774,17 +2772,14 @@
                                                 </div>
                                             </li>
                                         }
-
-
                                         <!-- END timeline item -->
                                     </ul>
                                     <div>
-                                        <span class="btn bg-gray img-add">
+                                        <span class="btn bg-gray video-add">
                                             <i class="fa fa-plus-square"></i>
-                                            @T("Admin.Common.AddNew")
-                                            @*@T("Admin.Common.Delete")*@
+                                             @T("Admin.Common.AddNew")                                        
                                         </span>
-                                        <span class="btn bg-red img-del">
+                                        <span class="btn bg-red video-del">
                                             <i class="fa fa-trash-o"></i>
                                             @T("Admin.Common.Delete")
                                         </span>
@@ -2839,7 +2834,6 @@
                                         <span asp-validation-for="PrefabPath"></span>
                                     </div>
                                 </div>
-
 
                                 <div class="form-group">
                                     <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源ID</label>
@@ -2929,7 +2923,6 @@
     </div>
     <!-- /.tab-content -->
 </div>
-
 <script>
 
     $(function () {
@@ -2958,7 +2951,7 @@
             }
         });
         ///3.0 选项选择
-        $(document).on("click", '.modelelcc,.imgeventitemmodelcc,.textevent-itemmodelcc,.text-eventfontitemmodelcc,.modeleventitemelcc,.audioeventmodelelcc', function () {
+        $(document).on("click", '.modelelcc,.imgeventitemmodelcc,.textevent-itemmodelcc,.text-eventfontitemmodelcc,.modeleventitemelcc,.audioeventmodelelcc,.videoeventitemmodelcc', function () {
             if ($(this).hasClass('itemselected')) {
                 $(this).removeClass("itemselected");
             }
@@ -3000,7 +2993,7 @@
         $(document).on('click', '.fonteventadd', function () {
             var modelel = $(this).parent().parent().find(".textevent-itemmodel");
             if (modelel && modelel.length > 0) {
-                alert("ok");
+               // alert("ok");
                 console.log(modelel[0].outerHTML);
                 var modelelcc = modelel.clone()
                     .removeClass("textevent-itemmodel")
@@ -3014,10 +3007,25 @@
                 alert("failed");
             }
         })
+
+        $(document).on('click', '.fonteventdel', function () {
+            var imgeventitemcc = $(this).parent().parent().find('.textevent-itemmodelcc');
+            if (imgeventitemcc && imgeventitemcc.length > 0) {
+                imgeventitemcc.each(function () {
+                    if ($(this).hasClass("itemselected")) {
+                        $(this).remove();
+                    }
+                })
+            }
+            else {
+                alert("failed");
+            }
+
+        })
         //7.0添加字体项
         $(document).on('click', '.font-add', function () {
             var el = $(this).parent().parent().find('.text-eventfontitemmodel');//v
-            alert("ok")
+            //alert("ok")
             if (el && el.length > 0) {
                 var elmodelclone = el.first().clone();
                 if (elmodelclone) {
@@ -3027,10 +3035,11 @@
             }
         })
         //8.0 删除字体项
-        $(document).on('click', '.font-del', function () {
+        $(document).on('click', '.font-delete', function () {
             var imgeventitemcc = $(this).parent().parent().find('.text-eventfontitemmodelcc');
             if (imgeventitemcc && imgeventitemcc.length > 0) {
                 imgeventitemcc.each(function () {
+
                     if ($(this).hasClass("itemselected")) {
                         $(this).remove();
                     }
@@ -3123,8 +3132,27 @@
             }
         })
 
+        $(document).on('click', '.video-del', function () {
+
+
+            var imgeventitemcc = $(this).parent().parent().find('.videoeventitemmodelcc');
+            if (imgeventitemcc && imgeventitemcc.length > 0) {
+                imgeventitemcc.each(function () {
+                    if ($(this).hasClass("itemselected")) {
+                        $(this).remove();
+                    }
+                })
+            }
+            else {
+                alert("failed");
+            }
+
+        })
+
         $(document).on("click", ".code-gen", function () {
 
+
+           // alert("ok");
             var root = new Object();
 
             //1.0添加打开事件信息
@@ -3138,6 +3166,13 @@
                     openeven.enventid = id;
                     openeven.name = name;
                     var objectids = new Array();
+                    $(this).find('.resourcelist').each(function () {
+
+                        if ($(this).attr('checked')) {
+                            objectids.push($(this).data('id'));
+
+                        }
+                    })
                     ///待补充  添加事件
                     openeven.objectids = objectids;
                     openeventstate.push(openeven);
@@ -3161,9 +3196,12 @@
                     openeven.enventid = id;
                     openeven.name = name;
                     var objectids = new Array();
-
-                    
-
+                    $(this).find('.resourcelist').each(function () {
+                        if ($(this).attr('checked'))
+                        {
+                            objectids.push($(this).data('id'));
+                        }
+                    })
                     ///待补充  添加事件
 
                     openeven.objectids = objectids;
@@ -3191,11 +3229,14 @@
                     btninfo.pos = pos;
                     ///按钮尺寸
                     btninfo.size = size;
-                    btninfo.path = $(this).find('.btn-prefab-defaulturl').first().val();
+                    btninfo.path = $(this).find('#PrefabPath,#itemdata_path').first().val();
+
+                   // alert(btninfo.path);
                     btninfo.name = $(this).find('.btn-prefab-name').first().val();
                     btninfo.url = $(this).find('.btn-prefab-url').first().val();
                     btninfo.id = $(this).find('.btn-id').first().val();
-                    btninfo.eventid = $(this).find('#EventId').first().val();
+                    btninfo.eventid = $(this).find('#EventId,#itemdata_eventid').first().val();
+                    alert(btninfo.eventid);
                     btninfo.bg = $(this).find('.btn-bgimg').first().val();
                     btninfo.text = $(this).find('.btn-txt').first().val();
 
@@ -3222,17 +3263,20 @@
                     imginfo.pos = pos;
                     imginfo.size = size;
                     // imginfo.defaultURL = $(this).find('.img-prefab-defaulturl').first().val();
-                    imginfo.path = $(this).find('#PrefabPath').first().val();
+                    imginfo.path = $(this).find('#PrefabPath,#itemdata_path').first().val();
                     imginfo.url = $(this).find('.img-prefab-url').first().val();
                     imginfo.name = $(this).find('.img-prefab-name').first().val();
                     imginfo.id = $(this).find('.img-id').first().val();
                     var dics = new Array();
-                    var dicitems = $('#tab_2 .imgeventitemmodel,#tab_2 .imgeventitemmodelcc');
+                    //var dicitems = $('#tab_2 .imgeventitemmodel,#tab_2 .imgeventitemmodelcc');
+                    var dicitems = $(this).find('.imgeventitemmodel,.imgeventitemmodelcc');
                     dicitems.each(function () {
                         var dicitem = new Object();
 
-                        dicitem.key = $(this).find('#EventId').first().val();
+                        dicitem.key = $(this).find('#EventId,#dicitem_key').first().val();
                         dicitem.val = $(this).find('.imgevent-url').first().val();
+
+                        dics.push(dicitem);
                     });
                     imginfo.dic = dics;
                     imageinfo.push(imginfo);
@@ -3254,7 +3298,7 @@
                 size.y = $(this).find('.txt-size-y').first().val();
                 textinfo.pos = pos;
                 textinfo.size = size;
-                textinfo.path = $(this).find('#PrefabPath').first().val() == null ? "" : $(this).find('#PrefabPath').first().val();
+                textinfo.path = $(this).find('#PrefabPath,#textinfo_path').first().val() == null ? "" : $(this).find('#PrefabPath,#textinfo_path').first().val();
                 //   textinfo.defaultURL = $(this).find('.txt-prefab-defaulturl').first().val();
                 textinfo.url = $(this).find('.txt-prefab-url').first().val();
                 textinfo.name = $(this).find('.txt-prefab-name').first().val();
@@ -3266,7 +3310,7 @@
                     var dicobj = new Object();
 
 
-                    dicobj.key = $(this).find('#EventId').first().val();
+                    dicobj.key = $(this).find('#EventId,#titemdata_key').first().val();
 
                     var txtobjarray = new Array();
 
@@ -3331,7 +3375,7 @@
                     scale.z = z;
                     modelinfo.scale = scale;
                     //  modelinfo.defaultURL = $(this).find('.model-prefab-defaulturl').first().val();
-                    modelinfo.path = $(this).find('#PrefabPath').first().val();
+                  //  modelinfo.path = $(this).find('#PrefabPath,#modelinfo_path').first().val();
                     modelinfo.url = $(this).find('.model-prefab-url').first().val();
                     modelinfo.name = $(this).find('.model-prefab-name').first().val();
                     modelinfo.id = $(this).find('.model-id').first().val();
@@ -3340,7 +3384,7 @@
                     var clips = new Array();
                     $(this).find('.modeleventitemel,.modeleventitemelcc').each(function () {
                         var clipinfo = new Object();
-                        clipinfo.key = $(this).find('#EventId').first().val();
+                        clipinfo.key = $(this).find('#EventId,#clipinfo_key').first().val();
                         clipinfo.val = $(this).find('.model-animation-name').first().val();
                         clips.push(clipinfo);
 
@@ -3401,7 +3445,7 @@
                     centerpos.y = y;
                     centerpos.z = z;
                     camerainfo.centerpos = centerpos;
-                    camerainfo.path = $(this).find('#PrefabPath').first().val();
+                    camerainfo.path = $(this).find('#PrefabPath,#camerainfo_path').first().val();
                     camerainfo.url = $(this).find('.camera-prefab-url').first().val();
                     camerainfo.name = $(this).find('.camera-prefab-name').first().val();
                     camerainfo.id = $(this).find('.camera-id').first().val();
@@ -3421,7 +3465,7 @@
                     var id = $(this).find('.audio-id').first().val();
                     var url = $(this).find('.audio-prefab-url').first().val();
                     var name = $(this).find('.audio-prefab-name').first().val();
-                    var path = $(this).find('#PrefabPath').first().val();
+                    var path = $(this).find('#PrefabPath,#audioinfo_path').first().val();
 
                     audioinfo.id = id;
                     audioinfo.url = url;
@@ -3430,7 +3474,7 @@
                     var audioclips = new Array();
                     $(this).find('.audioeventmodelel,.audioeventmodelelcc').each(function () {
                         var clipinfo = new Object();
-                        var key = $(this).find('#EventId').first().val();
+                        var key = $(this).find('#EventId,#clipinfo_key').first().val();
                         var val = $(this).find('.audio-enventurl').first().val();
                         clipinfo.key = key;
                         clipinfo.val = val;
@@ -3470,15 +3514,14 @@
                     videoinfoitem.pos = pos;
                     videoinfoitem.size = size;
                     // videoinfo.defaultURL = $(this).find('').first().val();
-                    videoinfoitem.path = $(this).find('#PrefabPath').first().val();
-
+                    videoinfoitem.path = $(this).find('#PrefabPath,#videoiteminfo.path').first().val();
                     videoinfoitem.id = $(this).find('.video-id').first().val();
                     var dics = new Array();
                     var dicitems = $(this).find(' .videoeventitemmodel,.videoeventitemmodelcc');
                     dicitems.each(function () {
                         var dicitem = new Object();
 
-                        dicitem.key = $(this).find('#EventId').first().val();
+                        dicitem.key = $(this).find('#EventId,#videoiteminfo_path').first().val();
                         dicitem.val = $(this).find('.video-url').first().val();
 
                         dics.push(dicitem);

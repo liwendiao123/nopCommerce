@@ -121,7 +121,16 @@ namespace Nop.Services.AIBookModel
 
             AiBookModel LoadStoreFunc()
             {
-                return _bookNodeRepository.GetById(booknodeId);
+              var item = _bookNodeRepository.GetById(booknodeId);
+
+                if (item != null && item.BookDirID > 0)
+                {
+                  var bookdir =  _bookDirService.GetBookDirById(item.BookDirID);
+
+                    item.BookDir = bookdir;
+                }
+
+                return item;
             }
 
             if (!loadCacheableCopy)
@@ -226,6 +235,10 @@ namespace Nop.Services.AIBookModel
             if (bookdirId > 0)
             {
                 var resultIds =_bookDirService. GetChildBookDirIds(bookdirId);
+
+                if(!resultIds.Contains(bookdirId))
+                { resultIds.Add(bookdirId); }
+                
                 query = query.Where(x => resultIds.Contains(x.BookDirID));
             }
 

@@ -224,6 +224,8 @@ namespace Nop.Web.Controllers.Api
                 model.Email = Guid.NewGuid().ToString("N") + "@163.com";
             }
 
+            model.Email = model.Email.Trim();
+
             SmsMsgRecord record = new SmsMsgRecord();
             if (model != null)
             {
@@ -433,7 +435,7 @@ namespace Nop.Web.Controllers.Api
                     }
                     if (_customerSettings.IdcardImgEnabled)
                     {
-                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.IdCardImgAttribute, model.ImageUrl);
+                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.IdCardImgAttribute, model.ImgUrl);
                     }
                     ///签订保密协议
                     if (_customerSettings.AcceptPrivacyPolicyEnabled)
@@ -638,6 +640,11 @@ namespace Nop.Web.Controllers.Api
             //    ModelState.AddModelError("", _localizationService.GetResource("Common.WrongCaptchaMessage"));
             //}
 
+
+            string name = "";
+            string inviteCode = string.Empty;
+            string imgurl = string.Empty;
+
             LoginModel model = new LoginModel()
             {
                  Email = "li@163.com",
@@ -675,18 +682,23 @@ namespace Nop.Web.Controllers.Api
                             _customerActivityService.InsertActivity(customer, "PublicStore.Login",
                                 _localizationService.GetResource("ActivityLog.PublicStore.Login"), customer);
 
-
-
+                            imgurl = _genericAttributeService.GetAttribute<string>(_customer, NopCustomerDefaults.IdCardImgAttribute);
+                            name = _genericAttributeService.GetAttribute<string>(_customer, NopCustomerDefaults.LastNameAttribute);
+                            var dep = _departmentService.GetDepById(_customer.DepartmentId);
+                            inviteCode = _genericAttributeService.GetAttribute<string>(_customer, NopCustomerDefaults.InviteCodeAttribute);
                             return Json(new {
                                 code = 0,
                                 msg="登录成功",
                                 data = new {
                                     Id = _customer.Id,
                                     UserName = _customer.Username,
-                                    Name ="",
+                                    Name = name,
                                     Phone = _customer.Username,
+                                    Email = _customer.Email,
                                     Token = "",
-                                    SchoolName ="七三科技",//_customer.Department==null ?"": _customer.Department.Name,
+                                    InviteCode = inviteCode,
+                                    CardImgUrl = imgurl,
+                                    SchoolName =dep==null ?"七三科技":dep.Name,
                                     DepartmentId = _customer.DepartmentId,
                                     Role =string.Join(",", _customer.CustomerCustomerRoleMappings.Select(x=>x.CustomerRole.Name).ToList())
                                 }
@@ -724,13 +736,9 @@ namespace Nop.Web.Controllers.Api
 
             //If we got this far, something failed, redisplay form
             model = _customerModelFactory.PrepareLoginModel(model.CheckoutAsGuest);
-
-
             return Json(new {
                 code = -1,
-                 msg ="登录失败;原因："+string.Join(",", ModelState.Root.Errors.Select(x=>x.ErrorMessage))
-               
-
+                 msg ="登录失败;原因："+string.Join(",", ModelState.Root.Errors.Select(x=>x.ErrorMessage))              
             });
           //  return View(model);
         }
@@ -1272,8 +1280,6 @@ namespace Nop.Web.Controllers.Api
             }
             return list;
         }
-
-
 
         public virtual IActionResult ValidInviteCode(string code)
         {
