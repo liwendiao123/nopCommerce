@@ -51,7 +51,7 @@ namespace Nop.Web.Models.Customer
         [NopResourceDisplayName("Account.Fields.Email")]
         public string Email { get; set; }
 
-
+        public string CertImg { get; set; }
         public int PlatformType { get; set; }
 
 

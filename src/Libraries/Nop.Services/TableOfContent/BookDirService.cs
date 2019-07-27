@@ -191,9 +191,12 @@ namespace Nop.Services.TableOfContent
             if (bookdirID > 0)
             {
                var resultIds = GetChildBookDirIds(bookdirID);
+                if (!resultIds.Contains(bookdirID))
+                {
+                    resultIds.Add(bookdirID);
+                }
                 query = query.Where(x => resultIds.Contains(x.ParentBookDirId));                
             }
-
             else if (bookID > 0)
             {
                 query = query.Where(x => bookID == x.BookID);

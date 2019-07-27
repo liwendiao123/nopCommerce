@@ -115,7 +115,7 @@ namespace Nop.Web.Controllers.Api
                             "127.0.0.1/LuaUpdata/assetbundle/zixingche.unity3d"
                         }
                     },
-                    strJson = NewInit() //JsonConvert.DeserializeObject<BookNodeRoot>(result.UnityStrJson)
+                    strJson = JsonConvert.DeserializeObject(result.UnityStrJson)
                 }
             });
         }
@@ -801,11 +801,11 @@ namespace Nop.Web.Controllers.Api
                          clips = new List<Dic>{
                               new Dic{
                                  key="0",
-                                 val="http://gylm.73cloud.top/html/library/thirdjs/audio/fdjj.mp3"
+                                 val="http://arbookresouce.73data.cn/11.ogg"
                               },
                              new Dic{
                                  key= "1",
-                                 val= "http://gylm.73cloud.top/html/library/thirdjs/audio/fhyf.mp3"
+                                 val= "http://arbookresouce.73data.cn/13.ogg"
                              }
                          },
 
@@ -835,11 +835,11 @@ namespace Nop.Web.Controllers.Api
                             },
                             size= new OffsetXY
                             {
-                                x= "0",
-                                y= "0"
+                                x= "500",
+                                y= "500"
                             },
-                            key= "0",
-                            val= ""
+                            key= "1",
+                            val= "http://arbookresouce.73data.cn/1434.mp4"
                         },
                     }
                     }

@@ -122,7 +122,18 @@ namespace Nop.Web.Areas.Admin.Factories
                 {
                     bookModelModel.BookId = bookdir.BookID;
                 }
-                bookModelModel.AvailableBookDirs = SelectListHelper.GetBookDirList(_bookdirService, _workContext.CurrentCustomer, _cacheManager);
+
+                var result = _productService.GetProductById(bookModelModel.BookId);
+                if (result != null)
+                {
+                    if (result.ProductCategories != null)
+                    {
+                        bookModelModel.CateId = result.ProductCategories.FirstOrDefault().CategoryId;
+                    }
+                    bookModelModel.BookId = result.Id;
+                    bookModelModel.AvailableBooks = SelectListHelper.GetBookList(_productService, new List<int> { bookModelModel.CateId }, _workContext.CurrentCustomer, _cacheManager);
+                }
+                bookModelModel.AvailableBookDirs = SelectListHelper.GetBookDirList(_bookdirService, _workContext.CurrentCustomer,bookModelModel.CateId,bookModelModel.BookId,_cacheManager);
             }
 
 
@@ -136,7 +147,7 @@ namespace Nop.Web.Areas.Admin.Factories
                         bookModelModel.CateId = result.ProductCategories.FirstOrDefault().CategoryId;
                     }
                     bookModelModel.BookId = result.Id;
-                  bookModelModel.AvailableBooks =  SelectListHelper.GetBookList(_productService, new List<int> { bookModelModel.CateId },_workContext.CurrentCustomer,_cacheManager);  
+                    bookModelModel.AvailableBooks =  SelectListHelper.GetBookList(_productService, new List<int> { bookModelModel.CateId },_workContext.CurrentCustomer,_cacheManager);  
                 }
             }
            

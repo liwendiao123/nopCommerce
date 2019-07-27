@@ -12,3 +12,4 @@ namespace Nop.Plugin.Payments.AliPay.Components
         }
     }
 }
+

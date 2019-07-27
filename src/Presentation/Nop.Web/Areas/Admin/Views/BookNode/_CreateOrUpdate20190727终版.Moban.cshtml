@@ -4,7 +4,7 @@
 @{
     if (!string.IsNullOrEmpty(Model.UnityStrJson))
     {
-        Model.BookNodeRoot = JsonConvert.DeserializeObject<BookNodeNewRoot>(Model.UnityStrJson);
+        Model.BookNodeRoot = JsonConvert.DeserializeObject<BookNodeRoot>(Model.UnityStrJson);
 
         if (Model != null
             && Model.BookNodeRoot != null
@@ -411,7 +411,7 @@
                                             @{ 
                                                 Model.PrefabPath = itemdata.path;
                                             }
-                                            <nop-select asp-for="PrefabPath" asp-for-name="PrefabPath" asp-items="Model.ButtonPrefebPath" />
+                                            <nop-select asp-for="PrefabPath" asp-for-name="PrefabPath" asp-items="Model.PrefabPathList" />
                                             <span asp-validation-for="PrefabPath"></span>
                                         </div>
                                     </div>
@@ -502,7 +502,7 @@
                                 <div class="form-group">
                                     <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
                                     <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
-                                        <nop-select asp-for="PrefabPath" asp-items="Model.ButtonPrefebPath" />
+                                        <nop-select asp-for="PrefabPath" asp-items="Model.PrefabPathList" />
                                         <span asp-validation-for="PrefabPath"></span>
                                     </div>
                                 </div>
@@ -582,7 +582,36 @@
                                     图片信息
                                 </div>
                                 <div class="panel-body">
-
+                                    <div class="form-group">
+                                        <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">平面坐标</label>
+                                        <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                            <div class="row">
+                                                <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                                <input type="number" value="@itemdata.pos.x" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-pos-x" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                            <div class="row">
+                                                <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                                <input type="number" value="@itemdata.pos.y" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-pos-y" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">按钮尺寸</label>
+                                        <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                            <div class="row">
+                                                <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                                <input type="number" value="@itemdata.size.x" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-size-x" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                            <div class="row">
+                                                <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                                <input type="number" value="@itemdata.size.y" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-size-y" />
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="form-group">
                                         <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
                                         <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
@@ -591,7 +620,7 @@
                                                 Model.PrefabPath = itemdata.path;
                                             }
 
-                                            <nop-select asp-for="PrefabPath" asp-for-name="PrefabPath" asp-items="Model.ImgPrefebPath" />
+                                            <nop-select asp-for="PrefabPath" asp-for-name="PrefabPath" asp-items="Model.PrefabPathList" />
                                             <span asp-validation-for="PrefabPath"></span>
                                         </div>
                                     </div>
@@ -648,42 +677,10 @@
                                                         <span class="time">@*<i class="fa fa-clock-o"></i> 12:05*@</span>
                                                         <h3 class="timeline-header"><a href="#">事件 @(j + 1)</a> </h3>
                                                         <div class="timeline-body">
-
-                                                            <div class="form-group">
-                                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">平面坐标</label>
-                                                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                                    <div class="row">
-                                                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
-                                                                        <input type="number" value="@dicitem.pos.x" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-pos-x" />
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                                    <div class="row">
-                                                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
-                                                                        <input type="number" value="@dicitem.pos.y" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-pos-y" />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">按钮尺寸</label>
-                                                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                                    <div class="row">
-                                                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
-                                                                        <input type="number" value="@dicitem.size.x" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-size-x" />
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                                    <div class="row">
-                                                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
-                                                                        <input type="number" value="@dicitem.size.y" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-size-y" />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
                                                             <div class="form-group">
                                                                 <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                                                 <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
-                                                                    @{
+                                                                    @{ 
                                                                         Model.EventId = dicitem.key;
                                                                     }
                                                                     <nop-select asp-for="EventId" asp-for-name="EventId" asp-items="Model.EventIdList" />
@@ -713,41 +710,7 @@
                                                     <span class="time">@*<i class="fa fa-clock-o"></i> 12:05*@</span>
                                                     <h3 class="timeline-header"><a href="#">事件1</a> </h3>
                                                     <div class="timeline-body">
-
                                                         <div class="form-group">
-                                                            <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">平面坐标</label>
-                                                            <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                                <div class="row">
-                                                                    <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
-                                                                    <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-pos-x" />
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                                <div class="row">
-                                                                    <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
-                                                                    <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-pos-y" />
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">图片尺寸</label>
-                                                            <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                                <div class="row">
-                                                                    <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
-                                                                    <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-size-x" />
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                                <div class="row">
-                                                                    <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
-                                                                    <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-size-y" />
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="form-group">
-
-
                                                             <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                                             <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
                                                                 <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
@@ -784,6 +747,7 @@
                         </div>
                     }
 
+
                 }
                 else
                 {
@@ -793,11 +757,40 @@
                                 图片信息
                             </div>
                             <div class="panel-body">
-
+                                <div class="form-group">
+                                    <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">平面坐标</label>
+                                    <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                        <div class="row">
+                                            <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                            <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-pos-x" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                        <div class="row">
+                                            <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                            <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-pos-y" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">按钮尺寸</label>
+                                    <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                        <div class="row">
+                                            <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                            <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-size-x" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                        <div class="row">
+                                            <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                            <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-size-y" />
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="form-group">
                                     <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
                                     <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
-                                        <nop-select asp-for="PrefabPath" asp-items="Model.ImgPrefebPath" />
+                                        <nop-select asp-for="PrefabPath" asp-items="Model.PrefabPathList" />
                                         <span asp-validation-for="PrefabPath"></span>
                                     </div>
                                 </div>
@@ -842,36 +835,6 @@
                                             <span class="time">@*<i class="fa fa-clock-o"></i> 12:05*@</span>
                                             <h3 class="timeline-header"><a href="#">事件1</a> </h3>
                                             <div class="timeline-body">
-                                                <div class="form-group">
-                                                    <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">平面坐标</label>
-                                                    <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                        <div class="row">
-                                                            <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
-                                                            <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-pos-x" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                        <div class="row">
-                                                            <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
-                                                            <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-pos-y" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">图片尺寸</label>
-                                                    <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                        <div class="row">
-                                                            <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
-                                                            <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-size-x" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                        <div class="row">
-                                                            <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
-                                                            <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 img-size-y" />
-                                                        </div>
-                                                    </div>
-                                                </div>
                                                 <div class="form-group">
                                                     <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                                     <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
@@ -939,7 +902,36 @@
                                     文字信息
                                 </div>
                                 <div class="panel-body">
-
+                                    <div class="form-group">
+                                        <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">平面坐标</label>
+                                        <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                            <div class="row">
+                                                <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                                <input type="number" value="@textinfo.pos.x" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-pos-x" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                            <div class="row">
+                                                <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                                <input type="number" value="@textinfo.pos.y" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-pos-y" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">按钮尺寸</label>
+                                        <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                            <div class="row">
+                                                <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                                <input type="number" value="@textinfo.size.x" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-size-x" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                            <div class="row">
+                                                <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                                <input type="number" value="@textinfo.size.y" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-size-y" />
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="form-group">
                                         <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
                                         <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
@@ -947,7 +939,7 @@
                                             @{ 
                                                 Model.PrefabPath = textinfo.path;
                                             }
-                                            <nop-select asp-for="PrefabPath" asp-for-name="PrefabPath" asp-items="Model.TextPrefebPath" />
+                                            <nop-select asp-for="PrefabPath" asp-for-name="PrefabPath" asp-items="Model.PrefabPathList" />
                                             <span asp-validation-for="PrefabPath"></span>
                                         </div>
                                     </div>
@@ -1011,36 +1003,6 @@
                                                         <span class="time">@*<i class="fa fa-clock-o"></i> 12:05*@</span>
                                                         <h3 class="timeline-header"><a href="#">事件1</a> </h3>
                                                         <div class="timeline-body">
-                                                            <div class="form-group">
-                                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">平面坐标</label>
-                                                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                                    <div class="row">
-                                                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
-                                                                        <input type="number" value="@titemdata.pos.x" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-pos-x" />
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                                    <div class="row">
-                                                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
-                                                                        <input type="number" value="@titemdata.pos.y" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-pos-y" />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">文字框尺寸</label>
-                                                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                                    <div class="row">
-                                                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
-                                                                        <input type="number" value="@titemdata.size.x" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-size-x" />
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                                    <div class="row">
-                                                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
-                                                                        <input type="number" value="@titemdata.size.y" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-size-y" />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
                                                             <div class="form-group">
                                                                 <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                                                 <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
@@ -1160,36 +1122,6 @@
                                                     <h3 class="timeline-header"><a href="#">事件1</a> </h3>
                                                     <div class="timeline-body">
                                                         <div class="form-group">
-                                                            <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">平面坐标</label>
-                                                            <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                                <div class="row">
-                                                                    <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
-                                                                    <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-pos-x" />
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                                <div class="row">
-                                                                    <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
-                                                                    <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-pos-y" />
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">按钮尺寸</label>
-                                                            <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                                <div class="row">
-                                                                    <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
-                                                                    <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-size-x" />
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                                <div class="row">
-                                                                    <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
-                                                                    <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-size-y" />
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="form-group">
                                                             <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                                             <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
                                                                 <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
@@ -1263,11 +1195,40 @@
                                 文字信息
                             </div>
                             <div class="panel-body">
-
+                                <div class="form-group">
+                                    <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">平面坐标</label>
+                                    <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                        <div class="row">
+                                            <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                            <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-pos-x" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                        <div class="row">
+                                            <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                            <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-pos-y" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">按钮尺寸</label>
+                                    <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                        <div class="row">
+                                            <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                            <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-size-x" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                        <div class="row">
+                                            <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                            <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-size-y" />
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="form-group">
                                     <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
                                     <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
-                                        <nop-select asp-for="PrefabPath" asp-items="Model.TextPrefebPath" />
+                                        <nop-select asp-for="PrefabPath" asp-items="Model.PrefabPathList" />
                                         <span asp-validation-for="PrefabPath"></span>
                                     </div>
                                 </div>
@@ -1318,38 +1279,6 @@
                                             <span class="time">@*<i class="fa fa-clock-o"></i> 12:05*@</span>
                                             <h3 class="timeline-header"><a href="#">事件1</a> </h3>
                                             <div class="timeline-body">
-
-                                                <div class="form-group">
-                                                    <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">平面坐标</label>
-                                                    <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                        <div class="row">
-                                                            <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
-                                                            <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-pos-x" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                        <div class="row">
-                                                            <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
-                                                            <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-pos-y" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">按钮尺寸</label>
-                                                    <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                        <div class="row">
-                                                            <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
-                                                            <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-size-x" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                        <div class="row">
-                                                            <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
-                                                            <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 txt-size-y" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-
                                                 <div class="form-group">
                                                     <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                                     <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
@@ -1945,7 +1874,7 @@
                                             @{ 
                                                 Model.PrefabPath = camerainfo.path;
                                             }
-                                            <nop-select asp-for="PrefabPath" asp-for-name="PrefabPath" asp-items="Model.CameraPrefebPath" />
+                                            <nop-select asp-for="PrefabPath" asp-for-name="PrefabPath" asp-items="Model.PrefabPathList" />
                                             <span asp-validation-for="PrefabPath"></span>
                                         </div>
                                     </div>
@@ -2101,7 +2030,7 @@
                                 <div class="form-group">
                                     <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
                                     <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
-                                        <nop-select asp-for="PrefabPath" asp-items="Model.CameraPrefebPath" />
+                                        <nop-select asp-for="PrefabPath" asp-items="Model.PrefabPathList" />
                                         <span asp-validation-for="PrefabPath"></span>
                                     </div>
                                 </div>
@@ -2177,7 +2106,7 @@
                                                 Model.PrefabPath = audioinfo.path;
                                             }
 
-                                            <nop-select asp-for="PrefabPath" asp-for-name="PrefabPath" asp-items="Model.AudioPrefebPath" />
+                                            <nop-select asp-for="PrefabPath" asp-for-name="PrefabPath" asp-items="Model.PrefabPathList" />
                                             <span asp-validation-for="PrefabPath"></span>
                                         </div>
                                     </div>
@@ -2309,7 +2238,7 @@
                                 <div class="form-group">
                                     <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
                                     <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
-                                        <nop-select asp-for="PrefabPath" asp-items="Model.AudioPrefebPath" />
+                                        <nop-select asp-for="PrefabPath" asp-items="Model.PrefabPathList" />
                                         <span asp-validation-for="PrefabPath"></span>
                                     </div>
                                 </div>
@@ -2721,14 +2650,43 @@
                                     视频信息
                                 </div>
                                 <div class="panel-body">
-
+                                    <div class="form-group">
+                                        <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">平面坐标</label>
+                                        <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                            <div class="row">
+                                                <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                                <input type="number" value="@videoiteminfo.pos.x" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 video-pos-x" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                            <div class="row">
+                                                <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                                <input type="number" value="@videoiteminfo.pos.y" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 video-pos-y" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">视频尺寸</label>
+                                        <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                            <div class="row">
+                                                <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                                <input type="number" value="@videoiteminfo.size.x" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 video-size-x" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                            <div class="row">
+                                                <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                                <input type="number" value="@videoiteminfo.size.y" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 video-size-y" />
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="form-group">
                                         <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
                                         <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
                                             @{ 
                                                 Model.PrefabPath = videoiteminfo.path;
                                             }
-                                            <nop-select asp-for="PrefabPath" asp-items="Model.VideoPrefebPath" />
+                                            <nop-select asp-for="PrefabPath" asp-items="Model.PrefabPathList" />
                                             <span asp-validation-for="PrefabPath"></span>
                                         </div>
                                     </div>
@@ -2755,7 +2713,6 @@
                                             {
                                                 vitemclassName = "videoeventitemmodel";
                                                 var vdicinfo = videoiteminfo.dic[i];
-                                               
                                                 <li class="@vitemclassName">
                                                     <!-- timeline icon -->
                                                     <i class="fa fa-envelope bg-blue"></i>
@@ -2763,43 +2720,11 @@
                                                         <span class="time">@*<i class="fa fa-clock-o"></i> 12:05*@</span>
                                                         <h3 class="timeline-header"><a href="#">事件1</a> </h3>
                                                         <div class="timeline-body">
-
-                                                            <div class="form-group">
-                                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">平面坐标</label>
-                                                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                                    <div class="row">
-                                                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
-                                                                        <input type="number" value="@vdicinfo.pos.x" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 video-pos-x" />
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                                    <div class="row">
-                                                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
-                                                                        <input type="number" value="@vdicinfo.pos.y" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 video-pos-y" />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">视频尺寸</label>
-                                                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                                    <div class="row">
-                                                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
-                                                                        <input type="number" value="@vdicinfo.size.x" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 video-size-x" />
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                                    <div class="row">
-                                                                        <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
-                                                                        <input type="number" value="@vdicinfo.size.y" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 video-size-y" />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
                                                             <div class="form-group">
                                                                 <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                                                 <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
 
-                                                                    @{
+                                                                    @{ 
                                                                         Model.PrefabPath = vdicinfo.key;
                                                                     }
 
@@ -2829,38 +2754,6 @@
                                                     <span class="time">@*<i class="fa fa-clock-o"></i> 12:05*@</span>
                                                     <h3 class="timeline-header"><a href="#">事件1</a> </h3>
                                                     <div class="timeline-body">
-
-                                                        <div class="form-group">
-                                                            <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">平面坐标</label>
-                                                            <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                                <div class="row">
-                                                                    <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
-                                                                    <input type="number" value="" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 video-pos-x" />
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                                <div class="row">
-                                                                    <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
-                                                                    <input type="number" value="" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 video-pos-y" />
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">视频尺寸</label>
-                                                            <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                                <div class="row">
-                                                                    <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
-                                                                    <input type="number" value="" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 video-size-x" />
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                                <div class="row">
-                                                                    <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
-                                                                    <input type="number" value="" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 video-size-y" />
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
                                                         <div class="form-group">
                                                             <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                                             <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
@@ -2904,11 +2797,40 @@
                                 视频信息
                             </div>
                             <div class="panel-body">
-
+                                <div class="form-group">
+                                    <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">平面坐标</label>
+                                    <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                        <div class="row">
+                                            <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                            <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 video-pos-x" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                        <div class="row">
+                                            <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                            <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 video-pos-y" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">视频尺寸</label>
+                                    <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                        <div class="row">
+                                            <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
+                                            <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 video-size-x" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
+                                        <div class="row">
+                                            <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
+                                            <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 video-size-y" />
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="form-group">
                                     <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
                                     <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
-                                        <nop-select asp-for="PrefabPath" asp-items="Model.VideoPrefebPath" />
+                                        <nop-select asp-for="PrefabPath" asp-items="Model.PrefabPathList" />
                                         <span asp-validation-for="PrefabPath"></span>
                                     </div>
                                 </div>
@@ -2936,38 +2858,6 @@
                                             <span class="time">@*<i class="fa fa-clock-o"></i> 12:05*@</span>
                                             <h3 class="timeline-header"><a href="#">事件1</a> </h3>
                                             <div class="timeline-body">
-
-                                                <div class="form-group">
-                                                    <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">平面坐标</label>
-                                                    <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                        <div class="row">
-                                                            <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
-                                                            <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 video-pos-x" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                        <div class="row">
-                                                            <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
-                                                            <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 video-pos-y" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">视频尺寸</label>
-                                                    <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                        <div class="row">
-                                                            <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">X:</label>
-                                                            <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 video-size-x" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">
-                                                        <div class="row">
-                                                            <label class="col-lg-2 col-xs-2 col-sm-2 col-md-2 control-labe2">Y:</label>
-                                                            <input type="number" class="col-lg-8 col-xs-8 col-sm-8 col-md-8 video-size-y" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-
                                                 <div class="form-group">
                                                     <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                                     <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
@@ -3346,7 +3236,7 @@
                     btninfo.url = $(this).find('.btn-prefab-url').first().val();
                     btninfo.id = $(this).find('.btn-id').first().val();
                     btninfo.eventid = $(this).find('#EventId,#itemdata_eventid').first().val();
-                   // alert(btninfo.eventid);
+                    alert(btninfo.eventid);
                     btninfo.bg = $(this).find('.btn-bgimg').first().val();
                     btninfo.text = $(this).find('.btn-txt').first().val();
 
@@ -3364,7 +3254,14 @@
             if (imgitems && imgitems.length > 0) {
                 imgitems.each(function () {
                     var imginfo = new Object();
-                  
+                    var pos = new Object();
+                    pos.x = $(this).find('.img-pos-x').first().val();
+                    pos.y = $(this).find('.img-pos-y').first().val();
+                    var size = new Object();
+                    size.x = $(this).find('.img-size-x').first().val();
+                    size.y = $(this).find('.img-size-y').first().val();
+                    imginfo.pos = pos;
+                    imginfo.size = size;
                     // imginfo.defaultURL = $(this).find('.img-prefab-defaulturl').first().val();
                     imginfo.path = $(this).find('#PrefabPath,#itemdata_path').first().val();
                     imginfo.url = $(this).find('.img-prefab-url').first().val();
@@ -3375,14 +3272,7 @@
                     var dicitems = $(this).find('.imgeventitemmodel,.imgeventitemmodelcc');
                     dicitems.each(function () {
                         var dicitem = new Object();
-                        var pos = new Object();
-                        pos.x = $(this).find('.img-pos-x').first().val();
-                        pos.y = $(this).find('.img-pos-y').first().val();
-                        var size = new Object();
-                        size.x = $(this).find('.img-size-x').first().val();
-                        size.y = $(this).find('.img-size-y').first().val();
-                        dicitem.pos = pos;
-                        dicitem.size = size;
+
                         dicitem.key = $(this).find('#EventId,#dicitem_key').first().val();
                         dicitem.val = $(this).find('.imgevent-url').first().val();
 
@@ -3400,7 +3290,14 @@
             var textitems = $('#tab_3 .modelel,#tab_3 .modelelcc');
             textitems.each(function () {
                 var textinfo = new Object();
-          
+                var pos = new Object();
+                pos.x = $(this).find('.txt-pos-x').first().val();
+                pos.y = $(this).find('.txt-pos-y').first().val();
+                var size = new Object();
+                size.x = $(this).find('.txt-size-x').first().val();
+                size.y = $(this).find('.txt-size-y').first().val();
+                textinfo.pos = pos;
+                textinfo.size = size;
                 textinfo.path = $(this).find('#PrefabPath,#textinfo_path').first().val() == null ? "" : $(this).find('#PrefabPath,#textinfo_path').first().val();
                 //   textinfo.defaultURL = $(this).find('.txt-prefab-defaulturl').first().val();
                 textinfo.url = $(this).find('.txt-prefab-url').first().val();
@@ -3412,14 +3309,7 @@
                 $(this).find('.textevent-itemmodel,.textevent-itemmodelcc').each(function () {
                     var dicobj = new Object();
 
-                    var pos = new Object();
-                    pos.x = $(this).find('.txt-pos-x').first().val();
-                    pos.y = $(this).find('.txt-pos-y').first().val();
-                    var size = new Object();
-                    size.x = $(this).find('.txt-size-x').first().val();
-                    size.y = $(this).find('.txt-size-y').first().val();
-                    dicobj.pos = pos;
-                    dicobj.size = size;
+
                     dicobj.key = $(this).find('#EventId,#titemdata_key').first().val();
 
                     var txtobjarray = new Array();
@@ -3615,7 +3505,14 @@
             if (videoitems && videoitems.length > 0) {
                 videoitems.each(function () {
                     var videoinfoitem = new Object();
-
+                    var pos = new Object();
+                    pos.x = $(this).find('.video-pos-x').first().val();
+                    pos.y = $(this).find('.video-pos-y').first().val();
+                    var size = new Object();
+                    size.x = $(this).find('.video-size-x').first().val();
+                    size.y = $(this).find('.video-size-y').first().val();
+                    videoinfoitem.pos = pos;
+                    videoinfoitem.size = size;
                     // videoinfo.defaultURL = $(this).find('').first().val();
                     videoinfoitem.path = $(this).find('#PrefabPath,#videoiteminfo.path').first().val();
                     videoinfoitem.id = $(this).find('.video-id').first().val();
@@ -3623,14 +3520,7 @@
                     var dicitems = $(this).find(' .videoeventitemmodel,.videoeventitemmodelcc');
                     dicitems.each(function () {
                         var dicitem = new Object();
-                        var pos = new Object();
-                        pos.x = $(this).find('.video-pos-x').first().val();
-                        pos.y = $(this).find('.video-pos-y').first().val();
-                        var size = new Object();
-                        size.x = $(this).find('.video-size-x').first().val();
-                        size.y = $(this).find('.video-size-y').first().val();
-                        dicitem.pos = pos;
-                        dicitem.size = size;
+
                         dicitem.key = $(this).find('#EventId,#videoiteminfo_path').first().val();
                         dicitem.val = $(this).find('.video-url').first().val();
 

@@ -48,6 +48,7 @@ using Nop.Core.Domain.Messages.SMS;
 using Nop.Web.Areas.Admin.Models.TableOfContent;
 using Nop.Web.Models.AiBook;
 using Nop.Services.TableOfContent;
+using Nop.Core.Infrastructure.Ex;
 
 namespace Nop.Web.Controllers.Api
 {
@@ -332,6 +333,7 @@ namespace Nop.Web.Controllers.Api
             else
             {
                 depName = department.Name;
+                model.DepartmentId = department.Id;
             }
 
             //check whether registration is allowed
@@ -388,13 +390,19 @@ namespace Nop.Web.Controllers.Api
                     _customerSettings.DefaultPasswordFormat,
                     _storeContext.CurrentStore.Id,
                     isApproved);
-                if (model.Occupation == 7)
+
+                registrationRequest.Customer.DepartmentId = model.DepartmentId;
+                if (model.Occupation == 0)
                 {
                     registrationRequest.RoleName = "Student";
                 }
-                else if (model.Occupation == 6)
+                else if (model.Occupation == 1)
                 {
                     registrationRequest.RoleName = "Teacher";
+                }
+                else if (model.Occupation == 2)
+                {
+                    registrationRequest.RoleName = "guarden";
                 }
                 else
                 {
@@ -414,8 +422,6 @@ namespace Nop.Web.Controllers.Api
                     {
                         _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.TimeZoneIdAttribute, model.TimeZoneId);
                     }
-
-
 
                     //form fields
                     if (_customerSettings.GenderEnabled)
@@ -744,12 +750,65 @@ namespace Nop.Web.Controllers.Api
         }
         public IActionResult CheckPhone(string phone)
         {
-            return Json(new
+
+
+            try
             {
-                code = "",
-                msg ="",
-                data=new { }
-            });
+
+                if (string.IsNullOrEmpty(phone))
+                {
+                    return Json(new
+                    {
+                        code = -1,
+                        msg = "手机号码格式错误",
+                        data = false
+                    });
+                }
+
+
+                if (!phone.CheckMobile())
+                {
+                    return Json(new
+                    {
+                        code = -1,
+                        msg = "手机号码格式错误",
+                        data = false
+                    });
+                }
+
+                var result = _customerService.GetCustomerByUsername(phone);
+
+                if (result != null && !result.Deleted)
+                {
+                    return Json(new
+                    {
+                        code = -1,
+                        msg = "该手机号已被注册",
+                        data = false
+                    });
+                }
+
+                return Json(new
+                {
+                    code = 0,
+                    msg = "恭喜您！号码可用",
+                    data = true
+                });
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = ex.Message,
+                    data = false
+                });
+            }
+
+
+
+          
         }
         /// <summary>
         /// 短信验证手机号码
@@ -1116,7 +1175,7 @@ namespace Nop.Web.Controllers.Api
                     model.Result = _localizationService.GetResource("Account.ChangePassword.Success");
                     return Json(new {
                         code = 0,
-                        msg = model.Result,
+                        msg ="密码修改成功", //model.Result,
                         data = true
                     });
                 }
@@ -1129,7 +1188,7 @@ namespace Nop.Web.Controllers.Api
             //If we got this far, something failed, redisplay form
             return Json(new {
                 code = -1,
-                msg = model.Result,
+                msg = model.Result??"修改失败",
                 data = false
 
             });

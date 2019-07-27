@@ -200,7 +200,7 @@
 
 
             //书籍类别
-            $("#@Html.IdFor(model => model.CateId)").change(function() {
+            $("#@Html.IdFor(model => model.CateId)").click(function () {
                 var selectedItem = $(this).val();
                 var ddlStates = $("#@Html.IdFor(model => model.BookId)");
 
@@ -231,7 +231,7 @@
 
 
             ///
-              $("#@Html.IdFor(model => model.BookId)").change(function() {
+            $("#@Html.IdFor(model => model.BookId)").click(function () {
                 var selectedItem = $(this).val();
                 var ddlStates = $("#@Html.IdFor(model => model.BookDirId)");
 

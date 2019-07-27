@@ -136,7 +136,7 @@ namespace Nop.Web.Areas.Admin.Helpers
             return result;
         }
 
-        public static List<SelectListItem> GetBookDirList(IBookDirService bookDirService,Customer customer = null, ICacheManager cacheManager = null, bool showHidden = false)
+        public static List<SelectListItem> GetBookDirList(IBookDirService bookDirService,Customer customer = null,int cateId = 0, int bookIds = 0, ICacheManager cacheManager = null, bool showHidden = false)
         {
             if (bookDirService == null)
                 throw new ArgumentNullException(nameof(bookDirService));
@@ -144,11 +144,11 @@ namespace Nop.Web.Areas.Admin.Helpers
             if (cacheManager == null)
                 throw new ArgumentNullException(nameof(cacheManager));
 
-            var cacheKey = string.Format(NopModelCacheDefaults.VendorsListKey, showHidden);
+            var cacheKey = string.Format(NopModelCacheDefaults.BookDirListKey, showHidden);
             var listItems = cacheManager.Get(cacheKey, () =>
             {
                 //   var vendors = bookDirService.GetAllVendors(showHidden: showHidden);
-                var vendors = bookDirService.GetAllBookDirs();
+                var vendors = bookDirService.GetAllBookDirsData("",cateId, bookIds);
                 return vendors.Select(v => new SelectListItem
                 {
                     Text = v.Name,
@@ -188,7 +188,7 @@ namespace Nop.Web.Areas.Admin.Helpers
             if (cacheManager == null)
                 throw new ArgumentNullException(nameof(cacheManager));
 
-            var cacheKey = string.Format(NopModelCacheDefaults.VendorsListKey, showHidden);
+            var cacheKey = string.Format(NopModelCacheDefaults.BookListKey, showHidden);
             var listItems = cacheManager.Get(cacheKey, () =>
             {
                 //   var vendors = bookDirService.GetAllVendors(showHidden: showHidden);

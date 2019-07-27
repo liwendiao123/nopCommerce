@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Nop.Services.Catalog;
+using Nop.Web.Models.Api.Book;
 
 namespace Nop.Web.Controllers.Api
 {
@@ -19,29 +20,29 @@ namespace Nop.Web.Controllers.Api
         {
             return View();
         }
-        public IActionResult GetBook(int cateid)
+        public IActionResult GetBook(SearchBookRequest requst)
         {
-            if (cateid < 0)
+            if (requst.CateId < 0)
             {
-                cateid = 14;
+                requst.CateId = 14;
             }
-           var product = _productService.SearchProducts(0, int.MaxValue, new List<int>() {cateid });
+           var product = _productService.SearchProducts(0, int.MaxValue, new List<int>() { requst.CateId });
 
 
             return Json(new
             {
                 code = 0,
-                msg = "",
+                msg = "获取成功",
                 data = product.Select(x => new {
 
                   //  x.ProductPictures
                    Id = x.Id,
                    Name = x.Name?.Trim(),
-                   TestName = "fdsfafsaf 测试" + x.Name?.Trim(),
+                   TestName =   x.Name?.Trim(),
                    Cateid =string.Join("," ,x.ProductCategories.Select(y=>y.Id)),
                    Imgurl = "http://arbookresouce.73data.cn/book/img/sy_img_02.png",
                    x.DisplayOrder,
-                   VendorName = "人民教育出版社",
+                   VendorName = "广西人民出版社",
                    Desc ="",
                    Tag = x.ProductProductTagMappings.Select(t=>new {
                         BookId = t.ProductId,

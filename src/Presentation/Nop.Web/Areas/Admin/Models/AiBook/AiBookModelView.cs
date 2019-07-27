@@ -29,7 +29,8 @@ namespace Nop.Web.Areas.Admin.Models.AiBook
             AvailableBooks = new List<SelectListItem>();
             AvailableBookDirs = new List<SelectListItem>();
             PrefabPathList = new List<SelectListItem>();
-            BookNodeRoot = new BookNodeRoot();
+            BookNodeRoot = new BookNodeNewRoot();
+          //  BookNodeNewRoot = new BookNodeNewRoot();
             EventIdList = new List<SelectListItem>();
             ResourceList = new List<SelectListItem>();
             InitPrefabList();
@@ -38,6 +39,248 @@ namespace Nop.Web.Areas.Admin.Models.AiBook
         #endregion
         private void InitPrefabList()
         {
+            #region  获取文本路径
+            if (TextPrefebPath == null)
+            {
+                TextPrefebPath = new List<SelectListItem>();
+            }
+            TextPrefebPath.Add(new SelectListItem {
+                Value = "K/Text/blackboard",
+                 Text = "左下黑板文本预制"
+            });
+            TextPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Text/Center",
+                Text = "居中对齐"
+            });
+            TextPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Text/CenterBottom",
+                Text = "中下对齐"
+            });
+            TextPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Text/CenterTop",
+                Text = "中上对齐"
+            });
+            TextPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Text/LeftBottom",
+                Text = "左下对齐"
+            });
+            TextPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Text/LeftCenter",
+                Text = "左中对齐"
+            });
+            TextPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Text/LeftTop",
+                Text = "左上对齐"
+            });
+            TextPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Text/RightBottom",
+                Text = "右下对齐"
+            });
+            TextPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Text/RightCenter",
+                Text = "右中对齐"
+            });
+            TextPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Text/RightTop",
+                Text = "右上对齐"
+            });
+            #endregion
+            #region 初始化按钮预制路径
+            if (ButtonPrefebPath == null)
+            {
+                ButtonPrefebPath = new List<SelectListItem>();
+            }
+      
+            ButtonPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Button/Center",
+                Text = "居中对齐"
+            });
+            ButtonPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Button/CenterBottom",
+                Text = "中下对齐"
+            });
+            ButtonPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Button/CenterTop",
+                Text = "中上对齐"
+            });
+            ButtonPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Button/LeftBottom",
+                Text = "左下对齐"
+            });
+            ButtonPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Button/LeftCenter",
+                Text = "左中对齐"
+            });
+            ButtonPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Button/LeftTop",
+                Text = "左上对齐"
+            });
+            ButtonPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Button/RightBottom",
+                Text = "右下对齐"
+            });
+            ButtonPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Button/RightCenter",
+                Text = "右中对齐"
+            });
+            ButtonPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Button/RightTop",
+                Text = "右上对齐"
+            });
+            #endregion
+            #region 初始化图片预制路径
+            if (ImgPrefebPath == null)
+            {
+                ImgPrefebPath = new List<SelectListItem>();
+            }
+            ImgPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Image/Center",
+                Text = "居中对齐"
+            });
+            ImgPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Image/CenterBottom",
+                Text = "中下对齐"
+            });
+            ImgPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Image/CenterTop",
+                Text = "中上对齐"
+            });
+            ImgPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Image/LeftBottom",
+                Text = "左下对齐"
+            });
+            ImgPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Image/LeftCenter",
+                Text = "左中对齐"
+            });
+            ImgPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Image/LeftTop",
+                Text = "左上对齐"
+            });
+            ImgPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Image/RightBottom",
+                Text = "右下对齐"
+            });
+            ImgPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Image/RightCenter",
+                Text = "右中对齐"
+            });
+            ImgPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Image/RightTop",
+                Text = "右上对齐"
+            });
+            #endregion
+            #region 初始化视频预制路径
+            if (VideoPrefebPath == null)
+            {
+                VideoPrefebPath = new List<SelectListItem>();
+            }
+            VideoPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Video/Center",
+                Text = "居中对齐"
+            });
+            VideoPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Video/CenterBottom",
+                Text = "中下对齐"
+            });
+            VideoPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Video/CenterTop",
+                Text = "中上对齐"
+            });
+            VideoPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Video/LeftBottom",
+                Text = "左下对齐"
+            });
+            VideoPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Video/LeftCenter",
+                Text = "左中对齐"
+            });
+            VideoPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Video/LeftTop",
+                Text = "左上对齐"
+            });
+            VideoPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Video/RightBottom",
+                Text = "右下对齐"
+            });
+            VideoPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Video/RightCenter",
+                Text = "右中对齐"
+            });
+            VideoPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Video/RightTop",
+                Text = "右上对齐"
+            });
+            #endregion
+
+            #region  初始化音频路径 
+            if (AudioPrefebPath == null)
+            {
+                AudioPrefebPath = new List<SelectListItem>();
+            }
+            AudioPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/CKAudio/CKAudio",
+                Text = "音源预制"
+            });
+            #endregion
+
+            #region 初始化相机预制路径
+
+            if (CameraPrefebPath == null)
+            {
+                CameraPrefebPath = new List<SelectListItem>();
+            }
+            CameraPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Camera/DefaultCamera",
+                Text = "静态视角相机"
+            });
+            CameraPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Camera/Camera",
+                Text = "动态视角相机"
+            });
+            #endregion
+
+            #region
+
             PrefabPathList.Add(new SelectListItem
             {
                  Value = @"K/Audio/CKAudio",
@@ -73,6 +316,8 @@ namespace Nop.Web.Areas.Admin.Models.AiBook
                 Value = @"K/Video/VideoPlayer",
                 Text = @"K/Video/VideoPlayer"
             });
+
+            #endregion
         }
 
 
@@ -177,15 +422,39 @@ namespace Nop.Web.Areas.Admin.Models.AiBook
 
         [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.ResourceList")]
         public IList<SelectListItem> ResourceList { get; set; }
-        //[NopResourceDisplayName("Admin.AiBook.BookNode.Fields.ButtonPrefabPathList")]
-        //public IList<SelectListItem> ButtonPrefabPathList
-        //{
-        //    get;
-        //    set;
-        //}
 
 
-        public BookNodeRoot BookNodeRoot { get; set; }
+        /// <summary>
+        /// 文本预制路径
+        /// </summary>
+        public List<SelectListItem> TextPrefebPath { get; set; }
+
+
+        /// <summary>
+        /// 按钮预制路径
+        /// </summary>
+        public List<SelectListItem> ButtonPrefebPath { get; set; }
+
+        /// <summary>
+        /// 图片预制 路径
+        /// </summary>
+        public List<SelectListItem> ImgPrefebPath { get; set; }
+        /// <summary>
+        /// 视频 预制路径
+        /// </summary>
+        public List<SelectListItem> VideoPrefebPath { get; set; }
+
+        public List<SelectListItem> AudioPrefebPath { get; set; }
+
+        public List<SelectListItem> CameraPrefebPath { get; set; }
+
+       
+
+
+        public BookNodeNewRoot BookNodeRoot { get; set; }
+
+
+       // public BookNodeNewRoot BookNodeNewRoot { get; set; }
         #endregion
     }
 

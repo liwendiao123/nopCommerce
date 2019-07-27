@@ -138,7 +138,7 @@ namespace Nop.Web.Areas.Admin.Controllers
 
                     try
                     {
-                        model.BookNodeRoot = JsonConvert.DeserializeObject<BookNodeRoot>(model.UnityStrJson);
+                        model.BookNodeRoot = JsonConvert.DeserializeObject<BookNodeNewRoot>(model.UnityStrJson);
                     }
                     catch (Exception ex)
                     {
@@ -248,6 +248,8 @@ namespace Nop.Web.Areas.Admin.Controllers
                 model.UpdatedOnUtc = DateTime.Now;
                 result = model.ToEntity(result);
                 _bookNodeService.UpdateAiBookModel(result);
+
+                model = result.ToModel<AiBookModelView>();
                 //_bookDirService.UpdateBookDir(category);
                 //search engine name
                 //result.SeName = _urlRecordService.ValidateSeName(category, model.SeName, category.Name, true);

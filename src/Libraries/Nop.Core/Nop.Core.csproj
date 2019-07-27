@@ -26,8 +26,4 @@
     <PackageReference Include="System.IO.FileSystem.AccessControl" Version="4.5.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Infrastructure\Ex\" />
-  </ItemGroup>
-
 </Project>

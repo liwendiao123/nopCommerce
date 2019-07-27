@@ -235,20 +235,15 @@ namespace Nop.Web.Areas.Admin.Controllers
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageBlog))
                 return AccessDeniedView();
-
             //try to get a blog post with the specified id
             var blogPost = _blogService.GetBlogPostById(id);
             if (blogPost == null)
                 return RedirectToAction("BlogPosts");
-
             _blogService.DeleteBlogPost(blogPost);
-
             //activity log
             _customerActivityService.InsertActivity("DeleteBlogPost",
                 string.Format(_localizationService.GetResource("ActivityLog.DeleteBlogPost"), blogPost.Id), blogPost);
-
             _notificationService.SuccessNotification(_localizationService.GetResource("Admin.ContentManagement.Blog.BlogPosts.Deleted"));
-
             return RedirectToAction("BlogPosts");
         }
 

@@ -14,6 +14,8 @@ namespace Nop.Web.Models.AiBook
 
             Children = new
                  List<BookDirTreeModel>();
+
+            Description = string.Empty;
         }
 
 

@@ -1690,8 +1690,16 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
               .ForMember(entity => entity.EventId, options => options.Ignore())
                .ForMember(entity => entity.EventIdList, options => options.Ignore())
               .ForMember(entiy=>entiy.PrefabPathList,options=>options.Ignore())
-              .ForMember(entity => entity.BookId, options => options.Ignore())          
-              .ForMember(entity => entity.BookNodeRoot, options => options.Ignore());
+
+               .ForMember(entiy => entiy.ResourceList, options => options.Ignore())
+               .ForMember(entiy => entiy.TextPrefebPath, options => options.Ignore())
+               .ForMember(entiy => entiy.ButtonPrefebPath, options => options.Ignore())
+               .ForMember(entiy => entiy.ImgPrefebPath, options => options.Ignore())
+               .ForMember(entiy => entiy.VideoPrefebPath, options => options.Ignore())
+               .ForMember(entiy => entiy.AudioPrefebPath, options => options.Ignore())
+               .ForMember(entiy => entiy.CameraPrefebPath, options => options.Ignore())
+               .ForMember(entity => entity.BookId, options => options.Ignore())          
+               .ForMember(entity => entity.BookNodeRoot, options => options.Ignore());
 
 
             CreateMap<AiBookModelView, AiBookModel>()
