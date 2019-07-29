@@ -8,6 +8,9 @@ namespace Nop.Web.Models.AiBook
     public class BookDirTreeModel
     {
 
+        private string _desc = string.Empty;
+
+
         private float _percent = 0.1f;
         public BookDirTreeModel()
         {
@@ -53,7 +56,25 @@ namespace Nop.Web.Models.AiBook
         /// <summary>
         /// 价格描述  如果为零 则免费 否则展示需要付费的价格
         /// </summary>
-        public string PriceRanges { get; set; }
+        public string PriceRanges
+        {
+            get
+            {
+
+                if (string.IsNullOrEmpty(this._desc))
+                {
+                    return "";
+                }
+
+                return this._desc;
+            }
+
+            set
+            {
+                this._desc = value;
+            }
+
+        }
         /// <summary>
         /// 展示顺序
         /// </summary>

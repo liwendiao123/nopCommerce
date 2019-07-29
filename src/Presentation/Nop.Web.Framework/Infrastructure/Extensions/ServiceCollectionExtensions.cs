@@ -77,7 +77,10 @@ namespace Nop.Web.Framework.Infrastructure.Extensions
             //initialize plugins
             var mvcCoreBuilder = services.AddMvcCore();
             mvcCoreBuilder.PartManager.InitializePlugins(nopConfig);
-
+            services.AddCors(options =>
+                options.AddPolicy("自定义的跨域策略名称",
+                p => p.AllowAnyOrigin())
+                );
             //create engine and configure service provider
             var engine = EngineContext.Create();
             var serviceProvider = engine.ConfigureServices(services, configuration, nopConfig);

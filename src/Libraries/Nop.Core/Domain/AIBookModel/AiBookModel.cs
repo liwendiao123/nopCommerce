@@ -86,7 +86,7 @@ namespace Nop.Core.Domain.AIBookModel
         /// <summary>
         /// 书籍目录
         /// </summary>
-        public virtual BookDir BookDir { get; set; }
+      //  public virtual BookDir BookDir { get; set; }
 
         public string ImgUrl { get; set; }
     }

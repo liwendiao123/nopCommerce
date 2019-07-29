@@ -365,6 +365,10 @@
                         {
                             classname = "modelel";
                         }
+                        else
+                        {
+                            classname = "modelelcc";
+                        }
 
                         var itemdata = Model.BookNodeRoot.Base.buttoninfo[i];
 
@@ -408,7 +412,7 @@
                                         <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
                                         <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
 
-                                            @{ 
+                                            @{
                                                 Model.PrefabPath = itemdata.path;
                                             }
                                             <nop-select asp-for="PrefabPath" asp-for-name="PrefabPath" asp-items="Model.ButtonPrefebPath" />
@@ -427,15 +431,28 @@
                                             <input type="text" value="@itemdata.name" class="btn-prefab-name control-label" />
                                         </div>
                                     </div>
+
+                                    <div class="form-group">
+                                        <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">高光Url</label>
+                                        <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                            <input type="text" value="@itemdata.highlightedurl" class="btn-prefab-highlightedurl control-label" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">点击Url</label>
+                                        <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                            <input type="text" value="@itemdata.pressedurl" class="btn-prefab-pressedurl control-label" />
+                                        </div>
+                                    </div>
                                     <div class="form-group">
                                         <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                         <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
 
-                                            @{ 
+                                            @{
                                                 Model.EventId = itemdata.eventid;
                                             }
-
-                                            <nop-select asp-for="EventId" asp-for-name="EventId" asp-items="Model.EventIdList" />
+                                            <input type="text" id="EventId" name="EventId" value="@itemdata.eventid" class="btn-prefab-name control-label" />
+                                            @*<nop-select asp-for="EventId"  asp-for-name="EventId" asp-items="Model.EventIdList" />*@
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -518,10 +535,26 @@
                                         <input type="text" value="" class="btn-prefab-name control-label" />
                                     </div>
                                 </div>
+
+                                <div class="form-group">
+                                    <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">高光Url</label>
+                                    <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                        <input type="text" value="" class="btn-prefab-highlightedurl control-label" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">点击Url</label>
+                                    <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6">
+                                        <input type="text" value="" class="btn-prefab-pressedurl control-label" />
+                                    </div>
+                                </div>
+
                                 <div class="form-group">
                                     <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                     <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
-                                        <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                        @*<nop-select asp-for="EventId" asp-items="Model.EventIdList" />*@
+
+                                        <input type="text" id="EventId" name="EventId" value="" class="btn-prefab-name control-label" />
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -572,6 +605,10 @@
                         if (i == 0)
                         {
                             classname = "modelel";
+                        }
+                        else
+                        {
+                            classname = "modelelcc";
                         }
 
                         var itemdata = Model.BookNodeRoot.Base.imageinfo[i];
@@ -638,6 +675,10 @@
                                                 {
                                                     imgitemclassName = "imgeventitemmodel";
                                                 }
+                                                else
+                                                {
+                                                    imgitemclassName = "imgeventitemmodelcc";
+                                                }
 
                                                 var dicitem = itemdata.dic[j];
 
@@ -686,7 +727,7 @@
                                                                     @{
                                                                         Model.EventId = dicitem.key;
                                                                     }
-                                                                    <nop-select asp-for="EventId" asp-for-name="EventId" asp-items="Model.EventIdList" />
+                                                                    <input type="text" id="EventId" name="EventId" value="@dicitem.key" class="btn-prefab-name control-label" />
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
@@ -750,7 +791,8 @@
 
                                                             <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                                             <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
-                                                                <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                                                @*<nop-select asp-for="EventId" asp-items="Model.EventIdList" />*@
+                                                                <input type="text" id="EventId" name="EventId" value="" class="btn-prefab-name control-label" />
                                                             </div>
                                                         </div>
                                                         <div class="form-group">
@@ -875,7 +917,8 @@
                                                 <div class="form-group">
                                                     <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                                     <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
-                                                        <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                                        @*<nop-select asp-for="EventId" asp-items="Model.EventIdList" />*@
+                                                        <input type="text" id="EventId" name="EventId" value="" class="btn-prefab-name control-label" />
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
@@ -932,6 +975,10 @@
                         if (i == 0)
                         {
                             classname = "modelel";
+                        }
+                        else
+                        {
+                            classname = "modelelcc";
                         }
                         <div class="col-md-4 @classname">
                             <div class="panel panel-info textiteminfo">
@@ -1003,6 +1050,10 @@
                                                 {
                                                     texclassName = "textevent-itemmodel";
                                                 }
+                                                else
+                                                {
+                                                    texclassName = "textevent-itemmodelcc";
+                                                }
 
                                                 <li class="textevent-item @texclassName">
                                                     <!-- timeline icon -->
@@ -1049,8 +1100,8 @@
                                                                         Model.EventId = titemdata.key;
 
                                                                     }
-
-                                                                    <nop-select asp-for="EventId" asp-for-name="EventId" asp-items="Model.EventIdList" />
+                                                                    <input type="text" id="EventId" name="EventId" value="@titemdata.key" class="btn-prefab-name control-label" />
+                                                                    @*<nop-select asp-for="EventId" asp-for-name="EventId" asp-items="Model.EventIdList" />*@
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
@@ -1080,6 +1131,11 @@
                                                                         {
                                                                             fontclassName = "text-eventfontitemmodel";
                                                                         }
+                                                                        else
+                                                                        {
+                                                                            fontclassName = "text-eventfontitemmodelcc";
+                                                                        }
+
 
                                                                         <div class="row text-event @fontclassName">
                                                                             <div class="col-lg-12 col-xs-12 col-sm-12 col-md-12">
@@ -1192,7 +1248,8 @@
                                                         <div class="form-group">
                                                             <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                                             <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
-                                                                <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                                                @*<nop-select asp-for="EventId" asp-items="Model.EventIdList" />*@
+                                                                <input type="text" id="EventId" name="EventId" value="" class="btn-prefab-name control-label" />
                                                             </div>
                                                         </div>
                                                         <div class="form-group">
@@ -1353,7 +1410,9 @@
                                                 <div class="form-group">
                                                     <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                                     <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
-                                                        <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                                        @*<nop-select asp-for="EventId" asp-items="Model.EventIdList" />*@
+
+                                                        <input type="text" id="EventId" name="EventId" value="" class="btn-prefab-name control-label" />
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
@@ -1435,6 +1494,10 @@
                         if (i == 0)
                         {
                             classname = "modelel";
+                        }
+                        else
+                        {
+                            classname = "modelelcc";
                         }
                         <div class="col-md-4 @classname">
                             <div class="panel panel-info imgiteminfo">
@@ -1559,6 +1622,10 @@
                                                 {
                                                     clipclassName = "modeleventitemel";
                                                 }
+                                                else
+                                                {
+                                                    clipclassName = "modeleventitemelcc";
+                                                }
                                                 <li class="@clipclassName">
                                                     <!-- timeline icon -->
                                                     <i class="fa fa-envelope bg-blue"></i>
@@ -1570,11 +1637,12 @@
                                                                 <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                                                 <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
 
-                                                                    @{ 
+                                                                    @{
 
                                                                         Model.EventId = clipinfo.key;
                                                                     }
-                                                                    <nop-select asp-for="EventId" asp-for-name="EventId" asp-items="Model.EventIdList" />
+                                                                    <input type="text" id="EventId" name="EventId" value="@clipinfo.key" class="btn-prefab-name control-label" />
+                                                                    @*<nop-select asp-for="EventId" asp-for-name="EventId" asp-items="Model.EventIdList" />*@
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
@@ -1603,7 +1671,8 @@
                                                         <div class="form-group">
                                                             <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                                             <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
-                                                                <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                                                @*<nop-select asp-for="EventId" asp-items="Model.EventIdList" />*@ @*<nop-select asp-for="EventId" asp-items="Model.EventIdList" />*@
+                                                                <input type="text" id="EventId" name="EventId" value="" class="btn-prefab-name control-label" />
                                                             </div>
                                                         </div>
                                                         <div class="form-group">
@@ -1760,7 +1829,8 @@
                                                 <div class="form-group">
                                                     <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                                     <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
-                                                        <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                                        @*<nop-select asp-for="EventId" asp-items="Model.EventIdList" />*@
+                                                        <input type="text" id="EventId" name="EventId" value="" class="btn-prefab-name control-label" />
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
@@ -1816,6 +1886,10 @@
                         if (i == 0)
                         {
                             className = "modelel";
+                        }
+                        else
+                        {
+                            className = "modelelcc";
                         }
 
                         var camerainfo = Model.BookNodeRoot.Base.camerainfo[i];
@@ -2161,6 +2235,10 @@
                         {
                             className = "modelel";
                         }
+                        else
+                        {
+                            className = "modelelcc";
+                        }
                         var audioinfo = Model.BookNodeRoot.Base.audioinfo[i];
 
                         <div class="col-md-4 @className">
@@ -2219,6 +2297,10 @@
                                                 {
                                                     clipclassitem = "audioeventmodelel";
                                                 }
+                                                else
+                                                {
+                                                    clipclassitem = "audioeventmodelelcc";
+                                                }
 
                                                 var clipinfo = audioinfo.clips[j];
 
@@ -2236,7 +2318,8 @@
 
                                                                         Model.EventId = clipinfo.key;
                                                                     }
-                                                                    <nop-select asp-for="EventId" asp-for-name="EventId" asp-items="Model.EventIdList" />
+                                                                    <input type="text" id="EventId" name="EventId" value="@clipinfo.key" class="btn-prefab-name control-label" />
+                                                                    @*<nop-select asp-for="EventId" asp-for-name="EventId" asp-items="Model.EventIdList" />*@
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
@@ -2264,7 +2347,8 @@
                                                         <div class="form-group">
                                                             <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                                             <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
-                                                                <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                                                @*<nop-select asp-for="EventId" asp-items="Model.EventIdList" />*@
+                                                                <input type="text" id="EventId" name="EventId" value="" class="btn-prefab-name control-label" />
                                                             </div>
                                                         </div>
                                                         <div class="form-group">
@@ -2351,7 +2435,8 @@
                                                 <div class="form-group">
                                                     <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                                     <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
-                                                        <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                                        @*<nop-select asp-for="EventId" asp-items="Model.EventIdList" />*@
+                                                        <input type="text" id="EventId" name="EventId" value="" class="btn-prefab-name control-label" />
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
@@ -2407,6 +2492,10 @@
                         if (i == 0)
                         {
                             className = "modelel";
+                        }
+                        else
+                        {
+                            className = "modelelcc";
                         }
 
                         var openeventInfoes = Model.BookNodeRoot.Base.openeventstate[i];
@@ -2516,6 +2605,10 @@
                         {
                             className = "modelel";
                         }
+                        else
+                        {
+                            className = "modelelcc";
+                        }
 
                         var openeventInfoes = Model.BookNodeRoot.Base.closeeventstate[i];
                         <div class="col-md-4 @className">
@@ -2620,7 +2713,10 @@
                         {
                             className = "modelel";
                         }
-
+                        else
+                        {
+                            className = "modelelcc";
+                        }
                         var clickinfoitem = Model.BookNodeRoot.Base.clickinfo[i];
 
 
@@ -2712,6 +2808,10 @@
                         {
                             className = "modelel";
                         }
+                        else
+                        {
+                            className = "modelelcc";
+                        }
 
                         var videoiteminfo = Model.BookNodeRoot.Base.videoinfo[i];
 
@@ -2753,9 +2853,19 @@
                                             var vitemclassName = "videoeventitemmodelcc";
                                             for (var j = 0; j < videoiteminfo.dic.Count; j++)
                                             {
-                                                vitemclassName = "videoeventitemmodel";
-                                                var vdicinfo = videoiteminfo.dic[i];
-                                               
+
+                                                if (j == 0)
+                                                {
+                                                    vitemclassName = "videoeventitemmodel";
+                                                }
+                                                else
+                                                {
+                                                    vitemclassName = "videoeventitemmodelcc";
+                                                }
+
+
+                                                var vdicinfo = videoiteminfo.dic[j];
+
                                                 <li class="@vitemclassName">
                                                     <!-- timeline icon -->
                                                     <i class="fa fa-envelope bg-blue"></i>
@@ -2800,10 +2910,10 @@
                                                                 <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
 
                                                                     @{
-                                                                        Model.PrefabPath = vdicinfo.key;
+                                                                        Model.EventId = vdicinfo.key;
                                                                     }
-
-                                                                    <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                                                    <input type="text" id="EventId" name="EventId" value="@vdicinfo.key" class="btn-prefab-name control-label" />
+                                                                    @*<nop-select asp-for="EventId" asp-items="Model.EventIdList" />*@
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
@@ -2864,7 +2974,8 @@
                                                         <div class="form-group">
                                                             <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                                             <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
-                                                                <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                                                <input type="text" id="EventId" name="EventId" value="" class="video-eventid control-label" />
+                                                                @*<nop-select asp-for="EventId" asp-items="Model.EventIdList" />*@
                                                             </div>
                                                         </div>
                                                         <div class="form-group">
@@ -2971,7 +3082,8 @@
                                                 <div class="form-group">
                                                     <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">触发事件ID</label>
                                                     <div class="col-lg-6 col-xs-12 col-sm-12 col-md-6 control-label">
-                                                        <nop-select asp-for="EventId" asp-items="Model.EventIdList" />
+                                                        <input type="text" id="EventId" name="EventId" value="" class="btn-prefab-name control-label" />
+                                                        @*<nop-select asp-for="EventId" asp-items="Model.EventIdList" />*@
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
@@ -3272,6 +3384,11 @@
                 openevitems.each(function (el) {
                     var openeven = new Object();
                     var id = $(this).find('.openevent-id').first().val();
+
+                    //if (!id || id == "") {
+                    //    continue;
+                    //}
+
                     var name = $(this).find('.openevent-name').first().val();
                     openeven.enventid = id;
                     openeven.name = name;
@@ -3285,7 +3402,12 @@
                     })
                     ///待补充  添加事件
                     openeven.objectids = objectids;
-                    openeventstate.push(openeven);
+
+                    if (id && id != "")
+                    {
+                        openeventstate.push(openeven);
+                    }
+                    
                 })
                 root.openeventstate = openeventstate;
             }
@@ -3301,7 +3423,9 @@
                 closeeventitems.each(function (el) {
                     var openeven = new Object();
                     var id = $(this).find('.closeevent-id').first().val();
-
+                    //if (!id || id == "") {
+                    //    continue;
+                    //}
                     var name = $(this).find('.closeevent-name').first().val();
                     openeven.enventid = id;
                     openeven.name = name;
@@ -3315,7 +3439,11 @@
                     ///待补充  添加事件
 
                     openeven.objectids = objectids;
-                    closeeventstate.push(openeven);
+
+                    if (id && id != "") {
+                        closeeventstate.push(openeven);
+                    }
+                    //closeeventstate.push(openeven);
                 })
                 root.closeeventstate = closeeventstate;
             }
@@ -3329,12 +3457,18 @@
             if (btnitems && btnitems.length > 0) {
                 btnitems.each(function () {
                     var btninfo = new Object();
+
+                    btninfo.id = $(this).find('.btn-id').first().val();
+                    var id = btninfo.id;
+                    //if (!id || id == "") {
+                    //    continue;
+                    //}
                     var pos = new Object();
                     pos.x = $(this).find('.btn-pos-x').first().val();
                     pos.y = $(this).find('.btn-pos-y').first().val();
                     var size = new Object();
                     size.x = $(this).find('.btn-size-x').first().val();
-                    size.y = $(this).find('.btn-size-x').first().val();
+                    size.y = $(this).find('.btn-size-y').first().val();
                     ///按钮平面坐标
                     btninfo.pos = pos;
                     ///按钮尺寸
@@ -3344,16 +3478,26 @@
                    // alert(btninfo.path);
                     btninfo.name = $(this).find('.btn-prefab-name').first().val();
                     btninfo.url = $(this).find('.btn-prefab-url').first().val();
-                    btninfo.id = $(this).find('.btn-id').first().val();
+                    console.log("test`");
+                    btninfo.highlightedurl = $(this).find('.btn-prefab-highlightedurl').first().val();
+                    console.log("test`1111");
+                    btninfo.pressedurl = $(this).find('.btn-prefab-pressedurl').first().val();
                     btninfo.eventid = $(this).find('#EventId,#itemdata_eventid').first().val();
                    // alert(btninfo.eventid);
                     btninfo.bg = $(this).find('.btn-bgimg').first().val();
                     btninfo.text = $(this).find('.btn-txt').first().val();
 
-                    btnarray.push(btninfo);
-                    root.buttoninfo = btnarray;
 
+                    if (id && id != "") {
+
+                        btnarray.push(btninfo);
+                       // openeventstate.push(openeven);
+                    }
+                  
+                    
                 })
+
+                root.buttoninfo = btnarray;
             }
             else {
                 root.buttoninfo = btnarray;
@@ -3364,12 +3508,18 @@
             if (imgitems && imgitems.length > 0) {
                 imgitems.each(function () {
                     var imginfo = new Object();
-                  
+                    imginfo.id = $(this).find('.btn-id').first().val();
+
+                    var id = imginfo.id;
+                    //if (!id || id == "") {
+                    //    continue;
+                    //}
                     // imginfo.defaultURL = $(this).find('.img-prefab-defaulturl').first().val();
                     imginfo.path = $(this).find('#PrefabPath,#itemdata_path').first().val();
                     imginfo.url = $(this).find('.img-prefab-url').first().val();
                     imginfo.name = $(this).find('.img-prefab-name').first().val();
                     imginfo.id = $(this).find('.img-id').first().val();
+                
                     var dics = new Array();
                     //var dicitems = $('#tab_2 .imgeventitemmodel,#tab_2 .imgeventitemmodelcc');
                     var dicitems = $(this).find('.imgeventitemmodel,.imgeventitemmodelcc');
@@ -3389,7 +3539,9 @@
                         dics.push(dicitem);
                     });
                     imginfo.dic = dics;
-                    imageinfo.push(imginfo);
+
+                    if (id && id != "") { imageinfo.push(imginfo);}
+                   
                 })
             }
 
@@ -3400,14 +3552,17 @@
             var textitems = $('#tab_3 .modelel,#tab_3 .modelelcc');
             textitems.each(function () {
                 var textinfo = new Object();
-          
+                var id = $(this).find('.txt-id').first().val();
+                //if (!id || id == "") {
+                //    continue;
+                //}
                 textinfo.path = $(this).find('#PrefabPath,#textinfo_path').first().val() == null ? "" : $(this).find('#PrefabPath,#textinfo_path').first().val();
                 //   textinfo.defaultURL = $(this).find('.txt-prefab-defaulturl').first().val();
                 textinfo.url = $(this).find('.txt-prefab-url').first().val();
                 textinfo.name = $(this).find('.txt-prefab-name').first().val();
                 //   textinfo.eventid = $(this).find('#EventId').first().val();
-                textinfo.id = $(this).find('.txt-id').first().val();;
-
+                textinfo.id = $(this).find('.txt-id').first().val();
+              
                 texteventdic = new Array();
                 $(this).find('.textevent-itemmodel,.textevent-itemmodelcc').each(function () {
                     var dicobj = new Object();
@@ -3447,7 +3602,11 @@
 
                 })
                 textinfo.dic = texteventdic;
-                textinfoes.push(textinfo);
+
+                if (id && id != "") {
+                    textinfoes.push(textinfo);
+                }
+               
             })
 
             root.textinfo = textinfoes;
@@ -3489,7 +3648,10 @@
                     modelinfo.url = $(this).find('.model-prefab-url').first().val();
                     modelinfo.name = $(this).find('.model-prefab-name').first().val();
                     modelinfo.id = $(this).find('.model-id').first().val();
-
+                    var id = modelinfo.id;
+                    //if (!id || id == "") {
+                    //    continue;
+                    //}
                     //动画名称
                     var clips = new Array();
                     $(this).find('.modeleventitemel,.modeleventitemelcc').each(function () {
@@ -3500,7 +3662,12 @@
 
                     })
                     modelinfo.clips = clips;
-                    modelinfoes.push(modelinfo);
+
+                    if (id && id != "") {
+
+                        modelinfoes.push(modelinfo);
+                    }
+                    
                 })
             }
             root.modelinfo = modelinfoes;
@@ -3559,7 +3726,11 @@
                     camerainfo.url = $(this).find('.camera-prefab-url').first().val();
                     camerainfo.name = $(this).find('.camera-prefab-name').first().val();
                     camerainfo.id = $(this).find('.camera-id').first().val();
-                    camerainfoes.push(camerainfo);
+                    var id = camerainfo.id;
+                    if (id || id != "") {
+                        camerainfoes.push(camerainfo);
+                    }
+                   
                 })
             }
             root.cameraInfo = camerainfoes;
@@ -3573,10 +3744,14 @@
                     audioinfo = new Object();
 
                     var id = $(this).find('.audio-id').first().val();
+                    //if (!id || id == "") {
+                    //    continue;
+                    //}
                     var url = $(this).find('.audio-prefab-url').first().val();
                     var name = $(this).find('.audio-prefab-name').first().val();
                     var path = $(this).find('#PrefabPath,#audioinfo_path').first().val();
-
+                   // var id = camerainfo.id;
+                
                     audioinfo.id = id;
                     audioinfo.url = url;
                     audioinfo.name = name;
@@ -3591,7 +3766,11 @@
                         audioclips.push(clipinfo);
                         audioinfo.clips = audioclips;
                     })
-                    audioarray.push(audioinfo);
+
+                    if (id && id != "") {
+                        audioarray.push(audioinfo);
+                    }
+                   
                 })
             }
             root.audioinfo = audioarray;
@@ -3603,8 +3782,17 @@
                 clickinfoitems.each(function () {
                     var clickinfo = new Object();
                     clickinfo.eventid = $(this).find('.area-event-id').first().val();
+                    var id = clickinfo.eventid;
+                    //if (!id || id == "") {
+                    //    continue;
+                    //}
                     clickinfo.name = $(this).find('.area-event-name').first().val();
-                    clickinfoarray.push(clickinfo);
+
+                    if (id && id != "") {
+
+                        clickinfoarray.push(clickinfo);
+                    }
+                    
                 })
             }
             root.clickinfo = clickinfoarray;
@@ -3619,6 +3807,11 @@
                     // videoinfo.defaultURL = $(this).find('').first().val();
                     videoinfoitem.path = $(this).find('#PrefabPath,#videoiteminfo.path').first().val();
                     videoinfoitem.id = $(this).find('.video-id').first().val();
+                    var id = videoinfoitem.id;
+
+                    //if (!id || id == "") {
+                    //    continue;
+                    //}
                     var dics = new Array();
                     var dicitems = $(this).find(' .videoeventitemmodel,.videoeventitemmodelcc');
                     dicitems.each(function () {
@@ -3637,7 +3830,11 @@
                         dics.push(dicitem);
                     });
                     videoinfoitem.dic = dics;
-                    videoinfo.push(videoinfoitem);
+
+                    if (id && id != "") {
+                        videoinfo.push(videoinfoitem);
+                    }
+                   
                 })
             }
             root.videoinfo = videoinfo

@@ -51,9 +51,9 @@ namespace Nop.Web.Controllers.Api
                     PId = x.ParentBookDirId, //上级ID
                     IsLock = true,///是否已经购买 解锁
                     BookID= x.BookID, //所属课本ID
-                    Name=  x.Name, //章节名称
+                    Name=  x.Name??"", //章节名称
                     IsRead = false,
-                    Description = x.Description,//章节描述
+                    Description = x.Description??"",//章节描述
                     PriceRanges = x.PriceRanges??"0",//价格描述  如果为零 则免费 否则展示需要付费的价格
                     DisplayOrder =  x.DisplayOrder,//展示顺序
                     IsLastNode = x.IsLastNode,  //是否为知识点

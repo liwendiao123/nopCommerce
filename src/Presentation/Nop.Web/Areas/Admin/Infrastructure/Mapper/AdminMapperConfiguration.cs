@@ -1671,12 +1671,12 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
                 .ForMember(model => model.BookList, options => options.Ignore())
                 .ForMember(model => model.ParentBookDir, options => options.Ignore())
                 .ForMember(model => model.CategoryProductSearchModel, options => options.Ignore())
-                .ForMember(model => model.CustomProperties, options => options.Ignore())
-                .ForMember(entity => entity.AiBookModels, options => options.Ignore());
+                .ForMember(model => model.CustomProperties, options => options.Ignore());
+                //.ForMember(entity => entity.AiBookModels, options => options.Ignore());
 
-            CreateMap<BookDirModel,BookDir>()
-             //  .ForMember(model => model.SelectedCustomerRoleIds, options => options.Ignore())
-               .ForMember(entity => entity.AiBookModels, options => options.Ignore());
+            //CreateMap<BookDirModel,BookDir>()
+            // //  .ForMember(model => model.SelectedCustomerRoleIds, options => options.Ignore())
+            //   .ForMember(entity => entity.AiBookModels, options => options.Ignore());
 
         }
 
@@ -1690,7 +1690,7 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
               .ForMember(entity => entity.EventId, options => options.Ignore())
                .ForMember(entity => entity.EventIdList, options => options.Ignore())
               .ForMember(entiy=>entiy.PrefabPathList,options=>options.Ignore())
-
+              .ForMember(entity=>entity.Locales, options => options.Ignore())
                .ForMember(entiy => entiy.ResourceList, options => options.Ignore())
                .ForMember(entiy => entiy.TextPrefebPath, options => options.Ignore())
                .ForMember(entiy => entiy.ButtonPrefebPath, options => options.Ignore())
@@ -1702,9 +1702,9 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
                .ForMember(entity => entity.BookNodeRoot, options => options.Ignore());
 
 
-            CreateMap<AiBookModelView, AiBookModel>()
-             
-                .ForMember(entity => entity.BookDir, options => options.Ignore());
+            //CreateMap<AiBookModelView, AiBookModel>()
+
+            //    .ForMember(entity => entity., options => options.Ignore());
         }
 
 

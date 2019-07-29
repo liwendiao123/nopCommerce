@@ -119,16 +119,18 @@ namespace Nop.Services.AIBookModel
             if (booknodeId == 0)
                 return null;
 
+
+
             AiBookModel LoadStoreFunc()
             {
               var item = _bookNodeRepository.GetById(booknodeId);
 
-                if (item != null && item.BookDirID > 0)
-                {
-                  var bookdir =  _bookDirService.GetBookDirById(item.BookDirID);
+                //if (item != null && item.BookDirID > 0)
+                //{
+                //  var bookdir =  _bookDirService.GetBookDirById(item.BookDirID);
 
-                    item.BookDir = bookdir;
-                }
+                //   // item.BookDir = bookdir;
+                //}
 
                 return item;
             }
@@ -312,7 +314,13 @@ namespace Nop.Services.AIBookModel
 
                 if (aibookmodel is IEntityForCaching)
                     throw new ArgumentException("Cacheable entities are not supported by Entity Framework");
+
+
                 _bookNodeRepository.Update(aibookmodel);
+
+                //var key = string.Format(NopBookNodeDefault.BookNodesByIdCacheKey, aibookmodel.Id);
+                //_cacheManager.Remove(key);
+
                 _cacheManager.RemoveByPrefix(NopBookNodeDefault.BookNodesPrefixCacheKey);
                 //event notification
                 _eventPublisher.EntityUpdated(aibookmodel);

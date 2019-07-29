@@ -1,0 +1,11 @@
+﻿{
+  "Group": "Payment methods",
+  "FriendlyName": "WeixinPay",
+  "SystemName": "Payments.WeixinPay",
+  "Version": "4.20",
+  "SupportedVersions": [ "4.20" ],
+  "Author": "Tony <12070132@qq.com> shop.weiyou7.com",
+  "DisplayOrder": 3,
+  "FileName": "Nop.Plugin.Payments.WeixinPay.dll",
+  "Description": "This payment module allows you to integrate with WeixinPay(support WeiXinMP(JSApi),Wap(H5),PC/Desktop(Barcode Native1/2), payment module"
+}

@@ -173,11 +173,19 @@ namespace Nop.Web.Models.Api.BookNode
         {
             pos = new OffsetXY();
             size = new OffsetXY();
+
+            highlightedurl = string.Empty;
+
+            pressedurl = string.Empty;
         }
 
         public OffsetXY pos { get; set; }
         public OffsetXY size { get; set; }
         public string eventid { get; set; }
+
+        public string highlightedurl { get; set; }
+
+        public string pressedurl { get; set; }
         public string bg { get; set; }
         public string text { get; set; }
     }

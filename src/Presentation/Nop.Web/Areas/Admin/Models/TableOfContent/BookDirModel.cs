@@ -232,11 +232,11 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
         public BookDirSearchModel CategoryProductSearchModel { get; set; }
 
 
-        public virtual ICollection<AiBookModel> AiBookModels
-        {
-            get => _aiBookModels ?? (_aiBookModels = new List<AiBookModel>());
-            set => _aiBookModels = value;
-        }
+        //public virtual ICollection<AiBookModel> AiBookModels
+        //{
+        //    get => _aiBookModels ?? (_aiBookModels = new List<AiBookModel>());
+        //    set => _aiBookModels = value;
+        //}
 
        
         public new Dictionary<string, object> CustomProperties { get; set; }

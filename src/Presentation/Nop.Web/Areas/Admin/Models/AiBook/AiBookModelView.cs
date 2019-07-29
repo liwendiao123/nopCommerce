@@ -256,7 +256,7 @@ namespace Nop.Web.Areas.Admin.Models.AiBook
             }
             AudioPrefebPath.Add(new SelectListItem
             {
-                Value = "K/CKAudio/CKAudio",
+                Value = "K/Audio/CKAudio",
                 Text = "音源预制"
             });
             #endregion
@@ -380,6 +380,10 @@ namespace Nop.Web.Areas.Admin.Models.AiBook
         [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.Active")]
         public bool Active { get; set; }
 
+        /// <summary>
+        /// 是否为特例
+        /// </summary>
+        public int ComplexLevel { get; set; }
         public DateTime CreatedOnUtc { get; set; }
 
         public DateTime UpdatedOnUtc { get; set; }

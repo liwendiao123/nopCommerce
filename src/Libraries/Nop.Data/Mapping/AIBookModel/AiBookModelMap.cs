@@ -20,10 +20,10 @@ namespace Nop.Data.Mapping.AIBookModel
 
            // builder.HasKey(comment => comment.Id);
 
-            builder.HasOne(aibookmodel => aibookmodel.BookDir)
-                .WithMany(aibookmodel => aibookmodel.AiBookModels)
-                .HasForeignKey(comment => comment.BookDirID)
-                .IsRequired();
+            //builder.HasOne(aibookmodel => aibookmodel.BookDir)
+            //    .WithMany(aibookmodel => aibookmodel.AiBookModels)
+            //    .HasForeignKey(comment => comment.BookDirID)
+            //    .IsRequired();
 
             //builder.HasOne(aibook => aibook.BlogPost)
             //    .WithMany(blog => blog.BlogComments)

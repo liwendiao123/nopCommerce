@@ -1,0 +1,33 @@
+﻿@{
+    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+}
+
+<html>
+<head>
+    <title>Payment result</title>
+</head>
+<body>
+
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-body">
+
+                <div class="form-group">
+
+                    <div col-md-3>
+                    <a href="/order/history">@T("Plugins.Payments.WeixinPay.IsFinished")</a>
+                     </div>
+                    </div>
+
+                <div class="form-group">
+                    <div col-md-3>
+                    <a href="/order/history">@T("Plugins.Payments.WeixinPay.NotFinished")</a>
+                    </div>
+                    </div> 
+            
+            </div>
+         </div>
+      </div>
+
+</body>
+</html>

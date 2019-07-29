@@ -21,7 +21,7 @@ namespace Nop.Core.Domain.TableOfContent
     {
 
 
-        private  ICollection<AiBookModel> _aiBookModels;
+      //  private  ICollection<AiBookModel> _aiBookModels;
 
        //private ICollection<DiscountBookDirMapping> _discountCategoryMappings;
        public int BookID { get; set; }
@@ -135,11 +135,11 @@ namespace Nop.Core.Domain.TableOfContent
         /// Gets or sets the discount-category mappings
         /// </summary>
         /// 
-        [JsonIgnore]
-        public virtual ICollection<AiBookModel> AiBookModels
-        {
-            get => _aiBookModels ?? (_aiBookModels = new List<AiBookModel>());
-            set => _aiBookModels = value;
-        }
+        //[JsonIgnore]
+        //public virtual ICollection<AiBookModel> AiBookModels
+        //{
+        //    get => _aiBookModels ?? (_aiBookModels = new List<AiBookModel>());
+        //    set => _aiBookModels = value;
+        //}
     }
 }
