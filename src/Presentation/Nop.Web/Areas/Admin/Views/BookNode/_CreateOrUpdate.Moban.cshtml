@@ -991,7 +991,7 @@
                                         <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
                                         <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
 
-                                            @{ 
+                                            @{
                                                 Model.PrefabPath = textinfo.path;
                                             }
                                             <nop-select asp-for="PrefabPath" asp-for-name="PrefabPath" asp-items="Model.TextPrefebPath" />
@@ -1572,7 +1572,7 @@
                                         <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
                                         <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
 
-                                            @{ 
+                                            @{
 
                                                 Model.PrefabPath = modelinfo.path;
 
@@ -2016,7 +2016,7 @@
                                         <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
                                         <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
 
-                                            @{ 
+                                            @{
                                                 Model.PrefabPath = camerainfo.path;
                                             }
                                             <nop-select asp-for="PrefabPath" asp-for-name="PrefabPath" asp-items="Model.CameraPrefebPath" />
@@ -2250,7 +2250,7 @@
                                     <div class="form-group">
                                         <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
                                         <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
-                                            @{ 
+                                            @{
 
                                                 Model.PrefabPath = audioinfo.path;
                                             }
@@ -2825,7 +2825,7 @@
                                     <div class="form-group">
                                         <label class="col-lg-3 col-xs-12 col-sm-12 col-md-3 control-label">资源预制路径</label>
                                         <div class="col-lg-3 col-xs-12 col-sm-12 col-md-3">
-                                            @{ 
+                                            @{
                                                 Model.PrefabPath = videoiteminfo.path;
                                             }
                                             <nop-select asp-for="PrefabPath" asp-items="Model.VideoPrefebPath" />
@@ -2995,7 +2995,7 @@
                                     <div>
                                         <span class="btn bg-gray video-add">
                                             <i class="fa fa-plus-square"></i>
-                                             @T("Admin.Common.AddNew")                                        
+                                            @T("Admin.Common.AddNew")
                                         </span>
                                         <span class="btn bg-red video-del">
                                             <i class="fa fa-trash-o"></i>
@@ -3133,6 +3133,11 @@
             <i class="fa fa-plus-square"></i>
             "生成JSON"
         </span>
+
+        <button type="button" name="importexcel" class="btn bg-olive" data-toggle="modal" data-target="#importexcel-window">
+            <i class="fa fa-upload"></i>
+            @T("Admin.Common.Import")
+        </button>
     </div>
     <div class="form-group">
         <div class="col-md-3">
@@ -3215,7 +3220,7 @@
         $(document).on('click', '.fonteventadd', function () {
             var modelel = $(this).parent().parent().find(".textevent-itemmodel");
             if (modelel && modelel.length > 0) {
-               // alert("ok");
+                // alert("ok");
                 console.log(modelel[0].outerHTML);
                 var modelelcc = modelel.clone()
                     .removeClass("textevent-itemmodel")
@@ -3374,7 +3379,7 @@
         $(document).on("click", ".code-gen", function () {
 
 
-           // alert("ok");
+            // alert("ok");
             var root = new Object();
 
             //1.0添加打开事件信息
@@ -3403,11 +3408,10 @@
                     ///待补充  添加事件
                     openeven.objectids = objectids;
 
-                    if (id && id != "")
-                    {
+                    if (id && id != "") {
                         openeventstate.push(openeven);
                     }
-                    
+
                 })
                 root.openeventstate = openeventstate;
             }
@@ -3431,8 +3435,7 @@
                     openeven.name = name;
                     var objectids = new Array();
                     $(this).find('.resourcelist').each(function () {
-                        if ($(this).attr('checked'))
-                        {
+                        if ($(this).attr('checked')) {
                             objectids.push($(this).data('id'));
                         }
                     })
@@ -3475,7 +3478,7 @@
                     btninfo.size = size;
                     btninfo.path = $(this).find('#PrefabPath,#itemdata_path').first().val();
 
-                   // alert(btninfo.path);
+                    // alert(btninfo.path);
                     btninfo.name = $(this).find('.btn-prefab-name').first().val();
                     btninfo.url = $(this).find('.btn-prefab-url').first().val();
                     console.log("test`");
@@ -3483,7 +3486,7 @@
                     console.log("test`1111");
                     btninfo.pressedurl = $(this).find('.btn-prefab-pressedurl').first().val();
                     btninfo.eventid = $(this).find('#EventId,#itemdata_eventid').first().val();
-                   // alert(btninfo.eventid);
+                    // alert(btninfo.eventid);
                     btninfo.bg = $(this).find('.btn-bgimg').first().val();
                     btninfo.text = $(this).find('.btn-txt').first().val();
 
@@ -3491,10 +3494,10 @@
                     if (id && id != "") {
 
                         btnarray.push(btninfo);
-                       // openeventstate.push(openeven);
+                        // openeventstate.push(openeven);
                     }
-                  
-                    
+
+
                 })
 
                 root.buttoninfo = btnarray;
@@ -3519,7 +3522,7 @@
                     imginfo.url = $(this).find('.img-prefab-url').first().val();
                     imginfo.name = $(this).find('.img-prefab-name').first().val();
                     imginfo.id = $(this).find('.img-id').first().val();
-                
+
                     var dics = new Array();
                     //var dicitems = $('#tab_2 .imgeventitemmodel,#tab_2 .imgeventitemmodelcc');
                     var dicitems = $(this).find('.imgeventitemmodel,.imgeventitemmodelcc');
@@ -3540,8 +3543,8 @@
                     });
                     imginfo.dic = dics;
 
-                    if (id && id != "") { imageinfo.push(imginfo);}
-                   
+                    if (id && id != "") { imageinfo.push(imginfo); }
+
                 })
             }
 
@@ -3562,7 +3565,7 @@
                 textinfo.name = $(this).find('.txt-prefab-name').first().val();
                 //   textinfo.eventid = $(this).find('#EventId').first().val();
                 textinfo.id = $(this).find('.txt-id').first().val();
-              
+
                 texteventdic = new Array();
                 $(this).find('.textevent-itemmodel,.textevent-itemmodelcc').each(function () {
                     var dicobj = new Object();
@@ -3606,7 +3609,7 @@
                 if (id && id != "") {
                     textinfoes.push(textinfo);
                 }
-               
+
             })
 
             root.textinfo = textinfoes;
@@ -3644,7 +3647,7 @@
                     scale.z = z;
                     modelinfo.scale = scale;
                     //  modelinfo.defaultURL = $(this).find('.model-prefab-defaulturl').first().val();
-                  //  modelinfo.path = $(this).find('#PrefabPath,#modelinfo_path').first().val();
+                    //  modelinfo.path = $(this).find('#PrefabPath,#modelinfo_path').first().val();
                     modelinfo.url = $(this).find('.model-prefab-url').first().val();
                     modelinfo.name = $(this).find('.model-prefab-name').first().val();
                     modelinfo.id = $(this).find('.model-id').first().val();
@@ -3667,7 +3670,7 @@
 
                         modelinfoes.push(modelinfo);
                     }
-                    
+
                 })
             }
             root.modelinfo = modelinfoes;
@@ -3730,7 +3733,7 @@
                     if (id || id != "") {
                         camerainfoes.push(camerainfo);
                     }
-                   
+
                 })
             }
             root.cameraInfo = camerainfoes;
@@ -3750,8 +3753,8 @@
                     var url = $(this).find('.audio-prefab-url').first().val();
                     var name = $(this).find('.audio-prefab-name').first().val();
                     var path = $(this).find('#PrefabPath,#audioinfo_path').first().val();
-                   // var id = camerainfo.id;
-                
+                    // var id = camerainfo.id;
+
                     audioinfo.id = id;
                     audioinfo.url = url;
                     audioinfo.name = name;
@@ -3770,7 +3773,7 @@
                     if (id && id != "") {
                         audioarray.push(audioinfo);
                     }
-                   
+
                 })
             }
             root.audioinfo = audioarray;
@@ -3792,7 +3795,7 @@
 
                         clickinfoarray.push(clickinfo);
                     }
-                    
+
                 })
             }
             root.clickinfo = clickinfoarray;
@@ -3834,7 +3837,7 @@
                     if (id && id != "") {
                         videoinfo.push(videoinfoitem);
                     }
-                   
+
                 })
             }
             root.videoinfo = videoinfo

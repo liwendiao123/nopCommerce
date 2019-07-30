@@ -1702,7 +1702,7 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
                .ForMember(entity => entity.BookNodeRoot, options => options.Ignore());
 
 
-            //CreateMap<AiBookModelView, AiBookModel>()
+            CreateMap<AiBookModelView, AiBookModel>();
 
             //    .ForMember(entity => entity., options => options.Ignore());
         }
@@ -1722,7 +1722,7 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
 
         #endregion
 
-            #region Properties
+        #region Properties
 
             /// <summary>
             /// Order of this mapper implementation

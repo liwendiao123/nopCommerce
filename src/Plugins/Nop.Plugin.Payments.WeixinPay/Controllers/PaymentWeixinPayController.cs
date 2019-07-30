@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using AutoMapper.Configuration;
+
 using Castle.Core.Logging;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -28,6 +28,20 @@ using Nop.Web.Framework.Mvc.Filters;
 using Senparc.Weixin.Entities;
 using Senparc.Weixin.MP.AdvancedAPIs;
 using Senparc.Weixin.TenPay.V3;
+using Microsoft.Extensions.Configuration;
+using Nop.Core.Domain.Orders;
+using System.Xml.Linq;
+using Senparc.CO2NET.Extensions;
+using ZXing;
+using ZXing.QrCode;
+using System.Drawing;
+using System.Drawing.Imaging;
+using Senparc.Weixin;
+using Senparc.Weixin.MP;
+using Senparc.Weixin.MP.Containers;
+using Senparc.Weixin.MP.Helpers;
+using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace Nop.Plugin.Payments.WeixinPay.Controllers
 {
@@ -203,8 +217,17 @@ namespace Nop.Plugin.Payments.WeixinPay.Controllers
                 }
                 );
 
-            var tenPayV3Info = new TenPayV3Info(model.TenPayV3_AppId, model.TenPayV3_AppSecret, model.TenPayV3_MchId, model.TenPayV3_Key, model.TenPayV3_TenpayNotify);
-            TenPayV3InfoCollection.Register(tenPayV3Info);//微信V3（新版）
+
+            //var tenPayV3info = new TenPayV3Info()
+
+            var tenPayV3Info = new TenPayV3Info(
+                model.TenPayV3_AppId,
+                model.TenPayV3_AppSecret,
+                model.TenPayV3_MchId,
+                model.TenPayV3_Key,
+                model.TenPayV3_CertPath,
+                model.TenPayV3_CertPassword,model.TenPayV3_URL,model.TenPayV3_TenpayNotify);
+            TenPayV3InfoCollection.Register(tenPayV3Info,"支付接口");//微信V3（新版）
 
             _weixinPayPaymentSettings.TenPayV3_MchId = model.TenPayV3_MchId;
             _weixinPayPaymentSettings.TenPayV3_Key = model.TenPayV3_Key;
@@ -459,43 +482,30 @@ namespace Nop.Plugin.Payments.WeixinPay.Controllers
                 if (orderId > 0)
                 {
                     order = _orderService.GetOrderById(orderId);
-
                 }
                 else
                 {
-
                     return Content("查找订单失败");
-
                 }
-
-
                 string timeStamp = "";
                 string nonceStr = "";
                 string paySign = "";
-
                 string sp_billno = "";
                 //当前时间 yyyyMMdd
                 string date = DateTime.Now.ToString("yyyyMMdd");
                 sp_billno = orderId.ToString();
-
                 //创建支付应答对象
                 RequestHandler packageReqHandler = new RequestHandler(null);
                 //初始化
                 packageReqHandler.Init();
-
                 timeStamp = TenPayV3Util.GetTimestamp();
                 nonceStr = TenPayV3Util.GetNoncestr();
-
                 string body = "";
                 foreach (var item in order.OrderItems)
                 {
                     body = item.Product.Name + item.Quantity.ToString() + " ";
-
                 }
-
                 //设置package订单参数
-
-
                 decimal totalFee = order.OrderTotal;
                 var currencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
                 if (currencyCode != "CNY")
@@ -503,14 +513,12 @@ namespace Nop.Plugin.Payments.WeixinPay.Controllers
                     Currency currency = _currencyService.GetCurrencyByCode("CNY");
                     totalFee = _currencyService.ConvertFromPrimaryStoreCurrency(totalFee, currency);
                 }
-
                 packageReqHandler.SetParameter("appid", _weixinPayPaymentSettings.TenPayV3_AppId);          //公众账号ID
                 packageReqHandler.SetParameter("mch_id", _weixinPayPaymentSettings.TenPayV3_MchId);         //商户号
                 packageReqHandler.SetParameter("nonce_str", nonceStr);                    //随机字符串
                 packageReqHandler.SetParameter("body", body);    //商品信息
                 packageReqHandler.SetParameter("out_trade_no", sp_billno);      //商家订单号
                 packageReqHandler.SetParameter("total_fee", (totalFee * 100).ToString().Split('.')[0]);                    //商品金额,以分为单位(money * 100).ToString()
-
                 packageReqHandler.SetParameter("spbill_create_ip", Request.HttpContext.Features.Get<IHttpConnectionFeature>().RemoteIpAddress.ToString());   //用户的公网ip，不是商户服务器IP
                 packageReqHandler.SetParameter("notify_url", _weixinPayPaymentSettings.TenPayV3_TenpayNotify);
 
@@ -903,7 +911,7 @@ namespace Nop.Plugin.Payments.WeixinPay.Controllers
 
             var userAgent = HttpContext.Request.Headers["User-Agent"].ToString();
 
-            var mobileDetect = new MobileDetect.MobileDetect(headers, userAgent);
+            var mobileDetect = new MobileDetect(headers, userAgent);
 
             if (userAgent != null
                 && (userAgent.Contains("MicroMessenger") || userAgent.Contains("Windows Phone")))

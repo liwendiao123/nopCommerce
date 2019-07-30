@@ -13,33 +13,21 @@ namespace Nop.Plugin.Payments.WeixinPay
 {
    public class NopStartup:INopStartup
     {
-        //public void ConfigureServices(IServiceCollection services, IConfigurationRoot configuration)
-
-        //{
-
-        //    //添加Senparc.Weixin配置文件（内容可以根据需要对应修改）
-        //    services.Configure<SenparcWeixinSetting>(configuration.GetSection("SenparcWeixinSetting"));
-
-
-        //}
-
-
         public void Configure(IApplicationBuilder application)
-        {
+        { 
             
         }
-
         public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             //添加Senparc.Weixin配置文件（内容可以根据需要对应修改）
             services.Configure<SenparcWeixinSetting>(configuration.GetSection("SenparcWeixinSetting"));
-        }
-       
-
+        }     
         public int Order
         {
-            get { return 1001; }
+            get
+            {
+                return 1001;
+            }
         }
-
     }
 }

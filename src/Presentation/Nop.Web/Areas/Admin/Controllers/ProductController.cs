@@ -2280,7 +2280,7 @@ namespace Nop.Web.Areas.Admin.Controllers
                     _notificationService.ErrorNotification(_localizationService.GetResource("Admin.Common.UploadFile"));
                     return RedirectToAction("List");
                 }
-
+     
                 _notificationService.SuccessNotification(_localizationService.GetResource("Admin.Catalog.Products.Imported"));
                 return RedirectToAction("List");
             }

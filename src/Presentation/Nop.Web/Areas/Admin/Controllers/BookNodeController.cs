@@ -20,6 +20,8 @@ using Nop.Web.Areas.Admin.Models.AiBook;
 using Nop.Core.Domain.AIBookModel;
 using Newtonsoft.Json;
 using Nop.Web.Models.Api.BookNode;
+using Microsoft.AspNetCore.Http;
+using Nop.Services.ExportImport;
 
 namespace Nop.Web.Areas.Admin.Controllers
 {
@@ -37,7 +39,8 @@ namespace Nop.Web.Areas.Admin.Controllers
         private readonly IProductModelFactory _productModelFactory;
         private readonly IBookNodeFactory _bookNodeFactory;
         private readonly IAiBookService _bookNodeService;
-        
+        private readonly IImportManager _importManager;
+
         public BookNodeController(
             IUrlRecordService urlRecordService
             ,IPermissionService permissionService
@@ -49,7 +52,8 @@ namespace Nop.Web.Areas.Admin.Controllers
             ,IBookDirFactory bookDirFactory
             ,IProductModelFactory productModelFactory
             ,IBookNodeFactory bookNodeFactory
-            ,IAiBookService bookNodeService
+            ,IAiBookService bookNodeService,
+            IImportManager importManager
             )
         {
             _urlRecordService = urlRecordService;
@@ -63,22 +67,18 @@ namespace Nop.Web.Areas.Admin.Controllers
             _productModelFactory = productModelFactory;
             _bookNodeFactory = bookNodeFactory;
             _bookNodeService = bookNodeService;
+            _importManager = importManager;
 
         }
         public IActionResult Index(AiBookSearchModelView smodel)
         {
-
-
             if (!_permissionService.Authorize(StandardPermissionProvider.ManagerBook))
                 return AccessDeniedView();
-
             //prepare model
             //  var model = _bookDirFactory.PrepareBookDirSearchModel(new BookDirSearchModel(),new BookDirModel());
             var model = _bookNodeFactory.PrepareBookNodeSearchModel(smodel);
             return View(model);
         }
-
-
         #region List
         //public virtual IActionResult Index()
         //{
@@ -94,7 +94,6 @@ namespace Nop.Web.Areas.Admin.Controllers
             var model = _bookNodeFactory.PrepareBookNodeSearchModel(smodel);
             return View(model);
         }
-
         [HttpPost]
         public virtual IActionResult List(AiBookSearchModelView searchModel)
         {
@@ -106,11 +105,7 @@ namespace Nop.Web.Areas.Admin.Controllers
             var model = _bookNodeFactory.PrepareBookNodeSearchModel(searchModel);
             return Json(model);
         }
-
         #endregion
-
-
-
         #region Create / Edit / Delete
         /// <summary>
         /// 创建目录
@@ -129,7 +124,6 @@ namespace Nop.Web.Areas.Admin.Controllers
         public IActionResult Create(AiBookModelView  model, bool continueEditing)
         {  if (!_permissionService.Authorize(StandardPermissionProvider.ManageCategories))
                 return AccessDeniedView();
-
             if (ModelState.IsValid)
             {
 
@@ -200,35 +194,25 @@ namespace Nop.Web.Areas.Admin.Controllers
                 
                 return RedirectToAction("Edit", new { id = category.Id });
             }
-
             //prepare model
-            model = _bookNodeFactory.PrepareBookNodeModel(new AiBookModelView(), 0);
-          
-
+            model = _bookNodeFactory.PrepareBookNodeModel(new AiBookModelView(), 0);        
             //if we got this far, something failed, redisplay form
             return View(model);
         }
-
         public IActionResult Edit(int id)
         {
-
             //try to get a category with the specified id
             //  var bookdir = _categoryService.GetCategoryById(id);
             var booknode = _bookNodeService.GetAiBookModelById(id);
             if (booknode == null || booknode.Deleted)
                 return RedirectToAction("List");
-
             //prepare model
             //var model = _categoryModelFactory.PrepareCategoryModel(null, category);
-
             // var model = _bookDirFactory.PrepareBookDirModel(null,bookdir);
             var aimodel = booknode.ToModel<AiBookModelView>();
             var model = _bookNodeFactory.PrepareBookNodeModel(aimodel, 0);
             return View(model);
-
         }
-
-
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public IActionResult Edit(AiBookModelView model, bool continueEditing)
         {
@@ -263,8 +247,7 @@ namespace Nop.Web.Areas.Admin.Controllers
            var model1 = _bookNodeFactory.PrepareBookNodeModel(model, 0);
            return View(model1);
 
-        }
-        
+        }       
         public IActionResult Delete(int id)
         {
 
@@ -287,8 +270,6 @@ namespace Nop.Web.Areas.Admin.Controllers
             return RedirectToAction("Index");
             //return View();
         }
-
-
         public IActionResult GetList(AiBookSearchModelView searchModel)
         {
             //prepare model
@@ -296,7 +277,6 @@ namespace Nop.Web.Areas.Admin.Controllers
 
                return Json(model);
         }
-
         /// <summary>
         /// 获取所属书籍
         /// </summary>
@@ -312,14 +292,20 @@ namespace Nop.Web.Areas.Admin.Controllers
 
             return Json(result.Data.ToList());
         }
-
-
-
         public IActionResult GetBookDirByBookId(BookDirSearchModel searchModel)
         {
            var model = _bookDirFactory.PrepareBookDirListModel(searchModel);
 
             return Json(model.Data.ToList());
+        }
+
+        [HttpPost]
+        public IActionResult ImportExcel(IFormFile importexcelfile)
+        {
+            _importManager.ImportBookNodeMobanFromXlsx(importexcelfile.OpenReadStream());
+            
+
+            return View();
         }
         #endregion
     }

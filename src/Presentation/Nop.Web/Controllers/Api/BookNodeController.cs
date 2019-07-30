@@ -76,7 +76,7 @@ namespace Nop.Web.Controllers.Api
         public IActionResult GetJsonData(int id)
         {
 
-           var result = _aiBookService.SearchAiBookModels(null,0,2,null,0,id).FirstOrDefault();
+           var result = _aiBookService.SearchAiBookModels("",0,int.MaxValue,null,0,id).FirstOrDefault();
 
             if (result == null || (result.ComplexLevel == 0&& string.IsNullOrEmpty(result.UnityStrJson)))
             {
@@ -131,6 +131,62 @@ namespace Nop.Web.Controllers.Api
                     strJson = jsonresult
                 }
             });
+        }
+
+
+        public IActionResult GetKnowledgeById(int id)
+        {
+            var result = _aiBookService.GetAiBookModelById(id);
+
+            if (result == null || (result.ComplexLevel == 0 && string.IsNullOrEmpty(result.UnityStrJson)))
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "未对知识点进行泛化",
+                    data = new object()
+                });
+            }
+            BookDir bookdir = null;
+
+            if (result != null && result.BookDirID > 0)
+            {
+                bookdir = _bookDirService.GetBookDirById(result.BookDirID);
+                //  result.BookDir = bookdir;
+            }
+            var jsonresult = JsonConvert.DeserializeObject<BookNodeNewRoot>(result.UnityStrJson);      
+            jsonresult.Base.buttoninfo = jsonresult.Base.buttoninfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+            jsonresult.Base.textinfo = jsonresult.Base.textinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+            jsonresult.Base.imageinfo = jsonresult.Base.imageinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+            jsonresult.Base.videoinfo = jsonresult.Base.videoinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+            jsonresult.Base.audioinfo = jsonresult.Base.audioinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+            jsonresult.Base.camerainfo = jsonresult.Base.camerainfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+            jsonresult.Base.clickinfo = jsonresult.Base.clickinfo.Where(x => !string.IsNullOrEmpty(x.eventid)).ToList();
+            jsonresult.Base.modelinfo = jsonresult.Base.modelinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+            jsonresult.Base.openeventstate = jsonresult.Base.openeventstate.Where(x => !string.IsNullOrEmpty(x.enventid)).ToList();
+            jsonresult.Base.closeeventstate = jsonresult.Base.closeeventstate.Where(x => !string.IsNullOrEmpty(x.enventid)).ToList();
+            return Json(new
+            {
+                code = 0,
+                msg = "已成功",
+                data = new
+                {
+                    complexLevel = 0,
+                    BookID = bookdir == null ? -1 : bookdir.BookID,
+                    appointStrJson = new
+                    {
+                        keyname = "ZiXingChe",
+                        head = "127.0.0.1/LuaUpdata/",
+                        lua = "127.0.0.1/LuaUpdata/LuaScripts/ZiXingChe.lua",
+                        assetbundle = new List<string> {
+                            "127.0.0.1/LuaUpdata/assetbundle/front.unity3d",
+                            "127.0.0.1/LuaUpdata/assetbundle/zixingche.unity3d"
+                        }
+                    },
+                    strJson = jsonresult
+                }
+            });
+
         }
         public BookNodeRoot Init()
         {

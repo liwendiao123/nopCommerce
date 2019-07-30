@@ -43,7 +43,8 @@ namespace Nop.Web.Controllers.Api
                    Imgurl = "http://arbookresouce.73data.cn/book/img/sy_img_02.png",
                    x.DisplayOrder,
                    VendorName = "广西人民出版社",
-                   Desc ="",
+                   Desc =x.FullDescription,
+                   x.Price,
                    Tag = x.ProductProductTagMappings.Select(t=>new {
                         BookId = t.ProductId,
                         Tag = t.ProductTag,

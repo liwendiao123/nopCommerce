@@ -1,17 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 
-
-/// <summary>
-/// 该模型主要用于对应 json字段 故属性对应为 小写 
-/// 请勿随意更改 大小写 
-/// author lwd
-/// </summary>
-
-namespace Nop.Web.Models.Api.BookNode
+namespace Nop.Core.Domain.AIBookModel
 {
+
     public class BookNodeRoot
     {
 
@@ -23,16 +16,16 @@ namespace Nop.Web.Models.Api.BookNode
         public string code { get; set; }
         public ModelBase Base { get; set; }
     }
-    public class BookNodeNewRoot
+    public class BookNodeDomainNewRoot
     {
-        public BookNodeNewRoot()
+        public BookNodeDomainNewRoot()
         {
             code = string.Empty;
             Base = new ModelNewBase();
         }
         public string code { get; set; }
         public ModelNewBase Base { get; set; }
-    }  
+    }
     public class ModelBase
     {
         public ModelBase()
@@ -122,9 +115,9 @@ namespace Nop.Web.Models.Api.BookNode
     {
         public BaseModel()
         {
-             id  =string.Empty;
-             url =string.Empty;
-             name=string.Empty;
+            id = string.Empty;
+            url = string.Empty;
+            name = string.Empty;
             path = string.Empty;
 
         }
@@ -157,7 +150,7 @@ namespace Nop.Web.Models.Api.BookNode
         public string y { get; set; }
         public string z { get; set; }
     }
-    public class ButtonInfo:BaseModel
+    public class ButtonInfo : BaseModel
     {
 
         public ButtonInfo()
@@ -180,7 +173,8 @@ namespace Nop.Web.Models.Api.BookNode
         public string bg { get; set; }
         public string text { get; set; }
     }
-    public class Dic {
+    public class Dic
+    {
         public string key { get; set; }
         public string val { get; set; }
     }
@@ -210,19 +204,21 @@ namespace Nop.Web.Models.Api.BookNode
 
         public List<RichText> dic { get; set; }
     }
-    public class ImageInfo:BaseModel
+    public class ImageInfo : BaseModel
     {
         public ImageInfo()
         {
             pos = new OffsetXY();
-           size = new OffsetXY();
+            size = new OffsetXY();
             dic = new List<Dic>();
             defaultURL = string.Empty;
         }
         public OffsetXY pos { get; set; }
         public OffsetXY size { get; set; }
-        public string defaultURL {
-            get;    set; }  
+        public string defaultURL
+        {
+            get; set;
+        }
         public List<Dic> dic { get; set; }
     }
     public class ImageNewInfo : BaseModel
@@ -252,7 +248,7 @@ namespace Nop.Web.Models.Api.BookNode
         }
         public OffsetXY pos { get; set; }
         public OffsetXY size { get; set; }
-      //  public string defaulttext { get; set; }
+        //  public string defaulttext { get; set; }
         public List<TextDic> dic { get; set; }
     }
     public class TextNewInfo : BaseModel
@@ -260,14 +256,15 @@ namespace Nop.Web.Models.Api.BookNode
         public TextNewInfo()
         {
             //pos = new OffsetXY();
-           // size = new OffsetXY();
+            // size = new OffsetXY();
             dic = new List<TextNewDic>();
         }
-       
+
         //  public string defaulttext { get; set; }
         public List<TextNewDic> dic { get; set; }
     }
-    public class TextNewDic {
+    public class TextNewDic
+    {
 
 
         public TextNewDic()
@@ -276,7 +273,7 @@ namespace Nop.Web.Models.Api.BookNode
             size = new OffsetXY();
             dic = new List<RichText>();
         }
-       
+
 
         public string key { get; set; }
 
@@ -284,7 +281,7 @@ namespace Nop.Web.Models.Api.BookNode
         public OffsetXY pos { get; set; }
         public OffsetXY size { get; set; }
     }
-    public class ModelInfo:BaseModel
+    public class ModelInfo : BaseModel
     {
         public ModelInfo()
         {
@@ -298,7 +295,7 @@ namespace Nop.Web.Models.Api.BookNode
         public OffsetXYZ scale { get; set; }
         public List<Dic> clips { get; set; }
     }
-    public class CameraInfo:BaseModel
+    public class CameraInfo : BaseModel
     {
         public CameraInfo()
         {
@@ -309,12 +306,12 @@ namespace Nop.Web.Models.Api.BookNode
             rect = new Rect();
         }
         public OffsetXYZ pos { get; set; }
-        public OffsetXYZ rot { get; set; }   
+        public OffsetXYZ rot { get; set; }
         public OffsetXYZ scale { get; set; }
         public OffsetXYZ centerpos { get; set; }
         public Rect rect { get; set; }
     }
-    public class AudioInfo:BaseModel
+    public class AudioInfo : BaseModel
     {
 
         public AudioInfo()
@@ -323,7 +320,8 @@ namespace Nop.Web.Models.Api.BookNode
         }
         public List<Dic> clips { get; set; }
     }
-    public class RichText {
+    public class RichText
+    {
 
         public RichText()
         {
@@ -333,9 +331,9 @@ namespace Nop.Web.Models.Api.BookNode
         public bool i { get; set; }
         public string size { get; set; }
         public string color { get; set; }
-        public string val { get; set;}
+        public string val { get; set; }
 
-       
+
         public string sort { get; set; }
     }
     public class Rect
@@ -359,7 +357,7 @@ namespace Nop.Web.Models.Api.BookNode
         }
 
         public OffsetXY pos { get; set; }
-        public OffsetXY size { get; set; }   
+        public OffsetXY size { get; set; }
 
         public string path { get; set; }
 
@@ -373,11 +371,11 @@ namespace Nop.Web.Models.Api.BookNode
 
         public VideoNewInfo()
         {
-     
+
             dic = new List<NewDic>();
         }
 
-  
+
 
         public string path { get; set; }
 
@@ -386,9 +384,10 @@ namespace Nop.Web.Models.Api.BookNode
         public List<NewDic> dic { get; set; }
 
     }
-    public class ClickInfo {
+    public class ClickInfo
+    {
         public string name { get; set; }
 
         public string eventid { get; set; }
-    }  
+    }
 }

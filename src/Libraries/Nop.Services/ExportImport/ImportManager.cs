@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
 using Nop.Core;
 using Nop.Core.Data;
+using Nop.Core.Domain.AIBookModel;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Directory;
 using Nop.Core.Domain.Media;
@@ -1241,9 +1242,7 @@ namespace Nop.Services.ExportImport
                     {
                         if (lastLoadedProduct == null)
                             continue;
-
                         var newTypeOfExportedAttribute = GetTypeOfExportedAttribute(worksheet, metadata.ProductAttributeManager, metadata.SpecificationAttributeManager, iRow);
-
                         //skip caption row
                         if (newTypeOfExportedAttribute != ExportedAttributeType.NotSpecified &&
                             newTypeOfExportedAttribute != typeOfExportedAttribute)
@@ -1251,7 +1250,6 @@ namespace Nop.Services.ExportImport
                             typeOfExportedAttribute = newTypeOfExportedAttribute;
                             continue;
                         }
-
                         switch (typeOfExportedAttribute)
                         {
                             case ExportedAttributeType.ProductAttribute:
@@ -1777,6 +1775,97 @@ namespace Nop.Services.ExportImport
                 _customerActivityService.InsertActivity("ImportProducts", string.Format(_localizationService.GetResource("ActivityLog.ImportProducts"), metadata.CountProductsInFile));
             }
         }
+
+
+        public virtual string ImportBookNodeMobanFromXlsx(Stream stream)
+        {
+
+            BookNodeRoot bnr = new BookNodeRoot();
+
+            using (var xlPackage = new ExcelPackage(stream))
+            {
+                // get the first worksheet in the workbook
+                var worksheet = xlPackage.Workbook.Worksheets;
+                if (worksheet == null || worksheet.Count !=11 )
+                    throw new NopException("导入数据模板不正确");
+
+
+                for (var i = 0; i < worksheet.Count; i++)
+                {
+
+                    switch (i)
+                    {
+                        case 0:
+
+                            var curworksheet = worksheet[i];
+                            if (curworksheet != null)
+                            {
+                                //var cells = curworksheet.Cells;
+                                //for (var j = 1; j < cells.Rows; j++)
+                                //{
+
+                                //}  
+
+                                int endrow = 0;
+
+                                int endcol = 0;
+
+                                var lastcell = curworksheet.Cells.LastOrDefault();
+
+                                if (lastcell != null)
+                                {
+
+                                }
+
+
+                                foreach (var cell in curworksheet.Cells)
+                                {
+                                    var val = cell.Value;
+                                }
+                            }
+
+                            
+                            //var table = curworksheet.Tables[0];
+
+                          
+                             
+
+                            break;
+                        case 1:
+                            break;
+                        case 2:
+                            break;
+                        case 3:
+                            break;
+                        case 4:
+                            break;
+                        case 5:
+                            break;
+                        case 6:
+                            break;
+                        case 7:
+                            break;
+                        case 8:
+                            break;
+                        case 9:
+                            break;
+                        case 10:
+                            break;
+
+
+                    }
+
+
+
+                }
+
+
+                var downloadedFiles = new List<string>();
+            }
+
+                return "";
+        }
+
 
         /// <summary>
         /// Import newsletter subscribers from TXT file

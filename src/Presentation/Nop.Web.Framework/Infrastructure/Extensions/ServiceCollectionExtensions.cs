@@ -41,7 +41,7 @@ using Nop.Web.Framework.Themes;
 using StackExchange.Profiling.Storage;
 using WebMarkupMin.AspNetCore2;
 using WebMarkupMin.NUglify;
-
+using Microsoft.AspNetCore.Cors;
 namespace Nop.Web.Framework.Infrastructure.Extensions
 {
     /// <summary>
@@ -77,10 +77,13 @@ namespace Nop.Web.Framework.Infrastructure.Extensions
             //initialize plugins
             var mvcCoreBuilder = services.AddMvcCore();
             mvcCoreBuilder.PartManager.InitializePlugins(nopConfig);
-            services.AddCors(options =>
-                options.AddPolicy("自定义的跨域策略名称",
-                p => p.AllowAnyOrigin())
-                );
+            services.AddCors(options => {
+
+                options.AddPolicy("AnyOrigin", builder =>
+                {
+                    builder.AllowAnyOrigin().AllowAnyMethod();
+                });
+            });
             //create engine and configure service provider
             var engine = EngineContext.Create();
             var serviceProvider = engine.ConfigureServices(services, configuration, nopConfig);
