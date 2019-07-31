@@ -304,7 +304,6 @@ namespace Nop.Services.AIBookModel
 
             //throw new NotImplementedException();
         }
-
         public int UpdateAiBookModel(AiBookModel aibookmodel)
         {
             try
@@ -328,8 +327,6 @@ namespace Nop.Services.AIBookModel
                 return 0;
             }
         }
-
-
         public bool CheckExist(AiBookModel aibookmodel)
         {
             return false;

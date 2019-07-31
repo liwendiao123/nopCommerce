@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using Nop.Core;
 using Nop.Core.Data;
 using Nop.Core.Domain.AIBookModel;
@@ -84,6 +86,14 @@ namespace Nop.Services.ExportImport
         private readonly MediaSettings _mediaSettings;
         private readonly VendorSettings _vendorSettings;
 
+        public List<SelectListItem> TextPrefebPath { get; private set; }
+        public List<SelectListItem> ButtonPrefebPath { get; private set; }
+        public List<SelectListItem> ImgPrefebPath { get; private set; }
+        public List<SelectListItem> VideoPrefebPath { get; private set; }
+        public List<SelectListItem> AudioPrefebPath { get; private set; }
+        public List<SelectListItem> CameraPrefebPath { get; private set; }
+        public List<SelectListItem> PrefabPathList { get; private set; }
+
         #endregion
 
         #region Ctor
@@ -153,6 +163,7 @@ namespace Nop.Services.ExportImport
             _workContext = workContext;
             _mediaSettings = mediaSettings;
             _vendorSettings = vendorSettings;
+            InitPrefabList();
         }
 
         #endregion
@@ -1617,7 +1628,7 @@ namespace Nop.Services.ExportImport
                     //search engine name
                     var seName = tempProperty?.StringValue ?? (isNew ? string.Empty : _urlRecordService.GetSeName(product, 0));
                     _urlRecordService.SaveSlug(product, _urlRecordService.ValidateSeName(product, seName, product.Name, true), 0);
-                    
+
                     tempProperty = metadata.Manager.GetProperty("Categories");
 
                     if (tempProperty != null)
@@ -1755,12 +1766,10 @@ namespace Nop.Services.ExportImport
                     ImportProductImagesUsingHash(productPictureMetadata, allProductsBySku);
                 else
                     ImportProductImagesUsingServices(productPictureMetadata);
-
                 foreach (var downloadedFile in downloadedFiles)
                 {
                     if (!_fileProvider.FileExists(downloadedFile))
                         continue;
-
                     try
                     {
                         _fileProvider.DeleteFile(downloadedFile);
@@ -1770,83 +1779,601 @@ namespace Nop.Services.ExportImport
                         // ignored
                     }
                 }
-
-                //activity log
+               //activity log
                 _customerActivityService.InsertActivity("ImportProducts", string.Format(_localizationService.GetResource("ActivityLog.ImportProducts"), metadata.CountProductsInFile));
             }
         }
-
-
         public virtual string ImportBookNodeMobanFromXlsx(Stream stream)
         {
+            BookNodeDomainNewRoot bnr = new BookNodeDomainNewRoot();
 
-            BookNodeRoot bnr = new BookNodeRoot();
-
+            bnr.code = "0";
             using (var xlPackage = new ExcelPackage(stream))
             {
                 // get the first worksheet in the workbook
                 var worksheet = xlPackage.Workbook.Worksheets;
-                if (worksheet == null || worksheet.Count !=11 )
+                if (worksheet == null || worksheet.Count != 11)
                     throw new NopException("导入数据模板不正确");
-
-
                 for (var i = 0; i < worksheet.Count; i++)
                 {
-
+                    var curworksheet = worksheet[i];
                     switch (i)
                     {
                         case 0:
-
-                            var curworksheet = worksheet[i];
+                           
                             if (curworksheet != null)
                             {
-                                //var cells = curworksheet.Cells;
-                                //for (var j = 1; j < cells.Rows; j++)
-                                //{
-
-                                //}  
-
                                 int endrow = 0;
-
-                                int endcol = 0;
-
-                                var lastcell = curworksheet.Cells.LastOrDefault();
-
-                                if (lastcell != null)
+                                int endcol = 0;  
+                                for (var ci = 2; ci < 1000; ci++)
                                 {
+                                    ButtonInfo btninfo = new ButtonInfo();
+                                    btninfo.id = curworksheet.Cells[ci, 1].Value?.ToString();
+                                    btninfo.name = string.Empty;
+                                   
+                                    btninfo.text = curworksheet.Cells[ci, 2].Value?.ToString();
+                                    var  path =  curworksheet.Cells[ci, 3].Value?.ToString();
+                                    var pathitem = ButtonPrefebPath.FirstOrDefault(x =>!string.IsNullOrEmpty(path)&& path.Contains(x.Text));
+                                    if (pathitem != null)
+                                    {
+                                        btninfo.path = pathitem.Value;
+                                    }
+                                    btninfo.eventid = curworksheet.Cells[ci, 4].Value?.ToString()??"";
+                                    btninfo.bg = curworksheet.Cells[ci, 5].Value?.ToString()??"";
+                                    btninfo.highlightedurl = curworksheet.Cells[ci, 6].Value?.ToString()??"";
+                                    btninfo.pressedurl = curworksheet.Cells[ci, 7].Value?.ToString()??"";
+                                    var xy = curworksheet.Cells[ci, 8].Value?.ToString()??"";
+                                    var size = curworksheet.Cells[ci, 9].Value?.ToString()??"";
+                                    if (!string.IsNullOrEmpty(xy) && xy.IndexOf(",") > 0 )
+                                    {
+                                        var xyarray = xy.Split(',');
 
-                                }
+                                        btninfo.pos.x = xyarray[0];
+                                        btninfo.pos.y = xyarray[1];
+                                    }
+                                    if (!string.IsNullOrEmpty(size) && xy.IndexOf(",") > 0)
+                                    {
+                                        var sizearray = size.Split(',');
 
-
-                                foreach (var cell in curworksheet.Cells)
-                                {
-                                    var val = cell.Value;
-                                }
-                            }
-
-                            
-                            //var table = curworksheet.Tables[0];
-
-                          
-                             
-
+                                        btninfo.size.x = sizearray[0];
+                                        btninfo.size.y = sizearray[1];
+                                    }
+                                    if (string.IsNullOrEmpty(btninfo.id))
+                                    {
+                                        break;
+                                    }
+                                    bnr.Base.buttoninfo.Add(btninfo);
+                                }                           
+                            }                        
                             break;
                         case 1:
+
+                            if (curworksheet != null)
+                            {
+                                for (var ci = 2; ci < 1000; ci++)
+                                {
+                                    ImageNewInfo imginfo = new ImageNewInfo();
+                                    imginfo.id = curworksheet.Cells[ci, 1].Value?.ToString()??"";
+                                    imginfo.name =  curworksheet.Cells[ci, 2].Value?.ToString()??"";
+                                   // imginfo.path =  curworksheet.Cells[ci, 3].Value?.ToString();
+                                    var path  = curworksheet.Cells[ci, 3].Value?.ToString()??"";
+                                    var pathitem = ImgPrefebPath.FirstOrDefault(x => !string.IsNullOrEmpty(path) && path.Contains(x.Text));
+                                    if (pathitem != null)
+                                    {
+                                        imginfo.path = pathitem.Value;
+                                    }
+                                    var eventids = curworksheet.Cells[ci, 4].Value?.ToString()??"";
+                                    var eventUrl = curworksheet.Cells[ci, 5].Value?.ToString()??"";
+                                    var eventpos = curworksheet.Cells[ci, 6].Value?.ToString()??"";
+                                    var eventsize = curworksheet.Cells[ci,7].Value?.ToString()??"";
+
+                                    NewDic dic = new NewDic
+                                    {
+                                        key = eventids,
+                                        val = eventUrl
+                                    };                           
+                                    if (!string.IsNullOrEmpty(eventpos) && eventpos.IndexOf(",") > 0)
+                                    {
+                                        var posarray = eventpos.Split(",");
+                                        dic.pos.x = posarray[0];
+                                        dic.pos.y = posarray[1];
+                                    }
+
+                                    if (!string.IsNullOrEmpty(eventsize) && eventsize.IndexOf(",") > 0)
+                                    {
+                                        var eventsizearray = eventsize.Split(",");
+                                        dic.size.x = eventsizearray[0];
+                                        dic.size.y = eventsizearray[1];
+                                    }
+
+                                    //imginfo.di = curworksheet.Cells[ci, 4].Value?.ToString();
+                                    if (string.IsNullOrEmpty(imginfo.id) )
+                                    {
+                                        break;
+                                    }
+                                    imginfo.dic.Add(dic);
+                                    var img =   bnr.Base.imageinfo.FirstOrDefault(x => x.id.Equals(imginfo.id));
+
+                                    if (img == null)
+                                    {
+                                        bnr.Base.imageinfo.Add(imginfo);
+                                    }
+                                    else
+                                    {
+                                        var cdic = img.dic.FirstOrDefault(x => x.key.Equals(dic.key));
+
+                                        if (cdic != null)
+                                        {
+
+                                        }
+                                        else
+                                        {
+                                            img.dic.Add(dic);
+                                        }
+                                    }
+                                }
+
+                            }
                             break;
                         case 2:
+
+                            if (curworksheet != null)
+                            {
+                                for (var ci = 2; ci < 1000; ci++)
+                                {
+                                    TextNewInfo txtinfo = new TextNewInfo();
+                                    txtinfo.id = curworksheet.Cells[ci, 1].Value?.ToString();
+                                    txtinfo.name = string.Empty;//curworksheet.Cells[ci, 2].Value?.ToString();
+                                    var path = curworksheet.Cells[ci, 2].Value?.ToString();
+                                    var pathitem = TextPrefebPath.FirstOrDefault(x => !string.IsNullOrEmpty(path) && path.Contains(x.Text));
+                                    if (pathitem != null)
+                                    {
+                                        txtinfo.path = pathitem.Value;
+                                    }
+                                    var eventids = curworksheet.Cells[ci, 3].Value?.ToString()??"";
+                                    var eventText = curworksheet.Cells[ci, 4].Value?.ToString()??"";
+                                    var eventpos = curworksheet.Cells[ci, 5].Value?.ToString()??"";
+                                    var eventsize = curworksheet.Cells[ci, 6].Value?.ToString()??"";
+
+                                    TextNewDic dic = new TextNewDic
+                                    {
+                                        key = eventids,
+                                         dic = new List<RichText> {
+                                             new RichText{
+                                                  i = false,
+                                                  b = false,
+                                                  color = "000000",
+                                                   sort = "0",
+                                                   size = "30",
+                                                    val = eventText??""
+                                             }
+                                         }
+                                    };
+                                    if (!string.IsNullOrEmpty(eventpos) && eventpos.IndexOf(",") > 0)
+                                    {
+                                        var posarray = eventpos.Split(",");
+                                        dic.pos.x = posarray[0];
+                                        dic.pos.y = posarray[1];
+                                    }
+
+                                    if (!string.IsNullOrEmpty(eventsize) && eventsize.IndexOf(",") > 0)
+                                    {
+                                        var eventsizearray = eventsize.Split(",");
+                                        dic.size.x = eventsizearray[0];
+                                        dic.size.y = eventsizearray[1];
+                                    }
+
+                                    //imginfo.di = curworksheet.Cells[ci, 4].Value?.ToString();
+                                    if (string.IsNullOrEmpty(txtinfo.id))
+                                    {
+                                        break;
+                                    }
+                                    txtinfo.dic.Add(dic);
+                                    var texxt = bnr.Base.textinfo.FirstOrDefault(x => x.id.Equals(txtinfo.id));
+
+                                    if (texxt == null)
+                                    {
+                                        bnr.Base.textinfo.Add(txtinfo);
+                                    }
+                                    else
+                                    {
+                                        var cdic = texxt.dic.FirstOrDefault(x => x.key.Equals(dic.key));
+
+                                        if (cdic != null)
+                                        {
+                                           
+                                        }
+                                        else
+                                        {
+                                            texxt.dic.Add(dic);
+                                        }
+                                    }
+                                }
+
+                            }
+
                             break;
                         case 3:
+                            if (curworksheet != null)
+                            {
+                                for (var ci = 2; ci < 1000; ci++)
+                                {
+                                    ModelInfo modelinfo = new ModelInfo();
+                                    modelinfo.id = curworksheet.Cells[ci, 1].Value?.ToString()??"";
+                                    var eventids = curworksheet.Cells[ci, 2].Value?.ToString()??"";
+                                    var clipName = curworksheet.Cells[ci, 4].Value?.ToString()??"";
+
+                                    var eventpos = curworksheet.Cells[ci, 5].Value?.ToString()??"";
+                                    var modelrot = curworksheet.Cells[ci, 6].Value?.ToString()??"";
+                                    var modelscale = curworksheet.Cells[ci, 7].Value?.ToString()??"";
+                                   
+                                    modelinfo.url = curworksheet.Cells[ci, 8].Value?.ToString()??"";
+                                    modelinfo.name = curworksheet.Cells[ci, 9].Value?.ToString()??"";
+                                    Dic dic = new Dic
+                                    {
+                                        key = eventids,
+                                        val = clipName
+                                       
+                                    };
+
+                                    modelinfo.clips.Add(dic);
+                                    if (!string.IsNullOrEmpty(eventpos) && eventpos.IndexOf(",") > 0)
+                                    {
+                                        var posarray = eventpos.Split(",");
+                                        modelinfo.pos.x = posarray[0];
+                                        modelinfo.pos.y = posarray[1];
+                                        modelinfo.pos.z = posarray[2];
+                                    }
+
+                                    if (!string.IsNullOrEmpty(modelrot) && modelrot.IndexOf(",") > 0)
+                                    {
+                                        var eventrotarray = modelrot.Split(",");
+                                        modelinfo.rot.x = eventrotarray[0];
+                                        modelinfo.rot.y = eventrotarray[1];
+                                        modelinfo.rot.z = eventrotarray[2];
+                                    }
+
+
+                                    if (!string.IsNullOrEmpty(modelscale) && modelscale.IndexOf(",") > 0)
+                                    {
+                                        var eventscalearray = modelscale.Split(",");
+                                        modelinfo.scale.x = eventscalearray[0];
+                                        modelinfo.scale.y = eventscalearray[1];
+                                        modelinfo.scale.z = eventscalearray[2];
+                                    }
+
+                                    //imginfo.di = curworksheet.Cells[ci, 4].Value?.ToString();
+                                    if (string.IsNullOrEmpty(modelinfo.id) )
+                                    {
+                                        break;
+                                    }
+
+                                    var texxt = bnr.Base.modelinfo.FirstOrDefault(x => x.id.Equals(modelinfo.id));
+
+                                    if (texxt == null)
+                                    {
+                                        bnr.Base.modelinfo.Add(modelinfo);
+                                    }
+                                    else
+                                    {
+                                       //modelinfo.
+                                        var cdic = texxt.clips.FirstOrDefault(x => x.key.Equals(dic.key));
+                                        if (cdic != null)
+                                        {
+                                            cdic.val = clipName;
+                                        }
+                                        else
+                                        {
+                                            texxt.clips.Add(dic);
+                                        }
+                                    }
+                                }
+
+                            }
                             break;
                         case 4:
+
+                            if (curworksheet != null)
+                            {
+                                for (var ci = 2; ci < 1000; ci++)
+                                {
+                                    CameraInfo camerainfo = new CameraInfo();
+                                    camerainfo.id = curworksheet.Cells[ci, 1].Value?.ToString()??"";
+                                    var path = curworksheet.Cells[ci, 2].Value?.ToString()??"";
+
+                                    //var path = curworksheet.Cells[ci, 3].Value?.ToString();
+                                    var pathitem = CameraPrefebPath.FirstOrDefault(x => !string.IsNullOrEmpty(path) && path.Contains(x.Text));
+                                    if (pathitem != null)
+                                    {
+                                        camerainfo.path = pathitem.Value??"";
+                                    }
+
+                                    var camerapos = curworksheet.Cells[ci, 3].Value?.ToString()??"";
+                                    var camerarot = curworksheet.Cells[ci, 4].Value?.ToString()??"";
+                                    var camerascale = curworksheet.Cells[ci, 5].Value?.ToString()??"";
+                                    var cameracenterpos = curworksheet.Cells[ci, 6].Value?.ToString()??"";
+                                    var camerarect = curworksheet.Cells[ci, 7].Value?.ToString()??"";
+                                    camerainfo.url = string.Empty;
+                                    camerainfo.name = string.Empty;
+                                    if (!string.IsNullOrEmpty(camerapos) && camerapos.IndexOf(",") > 0)
+                                    {
+                                        var posarray = camerapos.Split(",");
+                                        camerainfo.pos.x = posarray[0];
+                                        camerainfo.pos.y = posarray[1];
+                                        camerainfo.pos.z = posarray[2];
+                                       
+                                    }
+
+                                    if (!string.IsNullOrEmpty(camerarot) && camerarot.IndexOf(",") > 0)
+                                    {
+                                        var eventrotarray = camerarot.Split(",");
+                                        camerainfo.rot.x = eventrotarray[0];
+                                        camerainfo.rot.y = eventrotarray[1];
+                                        camerainfo.rot.z = eventrotarray[2];
+                                    }
+                                    if (!string.IsNullOrEmpty(cameracenterpos) && cameracenterpos.IndexOf(",") > 0)
+                                    {
+                                        var posarray = cameracenterpos.Split(",");
+
+                                        if (posarray.Length == 3)
+                                        {
+                                            camerainfo.centerpos.x = posarray[0];
+                                            camerainfo.centerpos.y = posarray[1];
+                                            camerainfo.centerpos.z = posarray[2];
+                                        }
+                                       
+
+                                    }
+
+                                    if (!string.IsNullOrEmpty(camerascale) && camerascale.IndexOf(",") > 0)
+                                    {
+                                        var eventscalearray = camerascale.Split(",");
+                                        camerainfo.scale.x = eventscalearray[0];
+                                        camerainfo.scale.y = eventscalearray[1];
+                                        camerainfo.scale.z = eventscalearray[2];
+                                    }
+
+                                    if (!string.IsNullOrEmpty(camerarect) && camerarect.IndexOf(",") > 0)
+                                    {
+                                        var eventrectarray = camerarect.Split(",");
+                                        camerainfo.rect.x = eventrectarray[0];
+                                        camerainfo.rect.y = eventrectarray[1];
+                                        camerainfo.rect.w = eventrectarray[2];
+                                        camerainfo.rect.h = eventrectarray[3];
+
+                                        //imginfo.di = curworksheet.Cells[ci, 4].Value?.ToString();
+
+
+
+                                    }
+
+                                    if (string.IsNullOrEmpty(camerainfo.id))
+                                    {
+                                        break;
+                                    }
+                                    var texxt = bnr.Base.camerainfo.FirstOrDefault(x => x.id.Equals(camerainfo.id));
+
+                                    if (texxt == null)
+                                    {
+                                        bnr.Base.camerainfo.Add(camerainfo);
+                                    }
+
+                                }
+
+                            }
+
                             break;
                         case 5:
+
+                            if (curworksheet != null)
+                            {
+                                for (var ci = 2; ci < 1000; ci++)
+                                {
+                                    AudioInfo audioainfo = new AudioInfo();
+                                    audioainfo.id = curworksheet.Cells[ci, 1].Value?.ToString()??"";
+                                    var path = curworksheet.Cells[ci, 3].Value?.ToString()??"";
+
+
+
+                                    var pathitem = AudioPrefebPath.FirstOrDefault(x => !string.IsNullOrEmpty(path) && path.Contains(x.Text));
+                                    if (pathitem != null)
+                                    {
+                                        audioainfo.path = pathitem.Value;
+                                    }
+                                    else
+                                    {
+                                        audioainfo.path = "K/Audio/CKAudio";
+                                    }
+
+                                    var eventid = curworksheet.Cells[ci, 4].Value?.ToString()??"";
+                                    var enenturl = curworksheet.Cells[ci, 5].Value?.ToString()??"";                                 
+                                    audioainfo.url = string.Empty;
+                                    audioainfo.name = string.Empty;
+                                    Dic dic = new Dic
+                                    {
+                                         key = eventid,
+                                         val = enenturl
+                                    };   
+                                    if (string.IsNullOrEmpty(audioainfo.id))
+                                    {
+                                        break;
+                                    }
+                                    audioainfo.clips.Add(dic);
+                                    var audio = bnr.Base.audioinfo.FirstOrDefault(x => x.id.Equals(audioainfo.id));
+
+                                    if (audio == null)
+                                    {
+                                        bnr.Base.audioinfo.Add(audioainfo);
+                                    }
+                                    else
+                                    {
+                                       var clip = audio.clips.FirstOrDefault(x => x.key.Equals(eventid) && !string.IsNullOrEmpty(eventid));
+                                        if (clip == null)
+                                        {
+                                            audio.clips.Add(dic);
+                                        }
+                                        else
+                                        {
+                                            clip.val = enenturl;
+                                        }
+                                    }
+                                }
+
+                            }
                             break;
                         case 6:
+                            if (curworksheet != null)
+                            {                      
+                                for (var ci = 2; ci < 1000; ci++)
+                                {
+                                    OpenEventState oes = new OpenEventState();
+                                    OpenEventState ces = new OpenEventState();
+                                    var ocid = curworksheet.Cells[ci, 1].Value?.ToString()??"";
+                                    var oeventids = curworksheet.Cells[ci, 2].Value?.ToString()??"";
+                                    var ceventids = curworksheet.Cells[ci, 3].Value?.ToString()??"";
+                                    if(string.IsNullOrEmpty( ocid))
+                                    {
+                                        break;
+                                    }
+                                    if (!string.IsNullOrEmpty(oeventids))
+                                    {
+                                        oes.enventid = ocid;
+                                        oes.name = string.Empty;
+                                        oes.objectids = oeventids.Split(",").ToList();
+                                    }
+                                    if (!string.IsNullOrEmpty(ceventids))
+                                    {
+                                        ces.enventid = ocid;
+                                        ces.name = string.Empty;
+                                        ces.objectids = ceventids.Split(",").ToList();
+                                    }
+                                    var opid = bnr.Base.openeventstate.FirstOrDefault(x => x.enventid.Equals(oes.enventid));
+                                    if (opid == null)
+                                    {
+                                        if (!string.IsNullOrEmpty(oes.enventid))
+                                        {
+                                            bnr.Base.openeventstate.Add(oes);
+                                        }                                     
+                                    }
+                                    else
+                                    {
+                                        opid.objectids = oes.objectids;
+                                    }
+
+
+                                    var cpid = bnr.Base.closeeventstate.FirstOrDefault(x => x.enventid.Equals(ces.enventid));
+
+                                    if (cpid == null  )
+                                    {
+                                        if (!string.IsNullOrEmpty(ces.enventid))
+                                        {
+                                            bnr.Base.closeeventstate.Add(ces);
+                                        }
+
+                                       
+                                    }
+                                    else
+                                    {
+                                        cpid.objectids = ces.objectids;
+                                    }
+                                }
+                                  
+
+
+                            }
                             break;
                         case 7:
-                            break;
+                            if (curworksheet != null)
+                            {
+                                for (var ci = 2; ci < 1000; ci++)
+                                {
+                                    ClickInfo cinfo = new ClickInfo();
+                                    cinfo.eventid = curworksheet.Cells[ci, 1].Value?.ToString()??"";
+                                    var oeventids = curworksheet.Cells[ci, 2].Value?.ToString()??"";
+                                    cinfo.name= curworksheet.Cells[ci, 3].Value?.ToString()??"";
+                                    if (string.IsNullOrEmpty(cinfo.eventid) )
+                                    {
+                                        break;
+                                    }
+                               var clickinfo = bnr.Base.clickinfo.FirstOrDefault(x => x.eventid.Equals(cinfo.eventid));
+                                    if (clickinfo == null)
+                                    {
+                                        bnr.Base.clickinfo.Add(cinfo);
+                                    }
+                                }
+                            }
+                                break;
                         case 8:
-                            break;
+
+                            if (curworksheet != null)
+                            {
+                                for (var ci = 2; ci < 1000; ci++)
+                                {
+                                    VideoNewInfo vni = new VideoNewInfo();
+
+                                    vni.id = curworksheet.Cells[ci, 1].Value?.ToString()??"";
+                                    var path = curworksheet.Cells[ci,3].Value?.ToString()??"";
+
+                                    var pathitem = VideoPrefebPath .FirstOrDefault(x => !string.IsNullOrEmpty(path) && path.Contains(x.Text));
+                                    if (pathitem != null)
+                                    {
+                                        vni.path = pathitem.Value;
+                                    }
+
+                                    var enventid = curworksheet.Cells[ci, 4].Value?.ToString()??"";
+                                    var enventUrl = curworksheet.Cells[ci, 5].Value?.ToString()??"";
+                                    var enventpos = curworksheet.Cells[ci, 6].Value?.ToString()??"";
+                                    var enventsize = curworksheet.Cells[ci, 7].Value?.ToString()??"";
+
+                                    NewDic dic = new NewDic
+                                    {
+                                        key = enventid,
+                                        val = enventUrl,
+                                       
+                                    };
+                                    if (!string.IsNullOrEmpty(enventpos) && enventpos.IndexOf(",") > 0)
+                                    {
+                                        var enventposarr = enventpos.Split(",");
+
+                                        dic.pos.x = enventposarr[0];
+                                        dic.pos.y = enventposarr[1];
+                                    }
+
+                                    if (!string.IsNullOrEmpty(enventsize) && enventsize.IndexOf(",") > 0)
+                                    {
+                                        var enventsizearr = enventsize.Split(",");
+
+                                        dic.size.x = enventsizearr[0];
+                                        dic.size.y = enventsizearr[1];
+                                    }
+
+                                   
+                                    if (string.IsNullOrEmpty(vni.id))
+                                    {
+                                        break;
+                                    }
+
+                                    vni.dic.Add(dic);
+
+
+                                    var curvniinfo = bnr.Base.videoinfo.FirstOrDefault(x => x.id.Equals(vni.id));
+
+                                    if (curvniinfo == null)
+                                    {
+                                        bnr.Base.videoinfo.Add(vni);
+                                    }
+                                    else
+                                    {
+                                        var result = curvniinfo.dic.FirstOrDefault(x => x.key.Equals(dic.key) && !string.IsNullOrEmpty(dic.key));
+
+                                        if (result == null)
+                                        {
+                                            curvniinfo.dic.Add(dic);
+                                        }
+                                    }
+                                }
+                            }
+                                    break;
                         case 9:
                             break;
                         case 10:
@@ -1858,12 +2385,10 @@ namespace Nop.Services.ExportImport
 
 
                 }
-
-
                 var downloadedFiles = new List<string>();
             }
 
-                return "";
+            return JsonConvert.SerializeObject(bnr);
         }
 
 
@@ -2303,6 +2828,297 @@ namespace Nop.Services.ExportImport
                 var other = obj as CategoryKey;
                 return other?.Equals(other) ?? false;
             }
+        }
+
+        #endregion
+
+
+        #region  预制路径工厂
+        private void InitPrefabList()
+        {
+            #region  获取文本路径
+            if (TextPrefebPath == null)
+            {
+                TextPrefebPath = new List<SelectListItem>();
+            }
+            TextPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Text/blackboard",
+                Text = "黑板(左下对齐)"
+            });
+            TextPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Text/Center",
+                Text = "居中对齐"
+            });
+            TextPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Text/CenterBottom",
+                Text = "中下对齐"
+            });
+            TextPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Text/CenterTop",
+                Text = "中上对齐"
+            });
+            TextPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Text/LeftBottom",
+                Text = "左下对齐"
+            });
+            TextPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Text/LeftCenter",
+                Text = "左中对齐"
+            });
+            TextPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Text/LeftTop",
+                Text = "左上对齐"
+            });
+            TextPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Text/RightBottom",
+                Text = "右下对齐"
+            });
+            TextPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Text/RightCenter",
+                Text = "右中对齐"
+            });
+            TextPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Text/RightTop",
+                Text = "右上对齐"
+            });
+            #endregion
+            #region 初始化按钮预制路径
+            if (ButtonPrefebPath == null)
+            {
+                ButtonPrefebPath = new List<SelectListItem>();
+            }
+
+            ButtonPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Button/Center",
+                Text = "居中对齐"
+            });
+            ButtonPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Button/CenterBottom",
+                Text = "中下对齐"
+            });
+            ButtonPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Button/CenterTop",
+                Text = "中上对齐"
+            });
+            ButtonPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Button/LeftBottom",
+                Text = "左下对齐"
+            });
+            ButtonPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Button/LeftCenter",
+                Text = "左中对齐"
+            });
+            ButtonPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Button/LeftTop",
+                Text = "左上对齐"
+            });
+            ButtonPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Button/RightBottom",
+                Text = "右下对齐"
+            });
+            ButtonPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Button/RightCenter",
+                Text = "右中对齐"
+            });
+            ButtonPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Button/RightTop",
+                Text = "右上对齐"
+            });
+            #endregion
+            #region 初始化图片预制路径
+            if (ImgPrefebPath == null)
+            {
+                ImgPrefebPath = new List<SelectListItem>();
+            }
+            ImgPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Image/Center",
+                Text = "居中对齐"
+            });
+            ImgPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Image/CenterBottom",
+                Text = "中下对齐"
+            });
+            ImgPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Image/CenterTop",
+                Text = "中上对齐"
+            });
+            ImgPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Image/LeftBottom",
+                Text = "左下对齐"
+            });
+            ImgPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Image/LeftCenter",
+                Text = "左中对齐"
+            });
+            ImgPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Image/LeftTop",
+                Text = "左上对齐"
+            });
+            ImgPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Image/RightBottom",
+                Text = "右下对齐"
+            });
+            ImgPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Image/RightCenter",
+                Text = "右中对齐"
+            });
+            ImgPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Image/RightTop",
+                Text = "右上对齐"
+            });
+            #endregion
+            #region 初始化视频预制路径
+            if (VideoPrefebPath == null)
+            {
+                VideoPrefebPath = new List<SelectListItem>();
+            }
+            VideoPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Video/Center",
+                Text = "居中对齐"
+            });
+            VideoPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Video/CenterBottom",
+                Text = "中下对齐"
+            });
+            VideoPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Video/CenterTop",
+                Text = "中上对齐"
+            });
+            VideoPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Video/LeftBottom",
+                Text = "左下对齐"
+            });
+            VideoPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Video/LeftCenter",
+                Text = "左中对齐"
+            });
+            VideoPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Video/LeftTop",
+                Text = "左上对齐"
+            });
+            VideoPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Video/RightBottom",
+                Text = "右下对齐"
+            });
+            VideoPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Video/RightCenter",
+                Text = "右中对齐"
+            });
+            VideoPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Video/RightTop",
+                Text = "右上对齐"
+            });
+            #endregion
+
+            #region  初始化音频路径 
+            if (AudioPrefebPath == null)
+            {
+                AudioPrefebPath = new List<SelectListItem>();
+            }
+            AudioPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Audio/CKAudio",
+                Text = "音源预制"
+            });
+            #endregion
+
+            #region 初始化相机预制路径
+
+            if (CameraPrefebPath == null)
+            {
+                CameraPrefebPath = new List<SelectListItem>();
+            }
+            CameraPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Camera/DefaultCamera",
+                Text = "默认镜头（静态)"
+            });
+            CameraPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Camera/Camera",
+                Text = "可操控镜头（动态缩放、旋转、位移）"
+            });
+            #endregion
+
+            #region
+            if (PrefabPathList == null)
+            {
+                PrefabPathList = new List<SelectListItem>();
+            }
+            PrefabPathList.Add(new SelectListItem
+            {
+                Value = @"K/Audio/CKAudio",
+                Text = @"K/Audio/CKAudio"
+            });
+            PrefabPathList.Add(new SelectListItem
+            {
+                Value = @"K/Button/Button",
+                Text = @"K/Button/Button"
+            });
+            PrefabPathList.Add(new SelectListItem
+            {
+                Value = @"K/Camera/DefaultCamera",
+                Text = @"K/Camera/DefaultCamera"
+            });
+            PrefabPathList.Add(new SelectListItem
+            {
+                Value = @"K/Camera/Camera",
+                Text = @"K/Camera/Camera"
+            });
+            PrefabPathList.Add(new SelectListItem
+            {
+                Value = @"K/Image/Image",
+                Text = @"K/Image/Image"
+            });
+            PrefabPathList.Add(new SelectListItem
+            {
+                Value = @"K/Text/Text",
+                Text = @"K/Text/Text"
+            });
+            PrefabPathList.Add(new SelectListItem
+            {
+                Value = @"K/Video/VideoPlayer",
+                Text = @"K/Video/VideoPlayer"
+            });
+
+            #endregion
         }
 
         #endregion

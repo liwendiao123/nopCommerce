@@ -54,7 +54,6 @@
         /// Path to Qualpay Embedded Fields css styles
         /// </summary>
         public static string EmbeddedFieldsStylePath => "https://app.qualpay.com/hosted/embedded/css/qp-embedded.css";
-
         /// <summary>
         /// Webhook label
         /// </summary>

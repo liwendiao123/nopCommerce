@@ -15,12 +15,10 @@ namespace Nop.Plugin.Payments.WeixinPay
         /// Mobile detection type.
         /// </summary>
         public const string DetectionTypeMobile = "mobile";
-
         /// <summary>
         /// Extended detection type.
         /// </summary>
         public const string DetectionTypeExtended = "extended";
-
         /// <summary>
         /// A frequently used regular expression to extract version #s.
         /// </summary>

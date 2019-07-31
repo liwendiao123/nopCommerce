@@ -106,7 +106,7 @@ namespace Nop.Web.Areas.Admin.Controllers
             return Json(model);
         }
         #endregion
-        #region Create / Edit / Delete
+        #region Create/Edit/Delete
         /// <summary>
         /// 创建目录
         /// </summary>
@@ -300,12 +300,28 @@ namespace Nop.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult ImportExcel(IFormFile importexcelfile)
+        public IActionResult ImportExcel(IFormFile importexcelfile,string booknodeid)
         {
-            _importManager.ImportBookNodeMobanFromXlsx(importexcelfile.OpenReadStream());
-            
+            if (string.IsNullOrEmpty(booknodeid))
+            {
+                return Json(new
+                {
+                    code=-1,
+                    msg="请指定知识点"
+                });
+            }
 
-            return View();
+            int id = 0;
+            Int32.TryParse(booknodeid, out id);
+
+          var eresult =  _bookNodeService.GetAiBookModelById(id);
+            if (eresult != null)
+            {
+                var result = _importManager.ImportBookNodeMobanFromXlsx(importexcelfile.OpenReadStream());
+                eresult.UnityStrJson = result;
+                _bookNodeService.UpdateAiBookModel(eresult);
+            }                           
+            return RedirectToAction("edit",new { id = id});
         }
         #endregion
     }

@@ -30,7 +30,6 @@ namespace Nop.Web.Controllers.Api
             {
                 code = 0,
                 test = ""
-
             });
         }
 
