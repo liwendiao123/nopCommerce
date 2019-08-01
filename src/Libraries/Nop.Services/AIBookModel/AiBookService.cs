@@ -27,6 +27,9 @@ namespace Nop.Services.AIBookModel
         private readonly IRepository<AiBookModel> _bookNodeRepository;
         private readonly IRepository<StoreMapping> _storeMappingRepository;
         private readonly IStaticCacheManager _cacheManager;
+
+        private readonly IRepository<BookNodeComment> _bookNodeCommentRepository;
+   
         private readonly ILogger _logger;
         private readonly IWorkContext _workContext;
         private readonly CommonSettings _commonSettings;
@@ -58,6 +61,7 @@ namespace Nop.Services.AIBookModel
                         IStoreContext storeContext,
                         ICategoryService cateservice,
                         IProductService productService,
+                        IRepository<BookNodeComment> bookNodeCommentRepository,
                         IBookDirService bookDirService
             )
         {
@@ -78,9 +82,13 @@ namespace Nop.Services.AIBookModel
             _cateservice = cateservice;
             _productService = productService;
             _bookDirService = bookDirService;
+            _bookNodeCommentRepository = bookNodeCommentRepository;
 
         }
 
+
+        #region AIBookModel
+         
         public int DeleteAiBookModel(AiBookModel store)
         {
             try
@@ -148,7 +156,6 @@ namespace Nop.Services.AIBookModel
                 return store;
             });
         }
-
         public IList<AiBookModel> GetAllAiBookModels(bool loadCacheableCopy = true)
         {
             IList<AiBookModel> loadBookDirsFunc()
@@ -171,7 +178,6 @@ namespace Nop.Services.AIBookModel
             return loadBookDirsFunc();
             //throw new NotImplementedException();
         }
-
         public string[] GetNotExistingAiBookModels(string[] storeIdsNames)
         {
             if (storeIdsNames == null)
@@ -331,5 +337,142 @@ namespace Nop.Services.AIBookModel
         {
             return false;
         }
+        #endregion
+
+
+        #region News comments
+
+        /// <summary>
+        /// Gets all comments
+        /// </summary>
+        /// <param name="customerId">Customer identifier; 0 to load all records</param>
+        /// <param name="storeId">Store identifier; pass 0 to load all records</param>
+        /// <param name="newsItemId">News item ID; 0 or null to load all records</param>
+        /// <param name="approved">A value indicating whether to content is approved; null to load all records</param> 
+        /// <param name="fromUtc">Item creation from; null to load all records</param>
+        /// <param name="toUtc">Item creation to; null to load all records</param>
+        /// <param name="commentText">Search comment text; null to load all records</param>
+        /// <returns>Comments</returns>
+        public virtual IList<BookNodeComment> GetAllComments(int customerId = 0, int storeId = 0, int? newsItemId = null,
+            bool? approved = null, DateTime? fromUtc = null, DateTime? toUtc = null, string commentText = null)
+        {
+            var query = _bookNodeCommentRepository.Table;
+
+            if (approved.HasValue)
+                query = query.Where(comment => comment.IsApproved == approved);
+
+            if (newsItemId > 0)
+                query = query.Where(comment => comment.BookNodeId == newsItemId);
+
+            if (customerId > 0)
+                query = query.Where(comment => comment.CustomerId == customerId);
+
+            if (storeId > 0)
+                query = query.Where(comment => comment.StoreId == storeId);
+
+            if (fromUtc.HasValue)
+                query = query.Where(comment => fromUtc.Value <= comment.CreatedOnUtc);
+
+            if (toUtc.HasValue)
+                query = query.Where(comment => toUtc.Value >= comment.CreatedOnUtc);
+
+            if (!string.IsNullOrEmpty(commentText))
+                query = query.Where(c => c.CommentText.Contains(commentText) || c.CommentTitle.Contains(commentText));
+
+            query = query.OrderBy(nc => nc.CreatedOnUtc);
+
+            return query.ToList();
+        }
+
+        /// <summary>
+        /// Gets a news comment
+        /// </summary>
+        /// <param name="newsCommentId">News comment identifier</param>
+        /// <returns>News comment</returns>
+        public virtual BookNodeComment GetNewsCommentById(int newsCommentId)
+        {
+            if (newsCommentId == 0)
+                return null;
+
+            return _bookNodeCommentRepository.GetById(newsCommentId);
+        }
+
+        /// <summary>
+        /// Get news comments by identifiers
+        /// </summary>
+        /// <param name="commentIds">News comment identifiers</param>
+        /// <returns>News comments</returns>
+        public virtual IList<BookNodeComment> GetNewsCommentsByIds(int[] commentIds)
+        {
+            if (commentIds == null || commentIds.Length == 0)
+                return new List<BookNodeComment>();
+
+            var query = from nc in _bookNodeCommentRepository.Table
+                        where commentIds.Contains(nc.Id)
+                        select nc;
+            var comments = query.ToList();
+            //sort by passed identifiers
+            var sortedComments = new List<BookNodeComment>();
+            foreach (var id in commentIds)
+            {
+                var comment = comments.Find(x => x.Id == id);
+                if (comment != null)
+                    sortedComments.Add(comment);
+            }
+
+            return sortedComments;
+        }
+
+        /// <summary>
+        /// Get the count of news comments
+        /// </summary>
+        /// <param name="newsItem">News item</param>
+        /// <param name="storeId">Store identifier; pass 0 to load all records</param>
+        /// <param name="isApproved">A value indicating whether to count only approved or not approved comments; pass null to get number of all comments</param>
+        /// <returns>Number of news comments</returns>
+        public virtual int GetNewsCommentsCount(BookNodeComment newsItem, int storeId = 0, bool? isApproved = null)
+        {
+            var query = _bookNodeCommentRepository.Table.Where(comment => comment.BookNodeId == newsItem.Id);
+
+            if (storeId > 0)
+                query = query.Where(comment => comment.StoreId == storeId);
+
+            if (isApproved.HasValue)
+                query = query.Where(comment => comment.IsApproved == isApproved.Value);
+
+            return query.Count();
+        }
+
+        /// <summary>
+        /// Deletes a news comment
+        /// </summary>
+        /// <param name="newsComment">News comment</param>
+        public virtual void DeleteNewsComment(BookNodeComment newsComment)
+        {
+            if (newsComment == null)
+                throw new ArgumentNullException(nameof(newsComment));
+
+            _bookNodeCommentRepository.Delete(newsComment);
+
+            //event notification
+            _eventPublisher.EntityDeleted(newsComment);
+        }
+
+        /// <summary>
+        /// Deletes a news comments
+        /// </summary>
+        /// <param name="newsComments">News comments</param>
+        public virtual void DeleteNewsComments(IList<BookNodeComment> newsComments)
+        {
+            if (newsComments == null)
+                throw new ArgumentNullException(nameof(newsComments));
+
+            foreach (var newsComment in newsComments)
+            {
+                DeleteNewsComment(newsComment);
+            }
+        }
+
+        #endregion
     }
 }

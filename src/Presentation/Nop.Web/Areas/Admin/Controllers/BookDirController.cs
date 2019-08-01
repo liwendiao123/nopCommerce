@@ -269,13 +269,18 @@ namespace Nop.Web.Areas.Admin.Controllers
             return View(model);
         }
 
-        public IActionResult Delete()
+        public IActionResult Delete(int id)
         {
 
             if (!_permissionService.Authorize(StandardPermissionProvider.BookDirManage))
                 return AccessDeniedView();
+            var bookNode = _bookDirService.GetBookDirById(id);
+            if (bookNode == null)
+                return RedirectToAction("Index");
+            _bookDirService.DeleteBookDir(bookNode);
 
-            return View();
+            return RedirectToAction("Index");
+         //   return View();
         }
 
         public IActionResult GetList(BookDirSearchModel searchModel)

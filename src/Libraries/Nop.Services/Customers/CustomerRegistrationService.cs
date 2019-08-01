@@ -154,7 +154,6 @@ namespace Nop.Services.Customers
 
             return CustomerLoginResults.Successful;
         }
-
         public virtual CustomerLoginResults ValidateCustomer(string usernameOrEmail, string password,Customer _ustomer)
         {
             var customer = _customerSettings.UsernamesEnabled ?
@@ -202,7 +201,7 @@ namespace Nop.Services.Customers
             return CustomerLoginResults.Successful;
         }
 
-
+  
         /// <summary>
         /// Register customer
         /// </summary>

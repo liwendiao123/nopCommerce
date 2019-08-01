@@ -601,9 +601,6 @@ namespace Nop.Plugin.Payments.WeixinPay.Controllers
 
 
         }
-
-
-
         /// <summary>
         /// 调用JSSDK  支付
         /// </summary>
@@ -893,13 +890,11 @@ namespace Nop.Plugin.Payments.WeixinPay.Controllers
                                                             //  return File(b, "image/jpeg");
             return PhysicalFile(path, "image/jpeg");
         }
-
         /// <summary>
         /// 处理Order
         /// </summary>
         /// <param name="orderId"></param>
         /// <returns></returns>
-
         public IActionResult Order(int orderId)
         {
             var order = new Order();
@@ -940,7 +935,6 @@ namespace Nop.Plugin.Payments.WeixinPay.Controllers
                 }
             }
         }
-
         /// <summary>
         /// 订单查询
         /// </summary>

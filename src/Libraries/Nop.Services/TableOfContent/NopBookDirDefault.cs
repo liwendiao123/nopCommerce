@@ -45,7 +45,7 @@ namespace Nop.Services.TableOfContent
         public static string BookDirsPrefixCacheKey => "Nop.BookDir.";
 
         public static string GetChildBookDirsByParentIdCacheKey => "Nop.BookDir.SubDir.ids-{0}";
-
+        public static string GetChildBookDirItemsByParentIdCacheKey => "Nop.BookDir.SubDir.items-{0}";
         #endregion
     }
 }

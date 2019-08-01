@@ -19,44 +19,26 @@ namespace Nop.Web.Models.Customer
         public string Name { get; set; }
         [NopResourceDisplayName("Account.Fields.Username")]
         public string UserName { get; set; }
-
-
         [DataType(DataType.Password)]
         [NoTrim]
         [NopResourceDisplayName("Account.Fields.Password")]
         public string Password { get; set; }
-
         [DataType(DataType.Password)]
         [NoTrim]
         [NopResourceDisplayName("Account.Fields.ConfirmPassword")]
         public string ConfirmPassword { get; set; }
-
-
-
         public string SmsCode { get; set; }
         public int Occupation { get; set; }
-
         public int DepartmentId { get; set; }
-
-
       //  [AllowHtml]
-
       // [DataType(DataType.ImageUrl)]
         public string ImgUrl { get; set; }
-
         public string InviteCode { get; set; }
-
-
         [DataType(DataType.EmailAddress)]
         [NopResourceDisplayName("Account.Fields.Email")]
         public string Email { get; set; }
-
         public string CertImg { get; set; }
         public int PlatformType { get; set; }
-
-
-
-
         //form fields & properties
         public bool GenderEnabled { get; set; }
         [NopResourceDisplayName("Account.Fields.Gender")]

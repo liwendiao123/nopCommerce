@@ -9,7 +9,7 @@ namespace Nop.Core.Domain.AIBookModel
     public partial class AiBookModel:BaseEntity,ILocalizedEntity
     {
 
-   
+        private ICollection<BookNodeComment> _bookNodesComments;
         /// <summary>
         /// 知识点ID
         /// </summary>
@@ -83,11 +83,15 @@ namespace Nop.Core.Domain.AIBookModel
         /// </summary>
         public DateTime UpdatedOnUtc { get; set; }
 
+    
         /// <summary>
-        /// 书籍目录
+        /// Gets or sets the news comments
         /// </summary>
-      //  public virtual BookDir BookDir { get; set; }
-
+        public virtual ICollection<BookNodeComment> BookNodesComments
+        {
+            get => _bookNodesComments ?? (_bookNodesComments = new List<BookNodeComment>());
+            protected set => _bookNodesComments = value;
+        }
         public string ImgUrl { get; set; }
     }
 }

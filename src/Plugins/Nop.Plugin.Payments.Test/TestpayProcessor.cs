@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.AspNetCore.Http;
+using Nop.Core;
 using Nop.Core.Domain.Orders;
 using Nop.Core.Domain.Payments;
 using Nop.Services.Payments;
@@ -11,6 +12,15 @@ namespace Nop.Plugin.Payments.Test
 {
     public class TestpayProcessor : BasePlugin, IPaymentMethod
     {
+
+
+        private readonly IWebHelper _webHelper;
+
+        public TestpayProcessor(IWebHelper webHelper)
+        {
+            _webHelper = webHelper;
+        }
+
        // public bool SupportCapture => throw new NotImplementedException();
 
        // public bool SupportPartiallyRefund => throw new NotImplementedException();
@@ -191,6 +201,16 @@ namespace Nop.Plugin.Payments.Test
         {
             return new List<string>();
         }
+
+
+        /// <summary>
+        /// Gets a configuration page URL
+        /// </summary>
+        public override string GetConfigurationPageUrl()
+        {
+            return $"{_webHelper.GetStoreLocation()}Admin/Configure";
+        }
+
         public VoidPaymentResult Void(VoidPaymentRequest voidPaymentRequest)
         {
             VoidPaymentResult result = new VoidPaymentResult();

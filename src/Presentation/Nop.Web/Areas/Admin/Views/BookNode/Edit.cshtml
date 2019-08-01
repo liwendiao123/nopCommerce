@@ -24,6 +24,12 @@
                 <i class="fa fa-floppy-o"></i>
                 @T("Admin.Common.SaveContinue")
             </button>
+
+            <span id="booknode-delete" class="btn bg-red">
+                <i class="fa fa-trash-o"></i>
+                @T("Admin.Common.Delete")
+            </span>
+            
             @await Component.InvokeAsync("AdminWidget", new { widgetZone = AdminWidgetZones.CategoryDetailsButtons })
         </div>
     </div>

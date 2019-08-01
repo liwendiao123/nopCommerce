@@ -24,9 +24,13 @@
                 <i class="fa fa-floppy-o"></i>
                 @T("Admin.Common.SaveContinue")
             </button>
+            <span id="bookdir-delete" class="btn bg-red">
+                <i class="fa fa-trash-o"></i>
+                @T("Admin.Common.Delete")
+            </span>
             @await Component.InvokeAsync("AdminWidget", new { widgetZone = AdminWidgetZones.CategoryDetailsButtons })
         </div>
     </div>
     @await Html.PartialAsync("_CreateOrUpdate", Model)
 </form>
-<nop-delete-confirmation asp-model-id="@Model.Id" asp-button-id="category-delete" />
+<nop-delete-confirmation asp-model-id="@Model.Id" asp-button-id="bookdir-delete" />

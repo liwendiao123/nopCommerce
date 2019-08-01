@@ -64,10 +64,10 @@ namespace Nop.Web.Controllers.Api
 
             });
             var resl = new List<BookDirTreeModel>();
-           var  resl1 = SortBookDirsForTree(list, resl, new List<int>(), 0);
-            resl = resl1.ToList();
+            var  resl1 = SortBookDirsForTree(list, resl, new List<int>(), 0);
+                resl = resl1.ToList();
 
-            return Json(new {
+           return Json(new {
                 code = 0,
                 msg = "获取成功",
                 data = resl

@@ -23,17 +23,14 @@ namespace Nop.Core.Domain.News
         /// Gets or sets the news item identifier
         /// </summary>
         public int NewsItemId { get; set; }
-
         /// <summary>
         /// Gets or sets the customer identifier
         /// </summary>
         public int CustomerId { get; set; }
-
         /// <summary>
         /// Gets or sets a value indicating whether the comment is approved
         /// </summary>
         public bool IsApproved { get; set; }
-
         /// <summary>
         /// Gets or sets the store identifier
         /// </summary>

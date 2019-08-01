@@ -1670,13 +1670,18 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
                 .ForMember(model => model.Locales, options => options.Ignore())
                 .ForMember(model => model.BookList, options => options.Ignore())
                 .ForMember(model => model.ParentBookDir, options => options.Ignore())
+               // .ForMember(model =>model.)
+                            
+
                 .ForMember(model => model.CategoryProductSearchModel, options => options.Ignore())
                 .ForMember(model => model.CustomProperties, options => options.Ignore());
-                //.ForMember(entity => entity.AiBookModels, options => options.Ignore());
 
-            //CreateMap<BookDirModel,BookDir>()
-            // //  .ForMember(model => model.SelectedCustomerRoleIds, options => options.Ignore())
-            //   .ForMember(entity => entity.AiBookModels, options => options.Ignore());
+            //.ForMember(entity => entity.AiBookModels, options => options.Ignore());
+
+            CreateMap<BookDirModel, BookDir>()
+                  .ForMember(model => model.BookNodeUrl, options => options.Ignore())
+                 
+                .ForMember(model => model.ComplexLevel, options => options.Ignore()) ;
 
         }
 
@@ -1701,10 +1706,8 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
                .ForMember(entity => entity.BookId, options => options.Ignore())          
                .ForMember(entity => entity.BookNodeRoot, options => options.Ignore());
 
-
-            CreateMap<AiBookModelView, AiBookModel>();
-
-            //    .ForMember(entity => entity., options => options.Ignore());
+            CreateMap<AiBookModelView, AiBookModel>()
+             .ForMember(entity => entity.BookNodesComments, options => options.Ignore());
         }
 
 

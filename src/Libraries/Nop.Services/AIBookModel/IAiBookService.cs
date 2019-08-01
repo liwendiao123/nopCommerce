@@ -68,5 +68,60 @@ namespace Nop.Services.AIBookModel
         /// <param name="showHidden"></param>
         /// <returns></returns>
         IPagedList<AiBookModel> SearchAiBookModels(string aibookNodeName, int pageIndex = 0, int pageSize = int.MaxValue, IList<int> categoryIds = null, int bookId = 0, int bookdirId = 0, int vendorId = 0, bool visibleIndividuallyOnly = false, string keywords = null, bool showHidden = false);
+
+        #region News comments
+
+        /// <summary>
+        /// Gets all comments
+        /// </summary>
+        /// <param name="customerId">Customer identifier; 0 to load all records</param>
+        /// <param name="storeId">Store identifier; pass 0 to load all records</param>
+        /// <param name="newsItemId">News item ID; 0 or null to load all records</param>
+        /// <param name="approved">A value indicating whether to content is approved; null to load all records</param> 
+        /// <param name="fromUtc">Item creation from; null to load all records</param>
+        /// <param name="toUtc">Item creation to; null to load all records</param>
+        /// <param name="commentText">Search comment text; null to load all records</param>
+        /// <returns>Comments</returns>
+        IList<BookNodeComment> GetAllComments(int customerId = 0, int storeId = 0, int? newsItemId = null,
+            bool? approved = null, DateTime? fromUtc = null, DateTime? toUtc = null, string commentText = null);
+
+        /// <summary>
+        /// Gets a news comment
+        /// </summary>
+        /// <param name="newsCommentId">News comment identifier</param>
+        /// <returns>News comment</returns>
+        BookNodeComment GetNewsCommentById(int newsCommentId);
+
+        /// <summary>
+        /// Get news comments by identifiers
+        /// </summary>
+        /// <param name="commentIds">News comment identifiers</param>
+        /// <returns>News comments</returns>
+        IList<BookNodeComment> GetNewsCommentsByIds(int[] commentIds);
+
+        /// <summary>
+        /// Get the count of news comments
+        /// </summary>
+        /// <param name="newsItem">News item</param>
+        /// <param name="storeId">Store identifier; pass 0 to load all records</param>
+        /// <param name="isApproved">A value indicating whether to count only approved or not approved comments; pass null to get number of all comments</param>
+        /// <returns>Number of news comments</returns>
+        int GetNewsCommentsCount(BookNodeComment newsItem, int storeId = 0, bool? isApproved = null);
+
+        /// <summary>
+        /// Deletes a news comment
+        /// </summary>
+        /// <param name="newsComment">News comment</param>
+        void DeleteNewsComment(BookNodeComment newsComment);
+
+        /// <summary>
+        /// Deletes a news comments
+        /// </summary>
+        /// <param name="newsComments">News comments</param>
+        void DeleteNewsComments(IList<BookNodeComment> newsComments);
+
+        #endregion
     }
+
+
 }

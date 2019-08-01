@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+
 using Nop.Core.Domain.TableOfContent;
 using Nop.Services.AIBookModel;
+using Nop.Services.Catalog;
 using Nop.Services.TableOfContent;
 using Nop.Web.Areas.Admin.Factories;
 using Nop.Web.Framework.Controllers;
@@ -18,20 +20,23 @@ namespace Nop.Web.Controllers.Api
         private readonly IAiBookService _aiBookService;
         private readonly IBookDirService _bookDirService;
         private readonly IBookNodeFactory _bookNodeFactory;
+        private readonly IProductService _productService;
         public BookNodeController(
                     IAiBookService   aiBookService,
                     IBookDirService  bookDirService,
+                    IProductService productService,
                     IBookNodeFactory bookNodeFactory)
         {
             _aiBookService = aiBookService;
             _bookNodeFactory = bookNodeFactory;
             _bookDirService = bookDirService;
+            _productService = productService;
         }
         public IActionResult Index()
         {
-
-            var model = _bookNodeFactory.PrepareBookNodeListModel(new Areas.Admin.Models.AiBook.AiBookSearchModelView());
-
+            var searchmodel = new Areas.Admin.Models.AiBook.AiBookSearchModelView();
+            searchmodel.SetGridPageSize(int.MaxValue);
+            var model = _bookNodeFactory.PrepareBookNodeListModel(searchmodel);
             return View(model);
         }
         public IActionResult GetData(int id)
@@ -77,7 +82,6 @@ namespace Nop.Web.Controllers.Api
         {
 
            var result = _aiBookService.SearchAiBookModels("",0,int.MaxValue,null,0,id).FirstOrDefault();
-
             if (result == null || (result.ComplexLevel == 0&& string.IsNullOrEmpty(result.UnityStrJson)))
             {
                 return Json(new
@@ -88,19 +92,12 @@ namespace Nop.Web.Controllers.Api
                 });
             }
             BookDir bookdir = null;
-
             if (result != null && result.BookDirID > 0)
             {
                  bookdir = _bookDirService.GetBookDirById(result.BookDirID);
-
               //  result.BookDir = bookdir;
-            }
-
-
-            
-
-          var jsonresult =  JsonConvert.DeserializeObject<BookNodeNewRoot>(result.UnityStrJson);
-        
+            }  
+            var jsonresult =  JsonConvert.DeserializeObject<BookNodeNewRoot>(result.UnityStrJson);     
             jsonresult.Base.buttoninfo = jsonresult.Base.buttoninfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
             jsonresult.Base.textinfo = jsonresult.Base.textinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
             jsonresult.Base.imageinfo = jsonresult.Base.imageinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
@@ -119,7 +116,8 @@ namespace Nop.Web.Controllers.Api
                 { 
                      complexLevel = 0,
                     BookID = bookdir == null?-1: bookdir.BookID,
-                     appointStrJson = new {
+                    BookNodeName = result.Name,
+                    appointStrJson = new {
                         keyname = "ZiXingChe",
                         head = "127.0.0.1/LuaUpdata/",
                         lua = "127.0.0.1/LuaUpdata/LuaScripts/ZiXingChe.lua",
@@ -132,12 +130,9 @@ namespace Nop.Web.Controllers.Api
                 }
             });
         }
-
-
         public IActionResult GetKnowledgeById(int id)
         {
             var result = _aiBookService.GetAiBookModelById(id);
-
             if (result == null || (result.ComplexLevel == 0 && string.IsNullOrEmpty(result.UnityStrJson)))
             {
                 return Json(new
@@ -148,11 +143,9 @@ namespace Nop.Web.Controllers.Api
                 });
             }
             BookDir bookdir = null;
-
             if (result != null && result.BookDirID > 0)
             {
-                bookdir = _bookDirService.GetBookDirById(result.BookDirID);
-                //  result.BookDir = bookdir;
+                bookdir = _bookDirService.GetBookDirById(result.BookDirID);  
             }
             var jsonresult = JsonConvert.DeserializeObject<BookNodeNewRoot>(result.UnityStrJson);      
             jsonresult.Base.buttoninfo = jsonresult.Base.buttoninfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
@@ -165,6 +158,9 @@ namespace Nop.Web.Controllers.Api
             jsonresult.Base.modelinfo = jsonresult.Base.modelinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
             jsonresult.Base.openeventstate = jsonresult.Base.openeventstate.Where(x => !string.IsNullOrEmpty(x.enventid)).ToList();
             jsonresult.Base.closeeventstate = jsonresult.Base.closeeventstate.Where(x => !string.IsNullOrEmpty(x.enventid)).ToList();
+            var ttbookdir = bookdir==null ? -1 : bookdir.BookID;
+            var bookid = ttbookdir;
+            var product =  _productService.GetProductById(bookid);       
             return Json(new
             {
                 code = 0,
@@ -173,6 +169,8 @@ namespace Nop.Web.Controllers.Api
                 {
                     complexLevel = 0,
                     BookID = bookdir == null ? -1 : bookdir.BookID,
+                    BookNodeName = result.Name,
+                    BookName=product==null? "未知":product.Name,
                     appointStrJson = new
                     {
                         keyname = "ZiXingChe",
@@ -186,8 +184,7 @@ namespace Nop.Web.Controllers.Api
                     strJson = jsonresult
                 }
             });
-
-        }
+        } 
         public BookNodeRoot Init()
         {
 
@@ -491,8 +488,6 @@ namespace Nop.Web.Controllers.Api
             // return View();
 
         }
-
-
         public BookNodeNewRoot NewInit()
         {
 
@@ -919,6 +914,57 @@ namespace Nop.Web.Controllers.Api
 
             return newnode;
 
+        }
+
+        [HttpPost]
+        public IActionResult SubmitComment(AddBookNodeCommentModel request)
+        {
+
+            var bookNode = _aiBookService.GetAiBookModelById(request.BookNodeID);
+
+
+            
+
+            if (bookNode == null)
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "知识点不存在",
+                    data = false
+                });
+            }
+            var comment = new Nop.Core.Domain.AIBookModel.BookNodeComment
+            {
+                BookNodeId = bookNode.Id,
+                CustomerId = request.CustomerId,
+                CommentTitle = request.CommentTitle,
+                CommentText = request.CommentText,
+                IsApproved = false,
+                StoreId = 1,
+                CreatedOnUtc = DateTime.UtcNow,
+            };
+            bookNode.UpdatedOnUtc = DateTime.Now;
+            bookNode.BookNodesComments.Add(comment);
+       
+           var result = _aiBookService.UpdateAiBookModel(bookNode);
+
+            if (result > 0)
+            {
+                return Json(new
+                {
+                    code = 0,
+                    msg = "评论提交成功",
+                    data = true
+
+                });
+            }
+            return Json(new {
+                code = 0,
+                msg = "未知错误",
+                data = true
+
+            });
         }
     }
 }

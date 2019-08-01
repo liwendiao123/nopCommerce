@@ -36,7 +36,7 @@ namespace Nop.Services.TableOfContent
 
         IPagedList<BookDir> GetAllBookDirsData(string categoryName, int cateId = 0, int bookID = 0, int bookdirID = 0, int storeId = 0,
             int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false);
-
+        IList<BookDir> GetChildBookDirItems(int parentBookirId);
         /// <summary>
         /// Gets a store 
         /// </summary>

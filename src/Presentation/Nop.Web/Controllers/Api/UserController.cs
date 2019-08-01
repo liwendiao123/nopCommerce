@@ -219,20 +219,16 @@ namespace Nop.Web.Controllers.Api
         [CheckAccessPublicStore(true)]
         public IActionResult Register(ApiRegisterModel model, string returnUrl, bool captchaValid, IFormCollection form)
         {
-
             if (string.IsNullOrEmpty(model.Email))
             {
                 model.Email = Guid.NewGuid().ToString("N") + "@163.com";
             }
-
             model.Email = model.Email.Trim();
-
             SmsMsgRecord record = new SmsMsgRecord();
             if (model != null)
             {
                 model.LastName = model.Name;
             }
-
             if (string.IsNullOrEmpty(model.SmsCode))
             {
                 return Json(new
@@ -242,18 +238,15 @@ namespace Nop.Web.Controllers.Api
                     data = false
                 });
             }
-
             else
             {
                  record = new SmsMsgRecord {
-
                      Phone = model.Phone,
                      Type = 0,
                      AppId  = AliSmsManager.accessKeyId,
                      TemplateCode = model.SmsCode
                 };
                var result = _smsService.CheckMsgValid(record);
-
                 if (!result.Result)
                 {
                     return Json(new
@@ -264,14 +257,10 @@ namespace Nop.Web.Controllers.Api
                     });
                 }
             }
-
             var department = _departmentService.GetDepById(model.DepartmentId);
-
             string depName = string.Empty;
-
             if (department == null)
             {
-
                 if (!string.IsNullOrEmpty(model.SchoolName))
                 {
                     var dep = new Department()
@@ -308,7 +297,7 @@ namespace Nop.Web.Controllers.Api
                         {
                             return Json(new
                             {
-                                code = 0,
+                                code = -1,
                                 msg = "注册失败:请指定一个学校",
                                 data = false
                             });
@@ -323,19 +312,17 @@ namespace Nop.Web.Controllers.Api
                 {
                     return Json(new
                     {
-                        code = 0,
+                        code = -1,
                         msg = "注册失败:请指定一个学校",
                         data = false
                     });
-                }
-      
+                }    
             }
             else
             {
                 depName = department.Name;
                 model.DepartmentId = department.Id;
             }
-
             //check whether registration is allowed
             if (_customerSettings.UserRegistrationType == UserRegistrationType.Disabled)
                 return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.Disabled });
@@ -390,19 +377,27 @@ namespace Nop.Web.Controllers.Api
                     _customerSettings.DefaultPasswordFormat,
                     _storeContext.CurrentStore.Id,
                     isApproved);
-
                 registrationRequest.Customer.DepartmentId = model.DepartmentId;
-                if (model.Occupation == 0)
+                if (model.Occupation == 7)
                 {
                     registrationRequest.RoleName = "Student";
                 }
-                else if (model.Occupation == 1)
+                else if (model.Occupation == 6)
                 {
                     registrationRequest.RoleName = "Teacher";
+                    if (string.IsNullOrEmpty(model.InviteCode) && string.IsNullOrEmpty(model.ImgUrl))
+                    {
+                        return Json(new
+                        {
+                            code = -1,
+                            msg = "注册为老师必须要邀请码或者教师资格证",
+                            data = false
+                        });
+                    }
                 }
-                else if (model.Occupation == 2)
+                else if (model.Occupation == 8)
                 {
-                    registrationRequest.RoleName = "guarden";
+                    registrationRequest.RoleName = "Guarden";
                 }
                 else
                 {
@@ -413,7 +408,6 @@ namespace Nop.Web.Controllers.Api
                         data = false
                     });
                 }
-
                 var registrationResult = _customerRegistrationService.RegisterCustomer(registrationRequest);
                 if (registrationResult.Success)
                 {
@@ -422,7 +416,6 @@ namespace Nop.Web.Controllers.Api
                     {
                         _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.TimeZoneIdAttribute, model.TimeZoneId);
                     }
-
                     //form fields
                     if (_customerSettings.GenderEnabled)
                         _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.GenderAttribute, model.Gender);
@@ -521,37 +514,26 @@ namespace Nop.Web.Controllers.Api
                     code = -1,
                     msg = "未按照要求填写注册信息",
                     data= false
-
                 });
             }
-
             _smsService.ApplySms(record);
-
-            //If we got this far, something failed, redisplay form
-          //  model = _customerModelFactory.PrepareRegisterModel(model, true, customerAttributesXml);
-        
             return Json(               
                 new {
                 code = 0,
                 msg = "信息获取成功",
-
                 data=new{
-                    Id = model.UserName,
-                    Phone = model.Phone,
+                    Id = model.UserName??"",
+                    Phone = model.Phone??"",
                     Name = model.LastName ?? "",
                     Email = model.Email ?? "",
                     Occupation = model.Occupation == 7 ? "学生" : "老师",
-                    SchoolName = depName,
+                    SchoolName = depName??"",
                     DepId = model.DepartmentId
-                }
-              
+                }            
             });
-
             //return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.Disabled });
           //  return View();
         }
-
-
 
         #region
         protected virtual string ParseCustomCustomerAttributes(IFormCollection form)
@@ -640,17 +622,9 @@ namespace Nop.Web.Controllers.Api
         [HttpPost]
         public IActionResult Login(string userName,string password)
         {
-            //validate CAPTCHA
-            //if (_captchaSettings.Enabled && _captchaSettings.ShowOnLoginPage && !captchaValid)
-            //{
-            //    ModelState.AddModelError("", _localizationService.GetResource("Common.WrongCaptchaMessage"));
-            //}
-
-
             string name = "";
             string inviteCode = string.Empty;
             string imgurl = string.Empty;
-
             LoginModel model = new LoginModel()
             {
                  Email = "li@163.com",
@@ -697,16 +671,17 @@ namespace Nop.Web.Controllers.Api
                                 msg="登录成功",
                                 data = new {
                                     Id = _customer.Id,
-                                    UserName = _customer.Username,
-                                    Name = name,
-                                    Phone = _customer.Username,
-                                    Email = _customer.Email,
+                                    UserName = _customer.Username??"",
+                                    Name = name??"",
+                                    Phone = _customer.Username??"",
+                                    Email = _customer.Email??"",
                                     Token = "",
-                                    InviteCode = inviteCode,
-                                    CardImgUrl = imgurl,
+                                    InviteCode = inviteCode??"",
+                                    CardImgUrl = imgurl??"",
                                     SchoolName =dep==null ?"七三科技":dep.Name,
                                     DepartmentId = _customer.DepartmentId,
-                                    Role =string.Join(",", _customer.CustomerCustomerRoleMappings.Select(x=>x.CustomerRole.Name).ToList())
+                                    Role =string.Join(",", _customer.CustomerCustomerRoleMappings.Select(x=>x.CustomerRole.SystemName).ToList()),
+                                    IsTeacher = string.Join(",", _customer.CustomerCustomerRoleMappings.Select(x => x.CustomerRole.Name).ToList()).Contains("Teacher")
                                 }
 
 
@@ -716,7 +691,6 @@ namespace Nop.Web.Controllers.Api
 
                             //return Redirect(returnUrl);
                         }
-
                         //break;
                     case CustomerLoginResults.CustomerNotExist:
                         ModelState.AddModelError("", _localizationService.GetResource("Account.Login.WrongCredentials.CustomerNotExist"));
@@ -747,6 +721,107 @@ namespace Nop.Web.Controllers.Api
                  msg ="登录失败;原因："+string.Join(",", ModelState.Root.Errors.Select(x=>x.ErrorMessage))              
             });
           //  return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult LoginCode(string userName, string code)
+        {
+            Customer _customer = null;
+            if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(code))
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "信息不完整",
+                    data = false
+
+                });
+            }
+
+
+            SmsMsgRecord smr = new SmsMsgRecord
+            {
+
+
+                AppId = AliSmsManager.accessKeyId,
+                Phone = userName,
+                TemplateCode = code,
+                Type = 2,
+
+            };
+
+            var result = _smsService.CheckMsgValid(smr);
+
+
+            if (result.Result)
+            {
+                var loginresut = _customerService.GetCustomerByUsername(userName);
+
+                if (loginresut != null)
+                {
+                    _customer = loginresut;
+                }
+
+                _eventPublisher.Publish(new CustomerLoggedinEvent(loginresut));
+
+                //activity log
+                _customerActivityService.InsertActivity(loginresut, "PublicStore.Login",
+                    _localizationService.GetResource("ActivityLog.PublicStore.Login"), loginresut);
+
+                var imgurl = _genericAttributeService.GetAttribute<string>(_customer, NopCustomerDefaults.IdCardImgAttribute);
+                var name = _genericAttributeService.GetAttribute<string>(_customer, NopCustomerDefaults.LastNameAttribute);
+                var dep = _departmentService.GetDepById(_customer.DepartmentId);
+                var inviteCode = _genericAttributeService.GetAttribute<string>(_customer, NopCustomerDefaults.InviteCodeAttribute);
+                return Json(new
+                {
+                    code = 0,
+                    msg = "登录成功",
+                    data = new
+                    {
+                        Id = _customer.Id,
+                        UserName = _customer.Username ?? "",
+                        Name = name ?? "",
+                        Phone = _customer.Username ?? "",
+                        Email = _customer.Email ?? "",
+                        Token = "",
+                        InviteCode = inviteCode ?? "",
+                        CardImgUrl = imgurl ?? "",
+                        SchoolName = dep == null ? "七三科技" : dep.Name,
+                        DepartmentId = _customer.DepartmentId,
+                        Role = string.Join(",", _customer.CustomerCustomerRoleMappings.Select(x => x.CustomerRole.SystemName).ToList()),
+                        IsTeacher = string.Join(",", _customer.CustomerCustomerRoleMappings.Select(x => x.CustomerRole.Name).ToList()).Contains("Teacher")
+                    }
+                });
+
+            }
+            else
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "验证码错误",
+                    data = false                  
+                });
+
+            }
+
+
+            
+
+
+
+
+            if (result.Result)
+            {
+                _smsService.ApplySms(smr);
+            }
+
+          
+
+            return Json(new {
+
+
+            });
         }
         public IActionResult CheckPhone(string phone)
         {
@@ -826,10 +901,7 @@ namespace Nop.Web.Controllers.Api
                     data = false
                 });
             }
-
-
             string title = "注册账户验证";
-
             var smr = new SmsMsgRecord()
             {
                 AppId = "LTAIgSHNbd8oGL92",
@@ -839,8 +911,7 @@ namespace Nop.Web.Controllers.Api
                 IsRead = 0,
                 CreateTime = DateTime.Now,
                 SysName = "Ali",
-                Title = title,
-               
+                Title = title,               
             };
 
             var sms = new SmsObject
@@ -1192,8 +1263,7 @@ namespace Nop.Web.Controllers.Api
                 data = false
 
             });
-        }
-        // public IActionResult Get
+        }       
         public IActionResult GetMyCollection(string userName)
         {
             BookDirSearchModel searchModel = new BookDirSearchModel
@@ -1339,17 +1409,11 @@ namespace Nop.Web.Controllers.Api
             }
             return list;
         }
-
         public virtual IActionResult ValidInviteCode(string code)
         {
-
-
            ///
-
-
             if (code.Equals("001"))
             {
-
                 return Json(new
                 {
                     code = 0,
@@ -1365,8 +1429,7 @@ namespace Nop.Web.Controllers.Api
                     msg = "邀请码不存在",
                     data = false
                 });
-            }
-                
+            }               
         }
     }
 }

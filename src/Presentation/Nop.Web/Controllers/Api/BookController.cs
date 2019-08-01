@@ -27,15 +27,11 @@ namespace Nop.Web.Controllers.Api
                 requst.CateId = 14;
             }
            var product = _productService.SearchProducts(0, int.MaxValue, new List<int>() { requst.CateId });
-
-
             return Json(new
             {
                 code = 0,
                 msg = "获取成功",
-                data = product.Select(x => new {
-
-                  //  x.ProductPictures
+                data = product.Select(x => new {               
                    Id = x.Id,
                    Name = x.Name?.Trim(),
                    TestName =   x.Name?.Trim(),

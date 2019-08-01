@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -37,7 +38,12 @@ namespace Nop.Web
         /// <param name="application">Builder for configuring an application's request pipeline</param>
         public void Configure(IApplicationBuilder application)
         {
+            #region .NET Core默认不支持GB2312
 
+            //http://www.mamicode.com/info-detail-2225481.html
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+            #endregion
             application.UseCors("AnyOrigin");
             application.ConfigureRequestPipeline();
         }

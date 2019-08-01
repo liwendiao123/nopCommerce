@@ -174,10 +174,6 @@ namespace Nop.Web.Areas.Admin.Factories
         {
             if (searchModel == null)
                 throw new ArgumentNullException(nameof(searchModel));
-
-
-
-
             var result = _aiBookService.SearchAiBookModels(searchModel.BookAiModelName,searchModel.Page -1,searchModel.PageSize,new List<int> { searchModel.CateId },searchModel.BookId,searchModel.BookDirId,0);
 
             var model = new AiBookModelListView().PrepareToGrid(searchModel, result, () =>

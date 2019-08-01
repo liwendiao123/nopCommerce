@@ -19,27 +19,22 @@ namespace Nop.Core.Domain.Customers
         /// Gets or sets a value indicating whether the customer role is marked as free shipping
         /// </summary>
         public bool FreeShipping { get; set; }
-
         /// <summary>
         /// Gets or sets a value indicating whether the customer role is marked as tax exempt
         /// </summary>
         public bool TaxExempt { get; set; }
-
         /// <summary>
         /// Gets or sets a value indicating whether the customer role is active
         /// </summary>
-        public bool Active { get; set; }
-
+        public bool Active { get; set; }  
         /// <summary>
         /// Gets or sets a value indicating whether the customer role is system
         /// </summary>
         public bool IsSystemRole { get; set; }
-
         /// <summary>
         /// Gets or sets the customer role system name
         /// </summary>
         public string SystemName { get; set; }
-
         /// <summary>
         /// Gets or sets a value indicating whether the customers must change passwords after a specified time
         /// </summary>

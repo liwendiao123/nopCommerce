@@ -22,6 +22,7 @@ using Newtonsoft.Json;
 using Nop.Web.Models.Api.BookNode;
 using Microsoft.AspNetCore.Http;
 using Nop.Services.ExportImport;
+using Nop.Web.Framework.Mvc;
 
 namespace Nop.Web.Areas.Admin.Controllers
 {
@@ -70,6 +71,10 @@ namespace Nop.Web.Areas.Admin.Controllers
             _importManager = importManager;
 
         }
+
+
+        #region 知识点
+
         public IActionResult Index(AiBookSearchModelView smodel)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManagerBook))
@@ -126,10 +131,8 @@ namespace Nop.Web.Areas.Admin.Controllers
                 return AccessDeniedView();
             if (ModelState.IsValid)
             {
-
                 if (!string.IsNullOrEmpty(model.UnityStrJson))
                 {
-
                     try
                     {
                         model.BookNodeRoot = JsonConvert.DeserializeObject<BookNodeNewRoot>(model.UnityStrJson);
@@ -137,12 +140,8 @@ namespace Nop.Web.Areas.Admin.Controllers
                     catch (Exception ex)
                     {
                         Console.Write(ex.Message);
-                    }
-
-
-                  
+                    }      
                 }
-
                 var category = model.ToEntity<AiBookModel>();
                 category.CreatedOnUtc = DateTime.UtcNow;
                 category.UpdatedOnUtc = DateTime.UtcNow;
@@ -151,15 +150,11 @@ namespace Nop.Web.Areas.Admin.Controllers
                 //{
                 //    category.PriceRanges = "0";
                 //}
-
-
                 //search engine name
                 //  model.SeName = _urlRecordService.ValidateSeName(category, model.SeName, category.Name, true);
                 // _urlRecordService.SaveSlug(category, model.SeName, 0);
-
                 //locales
                 // UpdateLocales(category, model);
-
                 //discounts
                 //    var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToCategories, showHidden: true);
                 //            foreach (var discount in allDiscounts)
@@ -169,17 +164,13 @@ namespace Nop.Web.Areas.Admin.Controllers
                 //                    category.DiscountCategoryMappings.Add(new DiscountCategoryMapping { Discount = discount
                 //});
                 //            }
-
                 // _bookDirService.InsertBookDir(category);
                 _bookNodeService.InsertAiBookModel(category);
                // _categoryService.UpdateCategory(category);
-
                 //update picture seo file name
               //  UpdatePictureSeoNames(category);
-
                 //ACL (customer roles)
                // SaveCategoryAcl(category, model);
-
                 //stores
                // SaveStoreMappings(category, model);
 
@@ -272,6 +263,8 @@ namespace Nop.Web.Areas.Admin.Controllers
         }
         public IActionResult GetList(AiBookSearchModelView searchModel)
         {
+
+           // searchModel.SetGridPageSize(int.MaxValue);
             //prepare model
             var model = _bookNodeFactory.PrepareBookNodeListModel(searchModel);
 
@@ -324,5 +317,171 @@ namespace Nop.Web.Areas.Admin.Controllers
             return RedirectToAction("edit",new { id = id});
         }
         #endregion
+
+        #endregion
+
+        #region 知识点评论
+
+        public virtual IActionResult NewsComments(int? filterByNewsItemId)
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManageNews))
+                return AccessDeniedView();
+
+            //try to get a news item with the specified id
+            //var newsItem = _newsService.GetNewsById(filterByNewsItemId ?? 0);
+           // if (newsItem == null && filterByNewsItemId.HasValue)
+                return RedirectToAction("NewsComments");
+
+            //prepare model
+           // var model = _newsModelFactory.PrepareNewsCommentSearchModel(new NewsCommentSearchModel(), newsItem);
+
+            //return View(model);
+        }
+
+        [HttpPost]
+        public virtual IActionResult Comments(BookNodeCommentSearchModelView searchModel)
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManageNews))
+                return AccessDeniedDataTablesJson();
+
+            //prepare model
+           // var model = _newsModelFactory.PrepareNewsCommentListModel(searchModel, searchModel.NewsItemId);
+
+            return Json(new {
+
+            });
+        }
+
+        [HttpPost]
+        public virtual IActionResult CommentUpdate(BookNodeCommetView model)
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManageNews))
+                return AccessDeniedView();
+
+            //try to get a news comment with the specified id
+            //var comment = _newsService.GetNewsCommentById(model.Id)
+            //    ?? throw new ArgumentException("No comment found with the specified id");
+
+            //var previousIsApproved = comment.IsApproved;
+
+            ////fill entity from model
+            //comment = model.ToEntity(comment);
+            //_newsService.UpdateNews(comment.NewsItem);
+
+            ////activity log
+            //_customerActivityService.InsertActivity("EditNewsComment",
+            //    string.Format(_localizationService.GetResource("ActivityLog.EditNewsComment"), comment.Id), comment);
+
+            ////raise event (only if it wasn't approved before and is approved now)
+            //if (!previousIsApproved && comment.IsApproved)
+            //    _eventPublisher.Publish(new NewsCommentApprovedEvent(comment));
+
+            return new NullJsonResult();
+        }
+
+
+
+        [HttpPost]
+        public virtual IActionResult CommentDelete(int id)
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManageNews))
+                return AccessDeniedView();
+
+            //try to get a news comment with the specified id
+            //var comment = _newsService.GetNewsCommentById(id)
+            //   ?? throw new ArgumentException("No comment found with the specified id", nameof(id));
+
+
+            var bookNode = _bookNodeService.GetAiBookModelById(id);
+
+           // _newsService.DeleteNewsComment(comment);
+
+            //activity log
+            _customerActivityService.InsertActivity("DeleteBookNodeComment",
+                string.Format(_localizationService.GetResource("ActivityLog.DeleteBookNodeComment"), bookNode.Id), bookNode);
+
+            return new NullJsonResult();
+        }
+
+
+        [HttpPost]
+        public virtual IActionResult DeleteSelectedComments(ICollection<int> selectedIds)
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManageNews))
+                return AccessDeniedView();
+
+            if (selectedIds == null)
+                return Json(new { Result = true });
+
+            //var comments = _newsService.GetNewsCommentsByIds(selectedIds.ToArray());
+
+            //_newsService.DeleteNewsComments(comments);
+
+            ////activity log
+            //foreach (var newsComment in comments)
+            //{
+            //    _customerActivityService.InsertActivity("DeleteNewsComment",
+            //        string.Format(_localizationService.GetResource("ActivityLog.DeleteNewsComment"), newsComment.Id), newsComment);
+            //}
+
+            return Json(new { Result = true });
+        }
+
+
+        [HttpPost]
+        public virtual IActionResult ApproveSelected(ICollection<int> selectedIds)
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManageNews))
+                return AccessDeniedView();
+
+            if (selectedIds == null)
+                return Json(new { Result = true });
+
+            //filter not approved comments
+            //var newsComments = _newsService.GetNewsCommentsByIds(selectedIds.ToArray()).Where(comment => !comment.IsApproved);
+
+            //foreach (var newsComment in newsComments)
+            //{
+            //    newsComment.IsApproved = true;
+            //    _newsService.UpdateNews(newsComment.NewsItem);
+
+            //    //raise event 
+            //    _eventPublisher.Publish(new NewsCommentApprovedEvent(newsComment));
+
+            //    //activity log
+            //    _customerActivityService.InsertActivity("EditNewsComment",
+            //        string.Format(_localizationService.GetResource("ActivityLog.EditNewsComment"), newsComment.Id), newsComment);
+            //}
+
+            return Json(new { Result = true });
+        }
+
+
+
+        [HttpPost]
+        public virtual IActionResult DisapproveSelected(ICollection<int> selectedIds)
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManageNews))
+                return AccessDeniedView();
+
+            if (selectedIds == null)
+                return Json(new { Result = true });
+            ////filter approved comments
+            //var newsComments = _newsService.GetNewsCommentsByIds(selectedIds.ToArray()).Where(comment => comment.IsApproved);
+            //foreach (var newsComment in newsComments)
+            //{
+            //    newsComment.IsApproved = false;
+            //    _newsService.UpdateNews(newsComment.NewsItem);
+
+            //    //activity log
+            //    _customerActivityService.InsertActivity("EditNewsComment",
+            //        string.Format(_localizationService.GetResource("ActivityLog.EditNewsComment"), newsComment.Id), newsComment);
+            //}
+
+            return Json(new { Result = true });
+        }
+
+        #endregion
+
     }
 }

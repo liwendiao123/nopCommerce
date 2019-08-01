@@ -4,8 +4,8 @@
   "SystemName": "Payments.Test",
   "Version": "1.00",
   "SupportedVersions": [ "4.20" ],
-  "Author": "广西七三科技有限公司 ",
+  "Author": "Chance Technology Ventude",
   "DisplayOrder": 1,
   "FileName": "Nop.Plugin.Payments.Test.dll",
-  "Description": "This plugin allows paying with Test"
+  "Description": "微信支付：支持PC 、手机、WEB扫码支付"
 }

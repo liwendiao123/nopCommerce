@@ -124,7 +124,7 @@
                             new FilterParameter(nameof(Model.BookAiModelName)),
                            // new FilterParameter(nameof(Model.SearchStoreId))
                         },
-                        ColumnCollection = new List<ColumnProperty>
+                   ColumnCollection = new List<ColumnProperty>
                         {
                             new ColumnProperty(nameof(AiBookModelView.Name))
                             {
@@ -161,11 +161,11 @@
                                Width = "100",
                                Render = new RenderPicture()
                             },
-                            new ColumnProperty(nameof(AiBookModelView.StrJson))
-                            {
-                                Title = T("Admin.AiBook.BookNode.Fields.AbUrl").Text
-                               // Render = new RenderLink(new DataUrl())
-                            },
+                            //new ColumnProperty(nameof(AiBookModelView.StrJson))
+                            //{
+                            //    Title = T("Admin.AiBook.BookNode.Fields.AbUrl").Text
+                            //   // Render = new RenderLink(new DataUrl())
+                            //},
                             new ColumnProperty(nameof(AiBookModelView.Published))
                             {
                                 Title = T("Admin.AiBook.BookNode.Fields.Published").Text,
@@ -196,7 +196,7 @@
                                 Render = new RenderButtonEdit(new DataUrl("BookNode/Edit"))
                             }
                         }
-                      })
+               })
                 </div>
             </div>
         </div>

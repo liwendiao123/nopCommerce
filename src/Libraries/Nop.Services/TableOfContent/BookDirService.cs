@@ -78,39 +78,66 @@ namespace Nop.Services.TableOfContent
         }
         #endregion
 
-        public int DeleteBookDir(BookDir store)
+        public int DeleteBookDir(BookDir category)
         {
 
 
-            try
+            if (category == null)
+                throw new ArgumentNullException(nameof(category));
+
+            if (category is IEntityForCaching)
+                throw new ArgumentException("Cacheable entities are not supported by Entity Framework");
+
+            category.Deleted = true;
+            //UpdateBookDir(category);
+            _bookdirRepository.Delete(category);
+            //event notification
+            _eventPublisher.EntityDeleted(category);
+
+
+
+            var subcategories = GetChildBookDirItems(category.Id);
+            //reset a "Parent category" property of all child subcategories
+           // var subcategories = GetAllCategoriesByParentCategoryId(category.Id, true);
+            foreach (var subcategory in subcategories)
             {
-                if (store == null)
-                    throw new ArgumentNullException(nameof(store));
+                subcategory.ParentBookDirId = -1;
 
-                if (store is IEntityForCaching)
-                    throw new ArgumentException("Cacheable entities are not supported by Entity Framework");
-
-                var allStores = GetAllBookDirs();
-                if (allStores.Count == 1)
-                    throw new Exception("You cannot delete the only configured BookDir");
-
-                _bookdirRepository.Delete(store);
-
-                _cacheManager.RemoveByPrefix(NopBookDirDefault.BookDirsPrefixCacheKey);
-
-                //event notification
-                _eventPublisher.EntityDeleted(store);
-
-                return 1;
+                _bookdirRepository.Delete(subcategory);
+               // UpdateBookDir(subcategory);
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex.Message,ex, _workContext.CurrentCustomer);
+            _cacheManager.RemoveByPrefix(NopBookDirDefault.BookDirsPrefixCacheKey);
+            return 1;
+
+            //try
+            //{
+            //    if (store == null)
+            //        throw new ArgumentNullException(nameof(store));
+
+            //    if (store is IEntityForCaching)
+            //        throw new ArgumentException("Cacheable entities are not supported by Entity Framework");
+
+            //    var allStores = GetAllBookDirs();
+            //    if (allStores.Count == 1)
+            //        throw new Exception("You cannot delete the only configured BookDir");
+
+            //    _bookdirRepository.Delete(store);
+
+            //    _cacheManager.RemoveByPrefix(NopBookDirDefault.BookDirsPrefixCacheKey);
+
+            //    //event notification
+            //    _eventPublisher.EntityDeleted(store);
+
+            //    return 1;
+            //}
+            //catch (Exception ex)
+            //{
+            //    _logger.Error(ex.Message,ex, _workContext.CurrentCustomer);
 
 
-                return 0;
-            }
-           
+            //    return 0;
+            //}
+
 
 
         }
@@ -445,7 +472,34 @@ namespace Nop.Services.TableOfContent
             });
         }
 
+        public virtual IList<BookDir> GetChildBookDirItems(int parentBookirId)
+        {
+            var cacheKey = string.Format(NopBookDirDefault.GetChildBookDirItemsByParentIdCacheKey,
+                parentBookirId,
+                string.Join(",", _workContext.CurrentCustomer.GetCustomerRoleIds()),
+                _storeContext.CurrentStore.Id,
+                false);
+            return _staticCacheManager.Get(cacheKey, () =>
+            {
+                //little hack for performance optimization
+                //there's no need to invoke "GetAllCategoriesByParentCategoryId" multiple times (extra SQL commands) to load childs
+                //so we load all categories at once (we know they are cached) and process them server-side
+                var categoriesIds = new List<BookDir>();
+                //var categories = GetAllCategories(storeId: storeId, showHidden: showHidden)
+                //    .Where(c => c.ParentCategoryId == parentCategoryId);
 
+                var categories = _bookdirRepository.Table
+                                        .Where(x => x.ParentBookDirId == parentBookirId)
+                                        .ToList();
+                foreach (var category in categories)
+                {
+                    categoriesIds.Add(category);
+                    categoriesIds.AddRange(GetChildBookDirItems(category.Id));
+                }
+
+                return categoriesIds;
+            });
+        }
         // IList<BookDir> GetBookDirBreadCrumb(BookDir bookDir, IList<BookDir> allBookDirs = null, bool showHidden = false)
     }
 }
