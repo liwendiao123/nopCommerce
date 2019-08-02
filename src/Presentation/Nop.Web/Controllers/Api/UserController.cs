@@ -680,7 +680,7 @@ namespace Nop.Web.Controllers.Api
                                     CardImgUrl = imgurl??"",
                                     SchoolName =dep==null ?"七三科技":dep.Name,
                                     DepartmentId = _customer.DepartmentId,
-                                    Role =string.Join(",", _customer.CustomerCustomerRoleMappings.Select(x=>x.CustomerRole.SystemName).ToList()),
+                                    Role =string.Join(",", _customer.CustomerCustomerRoleMappings.Where(x=> "Registered" != x.CustomerRole.Name).Select(x=>x.CustomerRole.SystemName).ToList()),
                                     IsTeacher = string.Join(",", _customer.CustomerCustomerRoleMappings.Select(x => x.CustomerRole.Name).ToList()).Contains("Teacher")
                                 }
 
@@ -829,7 +829,6 @@ namespace Nop.Web.Controllers.Api
 
             try
             {
-
                 if (string.IsNullOrEmpty(phone))
                 {
                     return Json(new
@@ -839,8 +838,6 @@ namespace Nop.Web.Controllers.Api
                         data = false
                     });
                 }
-
-
                 if (!phone.CheckMobile())
                 {
                     return Json(new

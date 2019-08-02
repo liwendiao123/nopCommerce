@@ -12,14 +12,10 @@ namespace Nop.Core.Domain.Customers
 
 
         public int CustomerId { get; set; }
-
-
         /// <summary>
         /// 课本id
         /// </summary>
         public int ProductId { get; set; }
-
-
 
         /// <summary>
         /// 知识点ID

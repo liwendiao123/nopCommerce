@@ -79,6 +79,10 @@ namespace Nop.Core.Configuration
         /// </summary>
         public string PluginsIgnoredDuringInstallation { get; set; }
 
+
+
+        public string HostLuaResource { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether to clear /Plugins/bin directory on application startup
         /// </summary>

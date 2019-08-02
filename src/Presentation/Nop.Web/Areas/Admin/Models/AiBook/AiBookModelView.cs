@@ -341,6 +341,7 @@ namespace Nop.Web.Areas.Admin.Models.AiBook
         [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.EventId")]
         public string EventId { get; set; }
 
+
         [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.Book")]
         public int BookId { get; set; }
         [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.BookDir")]
@@ -366,10 +367,14 @@ namespace Nop.Web.Areas.Admin.Models.AiBook
 
         [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.UnityJson")]
         public string UnityStrJson { get; set; }
+
+
+
+        [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.UniqueID")]
+        public string UniqueID { get; set; }
+
+
         [NopResourceDisplayName("Admin.Catalog.Products.Fields.Published")]
-
-
-     
         public bool Published { get; set; }
         [NopResourceDisplayName("Admin.Catalog.Categories.Fields.Deleted")]
         public bool Deleted { get; set; }
@@ -488,5 +493,9 @@ namespace Nop.Web.Areas.Admin.Models.AiBook
         public string ImgUrl { get; set; }
         [NopResourceDisplayName("Admin.AiBook.AiBookModel.Fields.StrJson")]
         public string StrJson { get; set; }
+
+
+        [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.UniqueID")]
+        public string UniqueID { get; set; }
     }
 }

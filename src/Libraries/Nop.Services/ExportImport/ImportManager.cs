@@ -1788,6 +1788,8 @@ namespace Nop.Services.ExportImport
             BookNodeDomainNewRoot bnr = new BookNodeDomainNewRoot();
 
             bnr.code = "0";
+
+
             using (var xlPackage = new ExcelPackage(stream))
             {
                 // get the first worksheet in the workbook
@@ -1823,7 +1825,9 @@ namespace Nop.Services.ExportImport
                                     btninfo.highlightedurl = curworksheet.Cells[ci, 6].Value?.ToString()??"";
                                     btninfo.pressedurl = curworksheet.Cells[ci, 7].Value?.ToString()??"";
                                     var xy = curworksheet.Cells[ci, 8].Value?.ToString()??"";
+                                    xy = xy.Replace("，", ",");
                                     var size = curworksheet.Cells[ci, 9].Value?.ToString()??"";
+                                    size = size.Replace("，", ",");
                                     if (!string.IsNullOrEmpty(xy) && xy.IndexOf(",") > 0 )
                                     {
                                         var xyarray = xy.Split(',');
@@ -1831,7 +1835,7 @@ namespace Nop.Services.ExportImport
                                         btninfo.pos.x = xyarray[0];
                                         btninfo.pos.y = xyarray[1];
                                     }
-                                    if (!string.IsNullOrEmpty(size) && xy.IndexOf(",") > 0)
+                                    if (!string.IsNullOrEmpty(size) && size.IndexOf(",") > 0)
                                     {
                                         var sizearray = size.Split(',');
 
@@ -1866,7 +1870,8 @@ namespace Nop.Services.ExportImport
                                     var eventUrl = curworksheet.Cells[ci, 5].Value?.ToString()??"";
                                     var eventpos = curworksheet.Cells[ci, 6].Value?.ToString()??"";
                                     var eventsize = curworksheet.Cells[ci,7].Value?.ToString()??"";
-
+                                    eventpos = eventpos.Replace("，", ",");
+                                    eventsize = eventsize.Replace("，", ",");
                                     NewDic dic = new NewDic
                                     {
                                         key = eventids,
@@ -1934,7 +1939,8 @@ namespace Nop.Services.ExportImport
                                     var eventText = curworksheet.Cells[ci, 4].Value?.ToString()??"";
                                     var eventpos = curworksheet.Cells[ci, 5].Value?.ToString()??"";
                                     var eventsize = curworksheet.Cells[ci, 6].Value?.ToString()??"";
-
+                                    eventpos = eventpos.Replace("，", ",");
+                                    eventsize = eventsize.Replace("，", ",");
                                     TextNewDic dic = new TextNewDic
                                     {
                                         key = eventids,
@@ -2006,7 +2012,12 @@ namespace Nop.Services.ExportImport
                                     var eventpos = curworksheet.Cells[ci, 5].Value?.ToString()??"";
                                     var modelrot = curworksheet.Cells[ci, 6].Value?.ToString()??"";
                                     var modelscale = curworksheet.Cells[ci, 7].Value?.ToString()??"";
-                                   
+
+                                    eventpos = eventpos.Replace("，", ",");
+                                    modelrot = modelrot.Replace("，", ",");
+                                    modelscale = modelscale.Replace("，", ",");
+
+
                                     modelinfo.url = curworksheet.Cells[ci, 8].Value?.ToString()??"";
                                     modelinfo.name = curworksheet.Cells[ci, 9].Value?.ToString()??"";
                                     Dic dic = new Dic
@@ -2092,6 +2103,12 @@ namespace Nop.Services.ExportImport
                                     var camerarot = curworksheet.Cells[ci, 4].Value?.ToString()??"";
                                     var camerascale = curworksheet.Cells[ci, 5].Value?.ToString()??"";
                                     var cameracenterpos = curworksheet.Cells[ci, 6].Value?.ToString()??"";
+
+                                    camerapos = camerapos.Replace("，", ",");
+                                    camerarot = camerarot.Replace("，", ",");
+                                    camerascale = camerascale.Replace("，", ",");
+                                    cameracenterpos = cameracenterpos.Replace("，", ",");
+
                                     var camerarect = curworksheet.Cells[ci, 7].Value?.ToString()??"";
                                     camerainfo.url = string.Empty;
                                     camerainfo.name = string.Empty;
@@ -2231,7 +2248,10 @@ namespace Nop.Services.ExportImport
                                     var ocid = curworksheet.Cells[ci, 1].Value?.ToString()??"";
                                     var oeventids = curworksheet.Cells[ci, 2].Value?.ToString()??"";
                                     var ceventids = curworksheet.Cells[ci, 3].Value?.ToString()??"";
-                                    if(string.IsNullOrEmpty( ocid))
+
+                                    oeventids = oeventids.Replace("，", ",");
+                                    ceventids = ceventids.Replace("，", ",");
+                                    if (string.IsNullOrEmpty( ocid))
                                     {
                                         break;
                                     }
@@ -2324,7 +2344,8 @@ namespace Nop.Services.ExportImport
                                     var enventUrl = curworksheet.Cells[ci, 5].Value?.ToString()??"";
                                     var enventpos = curworksheet.Cells[ci, 6].Value?.ToString()??"";
                                     var enventsize = curworksheet.Cells[ci, 7].Value?.ToString()??"";
-
+                                    enventpos = enventpos.Replace("，", ",");
+                                    enventsize = enventsize.Replace("，", ",");
                                     NewDic dic = new NewDic
                                     {
                                         key = enventid,

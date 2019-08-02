@@ -144,7 +144,7 @@ namespace Nop.Web.Areas.Admin.Helpers
             if (cacheManager == null)
                 throw new ArgumentNullException(nameof(cacheManager));
 
-            var cacheKey = string.Format(NopModelCacheDefaults.BookDirListKey, showHidden);
+            var cacheKey = string.Format(NopModelCacheDefaults.BookDirListKey, showHidden.ToString() + cateId.ToString() + bookIds.ToString());
             var listItems = cacheManager.Get(cacheKey, () =>
             {
                 //   var vendors = bookDirService.GetAllVendors(showHidden: showHidden);
@@ -188,7 +188,7 @@ namespace Nop.Web.Areas.Admin.Helpers
             if (cacheManager == null)
                 throw new ArgumentNullException(nameof(cacheManager));
 
-            var cacheKey = string.Format(NopModelCacheDefaults.BookListKey, showHidden);
+            var cacheKey = string.Format(NopModelCacheDefaults.BookListKey, showHidden.ToString()+ string.Join(",",cateids));
             var listItems = cacheManager.Get(cacheKey, () =>
             {
                 //   var vendors = bookDirService.GetAllVendors(showHidden: showHidden);

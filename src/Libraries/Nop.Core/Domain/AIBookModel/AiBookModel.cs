@@ -21,14 +21,13 @@ namespace Nop.Core.Domain.AIBookModel
         /// </summary>
         public string UniqueID { get; set; }
         /// <summary>
-        /// web 3d GLB模型地址 
+        /// 特殊模型名称
         /// </summary>
         public string WebModelUrl { get; set; }
         /// <summary>
         /// Webgltf 模型地址 
         /// </summary>
         public string WebGltfUrl { get; set; }
-
        /// <summary>
        /// Web bin格式地址
        /// </summary>

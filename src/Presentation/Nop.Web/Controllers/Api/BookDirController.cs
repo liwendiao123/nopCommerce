@@ -57,7 +57,7 @@ namespace Nop.Web.Controllers.Api
                     PriceRanges = x.PriceRanges??"0",//价格描述  如果为零 则免费 否则展示需要付费的价格
                     DisplayOrder =  x.DisplayOrder,//展示顺序
                     IsLastNode = x.IsLastNode,  //是否为知识点
-                    ComplexLevel =  x.ComplexLevel, //收费费复杂知识点
+                    ComplexLevel = x.Id == 148?1:  x.ComplexLevel, //收费费复杂知识点
                     ImgUrl = "http://arbookresouce.73data.cn/book/img/sy_img_02.png",//封面展示
                     BookNodeUrl =x.BookNodeUrl //获取对应知识点 Url 
                 });
@@ -108,6 +108,14 @@ namespace Nop.Web.Controllers.Api
             var list = new List<BookDirTreeModel>();
             treeresult.ToList().ForEach(x =>
             {
+
+                int level = 0;
+
+                if (x.Id == 148 || x.ComplexLevel == 1)
+                {
+                    level = 1;
+                }
+
                 list.Add(new BookDirTreeModel
                 {
                     Id = x.Id,  //章节ID
@@ -120,7 +128,7 @@ namespace Nop.Web.Controllers.Api
                     PriceRanges = x.PriceRanges ?? "0",//价格描述  如果为零 则免费 否则展示需要付费的价格
                     DisplayOrder = x.DisplayOrder,//展示顺序
                     IsLastNode = x.IsLastNode,  //是否为知识点
-                    ComplexLevel = x.ComplexLevel, //收费费复杂知识点
+                    ComplexLevel = level, //收费费复杂知识点
                     ImgUrl = "http://arbookresouce.73data.cn/book/img/sy_img_02.png",//封面展示
                     //获取对应知识点 Url"
                     BookNodeUrl = "http://www.73data.cn/EduProject/Sports.php?id="+ x.Id

@@ -26,7 +26,20 @@ namespace Nop.Web.Controllers.Api
             {
                 requst.CateId = 14;
             }
-           var product = _productService.SearchProducts(0, int.MaxValue, new List<int>() { requst.CateId });
+
+            if (requst.Pageindex < 0)
+            {
+                requst.Pageindex = 0;
+
+            }
+
+            if (requst.PageSize < 4)
+            {
+                requst.PageSize = 4;
+            }
+
+           var product = _productService.SearchProducts(requst.Pageindex, requst.PageSize, new List<int>() { requst.CateId });
+          
             return Json(new
             {
                 code = 0,
@@ -47,7 +60,6 @@ namespace Nop.Web.Controllers.Api
                         TagId = t.ProductTagId
                    }).ToList()
                 })
-
             });
 
         

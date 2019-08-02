@@ -28,7 +28,7 @@ namespace Nop.Web.Areas.Admin.Controllers
 {
     public class BookNodeController : BaseAdminController
     {
-       
+    
         private readonly ICustomerActivityService _customerActivityService;
         private readonly IEventPublisher _eventPublisher;
         private readonly ILocalizationService _localizationService;
@@ -225,7 +225,7 @@ namespace Nop.Web.Areas.Admin.Controllers
                 _bookNodeService.UpdateAiBookModel(result);
 
                 model = result.ToModel<AiBookModelView>();
-                //_bookDirService.UpdateBookDir(category);
+               // _bookDirService.UpdateBookDir(category);
                 //search engine name
                 //result.SeName = _urlRecordService.ValidateSeName(category, model.SeName, category.Name, true);
                 //_urlRecordService.SaveSlug(category, model.SeName, 0);
