@@ -4,7 +4,7 @@
 @{
     if (!string.IsNullOrEmpty(Model.UnityStrJson))
     {
-        Model.BookNodeRoot = JsonConvert.DeserializeObject<BookNodeRoot>(Model.UnityStrJson);
+        Model.BookNodeRoot = JsonConvert.DeserializeObject<BookNodeNewRoot>(Model.UnityStrJson);
 
         if (Model != null
             && Model.BookNodeRoot != null

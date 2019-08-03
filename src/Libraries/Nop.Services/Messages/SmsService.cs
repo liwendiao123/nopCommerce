@@ -63,17 +63,22 @@ namespace Nop.Services.Messages
                     && x.IsRead == 0
                     ).OrderByDescending(x => x.CreateTime).ToList();
 
-                if (query.Count() > 0)
+                if (checkFiterResult.Count() > 0)
                 {
-                    var existrecord = query.FirstOrDefault();
+                    var existrecord = checkFiterResult.FirstOrDefault();
                     if (existrecord == null || DateTime.Now.Subtract(existrecord.CreateTime).TotalSeconds > 300)
                     {
                        // _smsRecordRepository.Insert(record);                                      
-                        return Result(false, " 验证码无效或超时",ErrorCode.sys_fail);
+                       return Result(false, " 验证码无效或超时",ErrorCode.sys_fail);
                     }
                     else
                     {
+
+                        record = existrecord;
+                        //record = existrecord;
+
                         record.IsRead = 1;
+                      
                          _smsRecordRepository.Update(record);
                         return Result(true,"验证成功" ,ErrorCode.sys_success);
                     }
@@ -92,7 +97,7 @@ namespace Nop.Services.Messages
 
 
 
-            throw new NotImplementedException();
+           // throw new NotImplementedException();
         }
 
         public QSResult<bool> CheckMsgValid(SmsMsgRecord record)

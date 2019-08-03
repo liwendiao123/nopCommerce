@@ -48,6 +48,17 @@ namespace Nop.Services.AIBookModel
 
 
         /// <summary>
+        ///根据 AR识别图名称 获取知识点
+        /// </summary>
+        /// <param name="storeId">Store identifier</param>
+        /// <param name="loadCacheableCopy">A value indicating whether to load a copy that could be cached (workaround until Entity Framework supports 2-level caching)</param>
+        /// <returns>Store</returns>
+        AiBookModel GetAiBookModelByArImgName(string imgName, bool loadCacheableCopy = true);
+
+
+        IList<AiBookModel> AiBookModelByBookDirLastNodeId(List<int> bookdirIds, bool loadCacheableCopy = true);
+
+        /// <summary>
         /// Returns a list of names of not existing stores
         /// </summary>
         /// <param name="storeIdsNames">The names and/or IDs of the store to check</param>

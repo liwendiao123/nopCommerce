@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Nop.Services.AIBookModel;
 using Nop.Services.TableOfContent;
 using Nop.Web.Areas.Admin.Factories;
 using Nop.Web.Areas.Admin.Models.TableOfContent;
@@ -14,14 +15,20 @@ namespace Nop.Web.Controllers.Api
     {
         private readonly IBookDirService _bookDirService;
         private readonly IBookDirFactory _bookDirFactory;
+        private readonly IBookNodeFactory _bookNodeFactory;
+        private readonly IAiBookService _bookNodeService;
         private readonly IProductModelFactory _productModelFactory;
         public BookDirController(  
             IBookDirService bookDirService
             , IBookDirFactory bookDirFactory
+            ,IBookNodeFactory bookNodeFactory
+            , IAiBookService bookNodeService
             , IProductModelFactory productModelFactory)
         {
             _bookDirService = bookDirService;
             _bookDirFactory = bookDirFactory;
+            _bookNodeService  = bookNodeService;
+            _bookNodeFactory = bookNodeFactory;
             _productModelFactory = productModelFactory;
         }
         public IActionResult Index()
@@ -36,8 +43,31 @@ namespace Nop.Web.Controllers.Api
                   BookDirId = bookdirId
             };
             var result =  _bookDirService.GetAllBookDirsData("",0,bookid, bookdirId).ToList();
+
+
+            var bookdirIds = result.Where(x=>x.IsLastNode).Select(x => x.Id).ToList();
+
+          var bookNodeResult =  _bookNodeService.AiBookModelByBookDirLastNodeId(bookdirIds);
+
+
+
             result.ForEach(x =>
             {
+
+                var bookNode = bookNodeResult.Where(y => y.BookDirID == x.Id).FirstOrDefault();
+
+                if (bookNode != null)
+                {
+                    if (!string.IsNullOrEmpty(bookNode.UniqueID))
+                    {
+                        x.ComplexLevel = 1;
+                    }
+                }
+                else
+                {
+
+                }
+
                 x.BookNodeUrl = Request.Scheme + "://" + Request.Host + "BookNode/GetData?id=" + x.Id;
             });
             //  var model = _bookDirFactory.PrepareBookDirSearchModel(searchModel, new BookDirModel());
@@ -57,7 +87,7 @@ namespace Nop.Web.Controllers.Api
                     PriceRanges = x.PriceRanges??"0",//价格描述  如果为零 则免费 否则展示需要付费的价格
                     DisplayOrder =  x.DisplayOrder,//展示顺序
                     IsLastNode = x.IsLastNode,  //是否为知识点
-                    ComplexLevel = x.Id == 148?1:  x.ComplexLevel, //收费费复杂知识点
+                    ComplexLevel = x.ComplexLevel, //收费费复杂知识点
                     ImgUrl = "http://arbookresouce.73data.cn/book/img/sy_img_02.png",//封面展示
                     BookNodeUrl =x.BookNodeUrl //获取对应知识点 Url 
                 });
@@ -99,8 +129,29 @@ namespace Nop.Web.Controllers.Api
                 BookDirId = bookdirId
             };
             var result = _bookDirService.GetAllBookDirsData("", 0, bookid, bookdirId).ToList();
+            var bookdirIds = result.Where(x => x.IsLastNode).Select(x => x.Id).ToList();
+
+            var bookNodeResult = _bookNodeService.AiBookModelByBookDirLastNodeId(bookdirIds);
+
+
+
             result.ForEach(x =>
             {
+
+                var bookNode = bookNodeResult.Where(y => y.BookDirID == x.Id).FirstOrDefault();
+
+                if (bookNode != null)
+                {
+                    if (!string.IsNullOrEmpty(bookNode.UniqueID))
+                    {
+                        x.ComplexLevel = 1;
+                    }
+                }
+                else
+                {
+
+                }
+
                 x.BookNodeUrl = Request.Scheme + "://" + Request.Host + "BookNode/GetData?id=" + x.Id;
             });
             //  var model = _bookDirFactory.PrepareBookDirSearchModel(searchModel, new BookDirModel());
@@ -109,12 +160,8 @@ namespace Nop.Web.Controllers.Api
             treeresult.ToList().ForEach(x =>
             {
 
-                int level = 0;
+              
 
-                if (x.Id == 148 || x.ComplexLevel == 1)
-                {
-                    level = 1;
-                }
 
                 list.Add(new BookDirTreeModel
                 {
@@ -128,7 +175,7 @@ namespace Nop.Web.Controllers.Api
                     PriceRanges = x.PriceRanges ?? "0",//价格描述  如果为零 则免费 否则展示需要付费的价格
                     DisplayOrder = x.DisplayOrder,//展示顺序
                     IsLastNode = x.IsLastNode,  //是否为知识点
-                    ComplexLevel = level, //收费费复杂知识点
+                    ComplexLevel = x.ComplexLevel, //收费费复杂知识点
                     ImgUrl = "http://arbookresouce.73data.cn/book/img/sy_img_02.png",//封面展示
                     //获取对应知识点 Url"
                     BookNodeUrl = "http://www.73data.cn/EduProject/Sports.php?id="+ x.Id

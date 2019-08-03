@@ -101,7 +101,7 @@
                                 </div>
                                 <div class="form-group">
                                     <div class="col-md-8 col-md-offset-4">
-                                        <button type="button" id="search-categories" class="btn btn-primary btn-search"><i class="fa fa-search"></i>@T("Admin.Common.Search")</button>
+                                        <button type="button" id="search-bookdirs" class="btn btn-primary btn-search"><i class="fa fa-search"></i>@T("Admin.Common.Search")</button>
                                     </div>
                                 </div>
                             </div>
@@ -121,7 +121,10 @@
                    LengthMenu = Model.AvailablePageSizes,
                    Filters = new List<FilterParameter>
                         {
-                            new FilterParameter(nameof(Model.BookAiModelName)),
+                        new FilterParameter(nameof(Model.CateId)),
+                        new FilterParameter(nameof(Model.BookId)),
+                        new FilterParameter(nameof(Model.BookDirId)),
+                        new FilterParameter(nameof(Model.BookAiModelName)),
                            // new FilterParameter(nameof(Model.SearchStoreId))
                         },
                    ColumnCollection = new List<ColumnProperty>
@@ -245,3 +248,66 @@
         </div>
     </div>
 </div>
+<script>
+      $(document).ready(function () {
+
+
+            //书籍类别
+            $("#@Html.IdFor(model => model.CateId)").click(function () {
+                var selectedItem = $(this).val();
+                var ddlStates = $("#@Html.IdFor(model => model.BookId)");
+
+                var postData = {
+                    CategoryID: selectedItem,
+                    addSelectStateItem: "true"
+                };
+
+                $.ajax({
+                    cache: false,
+                    type: "GET",
+                    url: "@(Url.Action("GetBooksByCategory", "BookDir"))",
+                    data: postData,
+                    success: function (data, textStatus, jqXHR) {
+
+                      //  console.log("添加数据：" + JSON.stringify(data));
+
+                        ddlStates.html('');
+                        $.each(data, function(id, option) {
+                            ddlStates.append($('<option></option>').val(option.Id).html(option.Name));
+                        });
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $("#statesAlert").click();
+                    }
+                });
+            });
+
+
+            ///
+            $("#@Html.IdFor(model => model.BookId)").click(function () {
+                var selectedItem = $(this).val();
+                var ddlStates = $("#@Html.IdFor(model => model.BookDirId)");
+
+                var postData = {
+                    BookID: selectedItem,
+                    addSelectStateItem: "true"
+                };
+
+                $.ajax({
+                    cache: false,
+                    type: "GET",
+                    url: "@(Url.Action("GetBookDirByBookId", "BookDir"))",
+                    data: postData,
+                    success: function (data, textStatus, jqXHR) {                
+                        ddlStates.html('');
+                        $.each(data, function(id, option) {
+                            ddlStates.append($('<option></option>').val(option.Id).html(option.Name));
+                        });
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $("#statesAlert").click();
+                    }
+                });
+            });
+        });
+</script>

@@ -63,11 +63,8 @@ namespace Nop.Web.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
-
-
             if (!_permissionService.Authorize(StandardPermissionProvider.ManagerBook))
                 return AccessDeniedView();
-
             //prepare model
             var model = _bookDirFactory.PrepareBookDirSearchModel(new BookDirSearchModel(),new BookDirModel());
 

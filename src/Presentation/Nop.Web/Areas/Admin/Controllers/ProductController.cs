@@ -1055,36 +1055,27 @@ namespace Nop.Web.Areas.Admin.Controllers
             var product = _productService.GetProductById(id);
             if (product == null)
                 return RedirectToAction("List");
-
             //a vendor should have access only to his products
             if (_workContext.CurrentVendor != null && product.VendorId != _workContext.CurrentVendor.Id)
                 return RedirectToAction("List");
-
             _productService.DeleteProduct(product);
-
             //activity log
             _customerActivityService.InsertActivity("DeleteProduct",
                 string.Format(_localizationService.GetResource("ActivityLog.DeleteProduct"), product.Name), product);
-
             _notificationService.SuccessNotification(_localizationService.GetResource("Admin.Catalog.Products.Deleted"));
-
             return RedirectToAction("List");
         }
-
         [HttpPost]
         public virtual IActionResult DeleteSelected(ICollection<int> selectedIds)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageProducts))
                 return AccessDeniedView();
-
             if (selectedIds != null)
             {
                 _productService.DeleteProducts(_productService.GetProductsByIds(selectedIds.ToArray()).Where(p => _workContext.CurrentVendor == null || p.VendorId == _workContext.CurrentVendor.Id).ToList());
             }
-
             return Json(new { Result = true });
         }
-
         [HttpPost]
         public virtual IActionResult CopyProduct(ProductModel model)
         {

@@ -246,7 +246,7 @@ namespace Nop.Web.Controllers.Api
                      AppId  = AliSmsManager.accessKeyId,
                      TemplateCode = model.SmsCode
                 };
-               var result = _smsService.CheckMsgValid(record);
+               var result = _smsService.ApplySms(record);
                 if (!result.Result)
                 {
                     return Json(new
@@ -408,104 +408,119 @@ namespace Nop.Web.Controllers.Api
                         data = false
                     });
                 }
-                var registrationResult = _customerRegistrationService.RegisterCustomer(registrationRequest);
-                if (registrationResult.Success)
+
+                try
                 {
-                    //properties
-                    if (_dateTimeSettings.AllowCustomersToSetTimeZone)
+                    var registrationResult = _customerRegistrationService.RegisterCustomer(registrationRequest);
+                    if (registrationResult.Success)
                     {
-                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.TimeZoneIdAttribute, model.TimeZoneId);
-                    }
-                    //form fields
-                    if (_customerSettings.GenderEnabled)
-                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.GenderAttribute, model.Gender);
-                    // _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.FirstNameAttribute, model.FirstName);
-                    _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.LastNameAttribute, model.Name);
-
-                    if (_customerSettings.CompanyEnabled)
-                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.CompanyAttribute, model.Company);
-                    ///保存电话号码
-                    if (_customerSettings.PhoneEnabled)
-                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.PhoneAttribute, model.Phone);
-                    ///保存 邀请码
-                    if (_customerSettings.InviteCodeEnabled)
-                    {
-                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.InviteCodeAttribute, model.InviteCode);
-                    }
-                    if (_customerSettings.IdcardImgEnabled)
-                    {
-                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.IdCardImgAttribute, model.ImgUrl);
-                    }
-                    ///签订保密协议
-                    if (_customerSettings.AcceptPrivacyPolicyEnabled)
-                    {
-                        //privacy policy is required
-                        //GDPR
-                        if (_gdprSettings.GdprEnabled && _gdprSettings.LogPrivacyPolicyConsent)
+                        //properties
+                        if (_dateTimeSettings.AllowCustomersToSetTimeZone)
                         {
-                            _gdprService.InsertLog(customer, 0, GdprRequestType.ConsentAgree, _localizationService.GetResource("Gdpr.Consent.PrivacyPolicy"));
+                            _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.TimeZoneIdAttribute, model.TimeZoneId);
                         }
+                        //form fields
+                        if (_customerSettings.GenderEnabled)
+                            _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.GenderAttribute, model.Gender);
+                        // _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.FirstNameAttribute, model.FirstName);
+                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.LastNameAttribute, model.Name);
+
+                        if (_customerSettings.CompanyEnabled)
+                            _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.CompanyAttribute, model.Company);
+                        ///保存电话号码
+                        if (_customerSettings.PhoneEnabled)
+                            _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.PhoneAttribute, model.Phone);
+                        ///保存 邀请码
+                        if (_customerSettings.InviteCodeEnabled)
+                        {
+                            _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.InviteCodeAttribute, model.InviteCode);
+                        }
+                        if (_customerSettings.IdcardImgEnabled)
+                        {
+                            _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.IdCardImgAttribute, model.ImgUrl);
+                        }
+                        ///签订保密协议
+                        if (_customerSettings.AcceptPrivacyPolicyEnabled)
+                        {
+                            //privacy policy is required
+                            //GDPR
+                            if (_gdprSettings.GdprEnabled && _gdprSettings.LogPrivacyPolicyConsent)
+                            {
+                                _gdprService.InsertLog(customer, 0, GdprRequestType.ConsentAgree, _localizationService.GetResource("Gdpr.Consent.PrivacyPolicy"));
+                            }
+                        }
+                        //save customer attributes
+                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.CustomCustomerAttributes, customerAttributesXml);
+
+
+                        //notifications
+                        if (_customerSettings.NotifyNewCustomerRegistration)
+                            _workflowMessageService.SendCustomerRegisteredNotificationMessage(customer,
+                                _localizationSettings.DefaultAdminLanguageId);
+
+                        //raise event       
+                        _eventPublisher.Publish(new CustomerRegisteredEvent(customer));
+
+                        //switch (_customerSettings.UserRegistrationType)
+                        //{
+                        //    case UserRegistrationType.EmailValidation:
+                        //        {
+                        //            //email validation message
+                        //            _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.AccountActivationTokenAttribute, Guid.NewGuid().ToString());
+                        //            _workflowMessageService.SendCustomerEmailValidationMessage(customer, _workContext.WorkingLanguage.Id);
+
+                        //            //result
+                        //            return RedirectToRoute("RegisterResult",
+                        //                new { resultId = (int)UserRegistrationType.EmailValidation });
+                        //        }
+                        //    case UserRegistrationType.AdminApproval:
+                        //        {
+                        //            return RedirectToRoute("RegisterResult",
+                        //                new { resultId = (int)UserRegistrationType.AdminApproval });
+                        //        }
+                        //    case UserRegistrationType.Standard:
+                        //        {
+                        //            //send customer welcome message
+                        //            _workflowMessageService.SendCustomerWelcomeMessage(customer, _workContext.WorkingLanguage.Id);
+
+                        //            var redirectUrl = Url.RouteUrl("RegisterResult",
+                        //                new { resultId = (int)UserRegistrationType.Standard, returnUrl }, _webHelper.CurrentRequestProtocol);
+                        //            return Redirect(redirectUrl);
+                        //        }
+                        //    default:
+                        //        {
+                        //            return RedirectToRoute("Homepage");
+                        //        }
+                        //}
                     }
-                    //save customer attributes
-                    _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.CustomCustomerAttributes, customerAttributesXml);
+
+                    //errors
+                    foreach (var error in registrationResult.Errors)
+                        ModelState.AddModelError("", error);
 
 
-                    //notifications
-                    if (_customerSettings.NotifyNewCustomerRegistration)
-                        _workflowMessageService.SendCustomerRegisteredNotificationMessage(customer,
-                            _localizationSettings.DefaultAdminLanguageId);
+                    if (registrationResult.Errors.Count > 0)
+                    {
+                        return Json(new
+                        {
+                            code = -1,
+                            msg = string.Join(",", registrationResult.Errors),
+                            data = false
 
-                    //raise event       
-                    _eventPublisher.Publish(new CustomerRegisteredEvent(customer));
-
-                    //switch (_customerSettings.UserRegistrationType)
-                    //{
-                    //    case UserRegistrationType.EmailValidation:
-                    //        {
-                    //            //email validation message
-                    //            _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.AccountActivationTokenAttribute, Guid.NewGuid().ToString());
-                    //            _workflowMessageService.SendCustomerEmailValidationMessage(customer, _workContext.WorkingLanguage.Id);
-
-                    //            //result
-                    //            return RedirectToRoute("RegisterResult",
-                    //                new { resultId = (int)UserRegistrationType.EmailValidation });
-                    //        }
-                    //    case UserRegistrationType.AdminApproval:
-                    //        {
-                    //            return RedirectToRoute("RegisterResult",
-                    //                new { resultId = (int)UserRegistrationType.AdminApproval });
-                    //        }
-                    //    case UserRegistrationType.Standard:
-                    //        {
-                    //            //send customer welcome message
-                    //            _workflowMessageService.SendCustomerWelcomeMessage(customer, _workContext.WorkingLanguage.Id);
-
-                    //            var redirectUrl = Url.RouteUrl("RegisterResult",
-                    //                new { resultId = (int)UserRegistrationType.Standard, returnUrl }, _webHelper.CurrentRequestProtocol);
-                    //            return Redirect(redirectUrl);
-                    //        }
-                    //    default:
-                    //        {
-                    //            return RedirectToRoute("Homepage");
-                    //        }
-                    //}
+                        });
+                    }
                 }
-
-                //errors
-                foreach (var error in registrationResult.Errors)
-                    ModelState.AddModelError("", error);
-
-
-                if (registrationResult.Errors.Count > 0)
+                catch (Exception ex)
                 {
                     return Json(new
                     {
                         code = -1,
-                        msg = string.Join(",", registrationResult.Errors),
+                        msg = ex.Message,
                         data = false
 
                     });
                 }
+         
             }
             else
             {
@@ -750,7 +765,7 @@ namespace Nop.Web.Controllers.Api
 
             };
 
-            var result = _smsService.CheckMsgValid(smr);
+            var result = _smsService.ApplySms(smr);
 
 
             if (result.Result)
@@ -1047,9 +1062,7 @@ namespace Nop.Web.Controllers.Api
         }
         public IActionResult GetRole()
         {
-           var list =  _customerService.GetAllCustomerRoles().ToList();
-
-
+            var list =  _customerService.GetAllCustomerRoles().ToList();
             return Json(new
             {
                 code = 0,
@@ -1060,7 +1073,6 @@ namespace Nop.Web.Controllers.Api
                     SystemName = x.SystemName,
                     IsTeacher = x.Id == 6
                 }).ToList()
-
             });
         }
         [HttpPost]

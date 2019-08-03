@@ -10,6 +10,8 @@ namespace Nop.Core.Domain.AIBookModel
     {
 
         private ICollection<BookNodeComment> _bookNodesComments;
+        //private ICollection<BookNodeBookNodeTagMapping> _bookNodeBookNodeTagMapping;
+
         /// <summary>
         /// 知识点ID
         /// </summary>
@@ -91,6 +93,15 @@ namespace Nop.Core.Domain.AIBookModel
             get => _bookNodesComments ?? (_bookNodesComments = new List<BookNodeComment>());
             protected set => _bookNodesComments = value;
         }
+
+        /// <summary>
+        /// Gets or sets product-product tag mappings
+        /// </summary>
+        //public virtual ICollection<BookNodeBookNodeTagMapping> BookNodeBookNodeTagMappings
+        //{
+        //    get => _bookNodeBookNodeTagMapping ?? (_bookNodeBookNodeTagMapping = new List<BookNodeBookNodeTagMapping>());
+        //    protected set => _bookNodeBookNodeTagMapping = value;
+        //}
         public string ImgUrl { get; set; }
     }
 }

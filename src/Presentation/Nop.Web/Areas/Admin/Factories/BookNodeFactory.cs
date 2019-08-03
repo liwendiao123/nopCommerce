@@ -248,8 +248,7 @@ namespace Nop.Web.Areas.Admin.Factories
                     searchModel.BookId = result.Id;
                     searchModel.AvailableBooks = SelectListHelper.GetBookList(_productService, new List<int> { searchModel.CateId });
                 }
-            }
-     
+            }   
             return searchModel;
         }
     }

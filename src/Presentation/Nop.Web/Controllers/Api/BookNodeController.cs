@@ -53,7 +53,6 @@ namespace Nop.Web.Controllers.Api
             }
             if (!string.IsNullOrEmpty(result.StrJson))
             {
-
                 try
                 {
                     var je = Newtonsoft.Json.JsonConvert.DeserializeObject(result.StrJson);
@@ -112,12 +111,12 @@ namespace Nop.Web.Controllers.Api
                  bookdir = _bookDirService.GetBookDirById(result.BookDirID);
               //  result.BookDir = bookdir;
             }
-
+            var ttbookdir = bookdir == null ? -1 : bookdir.BookID;
+            var bookid = ttbookdir;
+            var product = _productService.GetProductById(bookid);
             BookNodeNewRoot jsonresult = new BookNodeNewRoot();
-
             try
             {
-
                 jsonresult = JsonConvert.DeserializeObject<BookNodeNewRoot>(result.UnityStrJson);
                 jsonresult.Base.buttoninfo = jsonresult.Base.buttoninfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
                 jsonresult.Base.textinfo = jsonresult.Base.textinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
@@ -134,16 +133,12 @@ namespace Nop.Web.Controllers.Api
             {
                 jsonresult = null;
             }
-
-
-
+            //var ttbookdir = bookdir == null ? -1 : bookdir.BookID;
+            //var bookid = ttbookdir;
+            //var product = _productService.GetProductById(bookid);
             result.WebModelUrl = (result.WebModelUrl ?? "").Replace("，", ",");
-
             var arr = result.WebModelUrl.Split(",").ToList().Where(x=>!string.IsNullOrEmpty(x)).ToList();
-
-
             List<string> allList = new List<string>();
-
             arr.ForEach(x =>
             {
                 if (!string.IsNullOrEmpty(x))
@@ -152,10 +147,8 @@ namespace Nop.Web.Controllers.Api
 
                     allList.Add(x);
                 }
-
             });
             var luaurl = _config.HostLuaResource ?? "" + result.WebGltfUrl ?? "";
-
             return Json(new
             {
                 code = 0,
@@ -165,8 +158,9 @@ namespace Nop.Web.Controllers.Api
                     complexLevel = string.IsNullOrEmpty(result.UniqueID) ? 0 : 1,
                     BookID = bookdir == null ? -1 : bookdir.BookID,
                     BookNodeName = result.Name,
+                    BookName = product == null?"":product.Name,
                     appointStrJson = new {
-                        keyname = result.UniqueID,
+                        keyname = result.UniqueID??"",
                         head = _config.HostLuaResource ?? "",
                         lua = _config.HostLuaResource ?? "" + result.WebGltfUrl ?? "",
                         assetbundle = allList
@@ -196,23 +190,31 @@ namespace Nop.Web.Controllers.Api
             {
                 bookdir = _bookDirService.GetBookDirById(result.BookDirID);  
             }
-            var jsonresult = JsonConvert.DeserializeObject<BookNodeNewRoot>(result.UnityStrJson);      
-            jsonresult.Base.buttoninfo = jsonresult.Base.buttoninfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
-            jsonresult.Base.textinfo = jsonresult.Base.textinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
-            jsonresult.Base.imageinfo = jsonresult.Base.imageinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
-            jsonresult.Base.videoinfo = jsonresult.Base.videoinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
-            jsonresult.Base.audioinfo = jsonresult.Base.audioinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
-            jsonresult.Base.camerainfo = jsonresult.Base.camerainfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
-            jsonresult.Base.clickinfo = jsonresult.Base.clickinfo.Where(x => !string.IsNullOrEmpty(x.eventid)).ToList();
-            jsonresult.Base.modelinfo = jsonresult.Base.modelinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
-            jsonresult.Base.openeventstate = jsonresult.Base.openeventstate.Where(x => !string.IsNullOrEmpty(x.enventid)).ToList();
-            jsonresult.Base.closeeventstate = jsonresult.Base.closeeventstate.Where(x => !string.IsNullOrEmpty(x.enventid)).ToList();
+            BookNodeNewRoot jsonresult = new BookNodeNewRoot();
+            try
+            {
+
+                jsonresult = JsonConvert.DeserializeObject<BookNodeNewRoot>(result.UnityStrJson);
+                jsonresult.Base.buttoninfo = jsonresult.Base.buttoninfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+                jsonresult.Base.textinfo = jsonresult.Base.textinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+                jsonresult.Base.imageinfo = jsonresult.Base.imageinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+                jsonresult.Base.videoinfo = jsonresult.Base.videoinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+                jsonresult.Base.audioinfo = jsonresult.Base.audioinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+                jsonresult.Base.camerainfo = jsonresult.Base.camerainfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+                jsonresult.Base.clickinfo = jsonresult.Base.clickinfo.Where(x => !string.IsNullOrEmpty(x.eventid)).ToList();
+                jsonresult.Base.modelinfo = jsonresult.Base.modelinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+                jsonresult.Base.openeventstate = jsonresult.Base.openeventstate.Where(x => !string.IsNullOrEmpty(x.enventid)).ToList();
+                jsonresult.Base.closeeventstate = jsonresult.Base.closeeventstate.Where(x => !string.IsNullOrEmpty(x.enventid)).ToList();
+            }
+            catch (Exception ex)
+            {
+                jsonresult = null;
+            }
             var ttbookdir = bookdir==null ? -1 : bookdir.BookID;
             var bookid = ttbookdir;
             var product =  _productService.GetProductById(bookid);
 
             result.WebModelUrl = (result.WebModelUrl ?? "").Replace("，", ",");
-
             var arr = result.WebModelUrl.Split(",").ToList().Where(x => !string.IsNullOrEmpty(x)).ToList();
             arr.ForEach(x =>
             {
@@ -228,21 +230,169 @@ namespace Nop.Web.Controllers.Api
                 msg = "已成功",
                 data = new
                 {
-                    complexLevel = 0,
+                    complexLevel = result.ComplexLevel,
                     BookID = bookdir == null ? -1 : bookdir.BookID,
                     BookNodeName = result.Name,
                     BookName=product==null? "未知":product.Name,
                     appointStrJson = new
                     {
-                        keyname = result.UniqueID,
+                        keyname = result.UniqueID??"",
                         head = _config.HostLuaResource ?? "",
                         lua = _config.HostLuaResource ?? "" + result.WebGltfUrl ?? "",
                         assetbundle = arr
                     },
-                    strJson = jsonresult
+                    strJson = jsonresult == null ?new object(): jsonresult
                 }
             });
         } 
+        public IActionResult GetKnowledgeByImgName(string imgName)
+        {
+            if (string.IsNullOrEmpty(imgName))
+            {
+                return Json(new
+                {
+                    code =-1,
+                    msg ="识别图名称不能为空",
+                    data = new object()
+                });
+            }
+
+            var result = _aiBookService.GetAiBookModelByArImgName(imgName);
+            if (result == null)
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "知识点不存在",
+                    data = new object()
+                });                   
+            }
+            else
+            {
+                if (result != null && !string.IsNullOrEmpty(result.UniqueID))
+                {
+                    result.ComplexLevel = 1;
+                }
+                if (result == null || (result.ComplexLevel == 0 && string.IsNullOrEmpty(result.UnityStrJson)))
+                {
+                    return Json(new
+                    {
+                        code = -1,
+                        msg = "未对知识点进行泛化",
+                        data = new object()
+                    });
+                }
+                BookDir bookdir = null;
+                if (result != null && result.BookDirID > 0)
+                {
+                    bookdir = _bookDirService.GetBookDirById(result.BookDirID);                
+                }
+                var ttbookdir = bookdir == null ? -1 : bookdir.BookID;
+                var bookid = ttbookdir;
+                var product = _productService.GetProductById(bookid);
+
+                //BookNodeNewRoot jsonresult = new BookNodeNewRoot();
+
+                //try
+                //{
+
+                //    jsonresult = JsonConvert.DeserializeObject<BookNodeNewRoot>(result.UnityStrJson);
+                //    jsonresult.Base.buttoninfo = jsonresult.Base.buttoninfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+                //    jsonresult.Base.textinfo = jsonresult.Base.textinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+                //    jsonresult.Base.imageinfo = jsonresult.Base.imageinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+                //    jsonresult.Base.videoinfo = jsonresult.Base.videoinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+                //    jsonresult.Base.audioinfo = jsonresult.Base.audioinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+                //    jsonresult.Base.camerainfo = jsonresult.Base.camerainfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+                //    jsonresult.Base.clickinfo = jsonresult.Base.clickinfo.Where(x => !string.IsNullOrEmpty(x.eventid)).ToList();
+                //    jsonresult.Base.modelinfo = jsonresult.Base.modelinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+                //    jsonresult.Base.openeventstate = jsonresult.Base.openeventstate.Where(x => !string.IsNullOrEmpty(x.enventid)).ToList();
+                //    jsonresult.Base.closeeventstate = jsonresult.Base.closeeventstate.Where(x => !string.IsNullOrEmpty(x.enventid)).ToList();
+                //}
+                //catch (Exception ex)
+                //{
+                //    jsonresult = null;
+                //}
+                //result.WebModelUrl = (result.WebModelUrl ?? "").Replace("，", ",");
+                //var arr = result.WebModelUrl.Split(",").ToList().Where(x => !string.IsNullOrEmpty(x)).ToList();
+                //List<string> allList = new List<string>();
+                //arr.ForEach(x =>
+                //{
+                //    if (!string.IsNullOrEmpty(x))
+                //    {
+                //        x = (_config.HostLuaResource ?? "") + x;
+
+                //        allList.Add(x);
+                //    }
+
+                //});
+                //var luaurl = _config.HostLuaResource ?? "" + result.WebGltfUrl ?? "";
+
+                return Json(new
+                {
+                    code = 0,
+                    msg = "已成功",
+                    data = new
+                    {
+                        Id = result.Id,
+                        BookID = bookdir == null ? -1 : bookdir.BookID,
+                        BookNodeName = result.Name,
+                        BookName = product == null ?"":product.Name
+                        //appointStrJson = new
+                        //{
+                        //    keyname = result.UniqueID??"",
+                        //    head = _config.HostLuaResource ?? "",
+                        //    lua = _config.HostLuaResource ?? "" + result.WebGltfUrl ?? "",
+                        //    assetbundle = allList
+                        //},
+                        //strJson = jsonresult == null ? new object() : jsonresult
+                    }
+                });
+            }
+        }
+        public IActionResult GetAllBookNodesARInfo(string userName)
+        {
+          var result =  _aiBookService.GetAllAiBookModels().Where(x=>!x.Deleted).OrderBy(x=>x.DisplayOrder).ToList();
+            return Json(new
+            {
+               code = 0,
+               msg = "获取成功",
+               data = result.Where(x=>!string.IsNullOrEmpty(x.AbUrl)).Select(x=>new {
+                   path = x.WebBinUrl??"",
+                   kid = x.BookDirID,
+                   name = x.AbUrl??""
+                 
+               })
+            });
+        }
+
+
+        public IActionResult GetBookNodeKeyName(string keyname)
+        {
+            List<object> ksts = new List<object>
+            {
+                new { 
+                    bookid = "51",
+                    bookname = "人教版历史七年级上册",
+                    kid = "135",
+                    name = "人面鱼纹彩陶盆"
+                },
+                new {
+                    bookid = "51",
+                    bookname = "人教版历史七年级上册",
+                    kid = "140",
+                    name = "玉蟾岩遗址出土的稻谷"
+                }
+            };
+           
+
+            return Json(new
+            {
+                code = 0,
+                msg = "获取成功",
+                data = ksts
+            });
+        }
+
         public BookNodeRoot Init()
         {
 

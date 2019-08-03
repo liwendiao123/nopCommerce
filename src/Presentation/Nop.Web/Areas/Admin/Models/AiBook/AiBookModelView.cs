@@ -350,15 +350,15 @@ namespace Nop.Web.Areas.Admin.Models.AiBook
         public string Name { get; set; }
         [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.Desc")]
         public string Desc { get; set; }
-        [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.Unique")]
+        [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.UniqueId")]
         public string UniqueId { get; set; }
-        [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.WebModelUrl")]
+        [NopResourceDisplayName("Admin.AiBook.AiBookModel.Fields.WebModelUrl")]
         public string WebModelUrl { get; set; }
-        [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.WebGltfUrl")]
+        [NopResourceDisplayName("Admin.AiBook.AiBookModel.Fields.WebGltfUrl")]
         public string WebGltfUrl { get; set; }
         [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.WebBinUrl")]
         public string WebBinUrl { get; set; }
-        [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.AbUrl")]
+        [NopResourceDisplayName("Admin.AiBook.AiBookModel.Fields.AbUrl")]
         public string AbUrl { get; set; }
         [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.ImgUrl")]     
         public string ImgUrl { get; set; }

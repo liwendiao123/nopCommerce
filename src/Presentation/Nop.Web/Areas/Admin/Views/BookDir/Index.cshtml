@@ -73,12 +73,12 @@
                                         <nop-editor asp-for="SearchDirName" />
                                     </div>
                                 </div>
-                                <div class="form-group" @(Model.HideStoresList ? Html.Raw("style=\"display:none\"") : null)>
+                                <div class="form-group">
                                     <div class="col-md-4">
-                                        <nop-label asp-for="SearchStoreId" />
+                                        <nop-label asp-for="CategoryID" />
                                     </div>
                                     <div class="col-md-8">
-                                        <nop-select asp-for="SearchStoreId" asp-items="Model.AvailableStores" />
+                                        <nop-select asp-for="CategoryID" asp-items="Model.AvailableCategories" />
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -90,17 +90,10 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group">
-                                    <div class="col-md-4">
-                                        <nop-label asp-for="CategoryID" />
-                                    </div>
-                                    <div class="col-md-8">
-                                        <nop-select asp-for="CategoryID" asp-items="Model.AvailableCategories" />
-                                    </div>
-                                </div>
+
                                 <div class="form-group">
                                     <div class="col-md-8 col-md-offset-4">
-                                        <button type="button" id="search-categories" class="btn btn-primary btn-search"><i class="fa fa-search"></i>@T("Admin.Common.Search")</button>
+                                        <button type="button" id="search-bookdirs" class="btn btn-primary btn-search"><i class="fa fa-search"></i>@T("Admin.Common.Search")</button>
                                     </div>
                                 </div>
                             </div>
@@ -196,6 +189,68 @@
                     </div>
                 </div>
             </form>
-        </div>
+        </div><script>
+      $(document).ready(function () {
+
+
+            //书籍类别
+            $("#@Html.IdFor(model => model.CateId)").click(function () {
+                var selectedItem = $(this).val();
+                var ddlStates = $("#@Html.IdFor(model => model.BookId)");
+
+                var postData = {
+                    CategoryID: selectedItem,
+                    addSelectStateItem: "true"
+                };
+
+                $.ajax({
+                    cache: false,
+                    type: "GET",
+                    url: "@(Url.Action("GetBooksByCategory", "BookDir"))",
+                    data: postData,
+                    success: function (data, textStatus, jqXHR) {
+
+                      //  console.log("添加数据：" + JSON.stringify(data));
+
+                        ddlStates.html('');
+                        $.each(data, function(id, option) {
+                            ddlStates.append($('<option></option>').val(option.Id).html(option.Name));
+                        });
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $("#statesAlert").click();
+                    }
+                });
+            });
+
+
+            ///
+            $("#@Html.IdFor(model => model.BookId)").click(function () {
+                var selectedItem = $(this).val();
+                var ddlStates = $("#@Html.IdFor(model => model.BookDirId)");
+
+                var postData = {
+                    BookID: selectedItem,
+                    addSelectStateItem: "true"
+                };
+
+                $.ajax({
+                    cache: false,
+                    type: "GET",
+                    url: "@(Url.Action("GetBookDirByBookId", "BookDir"))",
+                    data: postData,
+                    success: function (data, textStatus, jqXHR) {
+                        ddlStates.html('');
+                        $.each(data, function(id, option) {
+                            ddlStates.append($('<option></option>').val(option.Id).html(option.Name));
+                        });
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $("#statesAlert").click();
+                    }
+                });
+            });
+        });
+</script>
     </div>
 </div>

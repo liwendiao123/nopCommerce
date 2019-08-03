@@ -1012,7 +1012,7 @@ namespace Nop.Services.Customers
             {
                 var query = from cr in _customerRoleRepository.Table
                             orderby cr.Id
-                            where cr.SystemName == systemName
+                            where (cr.SystemName == systemName || cr.Name == systemName)
                             select cr;
                 var customerRole = query.FirstOrDefault();
                 return customerRole;

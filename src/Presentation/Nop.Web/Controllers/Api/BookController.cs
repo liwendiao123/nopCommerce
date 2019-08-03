@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Nop.Services.Catalog;
+using Nop.Services.Media;
 using Nop.Web.Models.Api.Book;
 
 namespace Nop.Web.Controllers.Api
@@ -12,9 +13,13 @@ namespace Nop.Web.Controllers.Api
     {
 
         private readonly IProductService _productService;
-        public BookController(IProductService productService)
+        private readonly IPictureService _pictureService;
+        public BookController(IProductService productService
+                                ,IPictureService pictureService
+                                )
         {
             _productService = productService;
+            _pictureService = pictureService;
         }
         public IActionResult Index()
         {
@@ -39,26 +44,46 @@ namespace Nop.Web.Controllers.Api
             }
 
            var product = _productService.SearchProducts(requst.Pageindex, requst.PageSize, new List<int>() { requst.CateId });
-          
+            //product.Select(x =>
+            //{
+            //    var defaultProductPicture = _pictureService.GetPicturesByProductId(product.Id, 1).FirstOrDefault();
+            //    x.Img = _pictureService.GetPictureUrl(defaultProductPicture, 75);
+            //    return x;
+            //});
+            
             return Json(new
             {
                 code = 0,
                 msg = "获取成功",
-                data = product.Select(x => new {               
-                   Id = x.Id,
-                   Name = x.Name?.Trim(),
-                   TestName =   x.Name?.Trim(),
-                   Cateid =string.Join("," ,x.ProductCategories.Select(y=>y.Id)),
-                   Imgurl = "http://arbookresouce.73data.cn/book/img/sy_img_02.png",
-                   x.DisplayOrder,
-                   VendorName = "广西人民出版社",
-                   Desc =x.FullDescription,
-                   x.Price,
-                   Tag = x.ProductProductTagMappings.Select(t=>new {
-                        BookId = t.ProductId,
-                        Tag = t.ProductTag,
-                        TagId = t.ProductTagId
-                   }).ToList()
+                data = product.Select(x =>  {
+
+                  var imgurl = string.Empty;
+                    var defaultProductPicture = _pictureService.GetPicturesByProductId(x.Id, 1).FirstOrDefault();
+
+                    if (defaultProductPicture != null)
+                    {
+                        imgurl = _pictureService.GetPictureUrl(defaultProductPicture);
+                    }
+                   
+                    return new
+                    {
+                        Id = x.Id,
+                        Name = x.Name?.Trim(),
+                        TestName = x.Name?.Trim(),
+                        Cateid = string.Join(",", x.ProductCategories.Select(y => y.Id)),
+                        Imgurl =string.IsNullOrEmpty( imgurl)? "http://arbookresouce.73data.cn/book/img/sy_img_02.png":imgurl,
+                        x.DisplayOrder,
+                        VendorName = "广西人民出版社",
+                        Desc = x.FullDescription,
+                        x.Price,
+                        Tag = x.ProductProductTagMappings.Select(t => new
+                        {
+                            BookId = t.ProductId,
+                            Tag = t.ProductTag,
+                            TagId = t.ProductTagId
+                        }).ToList()
+                    };
+                
                 })
             });
 

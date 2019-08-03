@@ -46,6 +46,9 @@ namespace Nop.Services.AIBookModel
 
         public static string GetChildBookNodesByParentIdCacheKey => "Nop.BookNodes.SubDir.ids-{0}";
 
+
+        public static string BookNodesByBookDirIdsCacheKey => "Nop.BookNodes.BookDirIds-{0}";
+
         #endregion
     }
 }

@@ -126,9 +126,6 @@ namespace Nop.Services.AIBookModel
         {
             if (booknodeId == 0)
                 return null;
-
-
-
             AiBookModel LoadStoreFunc()
             {
               var item = _bookNodeRepository.GetById(booknodeId);
@@ -156,6 +153,42 @@ namespace Nop.Services.AIBookModel
                 return store;
             });
         }
+
+
+        public AiBookModel GetAiBookModelByArImgName(string imgName, bool loadCacheableCopy = true)
+        {
+            if (string.IsNullOrEmpty(imgName))
+                return null;
+            AiBookModel LoadStoreFunc()
+            {
+                var items = from s in _bookNodeRepository.Table where s.AbUrl == imgName select s;
+
+                var item = items.ToList().FirstOrDefault();
+
+                //if (item != null && item.BookDirID > 0)
+                //{
+                //  var bookdir =  _bookDirService.GetBookDirById(item.BookDirID);
+
+                //   // item.BookDir = bookdir;
+                //}
+
+                return item;
+            }
+
+            if (!loadCacheableCopy)
+                return LoadStoreFunc();
+
+            //cacheable copy
+            var key = string.Format(NopBookNodeDefault.BookNodesByIdCacheKey, imgName);
+            return _cacheManager.Get(key, () =>
+            {
+                var store = LoadStoreFunc();
+                if (store == null)
+                    return null;
+                return store;
+            });
+        }
+
         public IList<AiBookModel> GetAllAiBookModels(bool loadCacheableCopy = true)
         {
             IList<AiBookModel> loadBookDirsFunc()
@@ -178,6 +211,33 @@ namespace Nop.Services.AIBookModel
             return loadBookDirsFunc();
             //throw new NotImplementedException();
         }
+
+
+        public IList<AiBookModel> AiBookModelByBookDirLastNodeId(List<int> bookdirIds, bool loadCacheableCopy = true)
+        {
+            IList<AiBookModel> loadBookDirsFunc()
+            {
+                var query = from s in _bookNodeRepository.Table
+                            where bookdirIds.Contains(s.BookDirID)
+                            orderby s.DisplayOrder, s.Id select s;
+                return query.ToList();
+            }
+
+            if (loadCacheableCopy)
+            {
+                //cacheable copy
+                return _cacheManager.Get(string.Format(NopBookNodeDefault.BookNodesByBookDirIdsCacheKey,string.Join(",",bookdirIds)), () =>
+                {
+                    var result = new List<AiBookModel>();
+                    foreach (var store in loadBookDirsFunc())
+                        result.Add(store);
+                    return result;
+                });
+            }
+            return loadBookDirsFunc();
+        }
+
+
         public string[] GetNotExistingAiBookModels(string[] storeIdsNames)
         {
             if (storeIdsNames == null)
@@ -472,6 +532,9 @@ namespace Nop.Services.AIBookModel
                 DeleteNewsComment(newsComment);
             }
         }
+
+       
+
 
         #endregion
     }

@@ -288,10 +288,8 @@ namespace Nop.Web.Areas.Admin.Controllers
         public IActionResult GetBookDirByBookId(BookDirSearchModel searchModel)
         {
            var model = _bookDirFactory.PrepareBookDirListModel(searchModel);
-
             return Json(model.Data.ToList());
         }
-
         [HttpPost]
         public IActionResult ImportExcel(IFormFile importexcelfile,string booknodeid)
         {
@@ -319,25 +317,20 @@ namespace Nop.Web.Areas.Admin.Controllers
         #endregion
 
         #endregion
-
         #region 知识点评论
-
         public virtual IActionResult NewsComments(int? filterByNewsItemId)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageNews))
                 return AccessDeniedView();
-
             //try to get a news item with the specified id
             //var newsItem = _newsService.GetNewsById(filterByNewsItemId ?? 0);
            // if (newsItem == null && filterByNewsItemId.HasValue)
                 return RedirectToAction("NewsComments");
-
             //prepare model
            // var model = _newsModelFactory.PrepareNewsCommentSearchModel(new NewsCommentSearchModel(), newsItem);
 
             //return View(model);
         }
-
         [HttpPost]
         public virtual IActionResult Comments(BookNodeCommentSearchModelView searchModel)
         {
