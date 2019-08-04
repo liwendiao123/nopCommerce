@@ -50,5 +50,17 @@ namespace Nop.Services.AIBookModel
         public static string BookNodesByBookDirIdsCacheKey => "Nop.BookNodes.BookDirIds-{0}";
 
         #endregion
+
+        #region BookNodeTag
+        public static string BookNodesTagPrefixCacheKey => "Nop.BookNodesTag.";
+        public static string BookNodesTagPrefixPopularModelKey => "Nop.BookNodesTag.popular";
+
+        public static string BookNodesTagPopularModelKey => "Nop.BookNodesTag.popular-{0}-{1}";
+
+        public static string BookNodesTagAllByProductIdCacheKey => "Nop.BookNodesTag.allbybooknodeid-{0}";
+        //   public static string BookNodesTagPrefixCacheKey => "Nop.BookNodesTag.";
+
+        #endregion
+
     }
 }

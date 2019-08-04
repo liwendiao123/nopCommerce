@@ -14,8 +14,7 @@ namespace Nop.Web.Areas.Admin.Models.Catalog
     public partial class ProductModel : BaseNopEntityModel, 
         IAclSupportedModel, IDiscountSupportedModel, ILocalizedModel<ProductLocalizedModel>, IStoreMappingSupportedModel
     {
-        #region Ctor
-
+        #region Ctor 
         public ProductModel()
         {
             ProductPictureModels = new List<ProductPictureModel>();
@@ -32,7 +31,7 @@ namespace Nop.Web.Areas.Admin.Models.Catalog
           AvailableDeliveryDates = new List<SelectListItem>();
 AvailableProductAvailabilityRanges = new List<SelectListItem>();
              AvailableWarehouses = new List<SelectListItem>();
-            ProductsTypesSupportedByProductTemplates = new Dictionary<int, IList<SelectListItem>>();
+ProductsTypesSupportedByProductTemplates = new Dictionary<int, IList<SelectListItem>>();
 
             AvailableVendors = new List<SelectListItem>();
             SelectedStoreIds = new List<int>();

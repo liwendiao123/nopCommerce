@@ -80,8 +80,26 @@ namespace Nop.Web.Controllers.Api
             }
           
         }
-        public IActionResult GetJsonData(int id)
+        public IActionResult GetJsonData(int id,string platformtype)
         {
+
+
+            string platformtypepath = "windows";
+            switch (platformtype)
+            {
+                case "1":
+                    platformtypepath = "ios";
+                    break;
+                case "2":
+                    platformtypepath = "android";
+                    break;
+                case "3":
+                    platformtypepath = "windows";
+                    break;
+
+            }
+
+
            var result = _aiBookService.SearchAiBookModels("",0,int.MaxValue,null,0,id).FirstOrDefault();
             if (result == null)
             {
@@ -108,8 +126,7 @@ namespace Nop.Web.Controllers.Api
             BookDir bookdir = null;
             if (result != null && result.BookDirID > 0)
             {
-                 bookdir = _bookDirService.GetBookDirById(result.BookDirID);
-              //  result.BookDir = bookdir;
+                 bookdir = _bookDirService.GetBookDirById(result.BookDirID);          
             }
             var ttbookdir = bookdir == null ? -1 : bookdir.BookID;
             var bookid = ttbookdir;
@@ -143,12 +160,12 @@ namespace Nop.Web.Controllers.Api
             {
                 if (!string.IsNullOrEmpty(x))
                 {
-                    x =( _config.HostLuaResource ?? "") + x;
+                    x =( _config.HostLuaResource ?? "") + platformtypepath + "/"  + x;
 
                     allList.Add(x);
                 }
             });
-            var luaurl = _config.HostLuaResource ?? "" + result.WebGltfUrl ?? "";
+            var luaurl = _config.HostLuaResource ?? "" + platformtypepath + "/"  + result.WebGltfUrl ?? "";
             return Json(new
             {
                 code = 0,
@@ -162,7 +179,7 @@ namespace Nop.Web.Controllers.Api
                     appointStrJson = new {
                         keyname = result.UniqueID??"",
                         head = _config.HostLuaResource ?? "",
-                        lua = _config.HostLuaResource ?? "" + result.WebGltfUrl ?? "",
+                        lua = _config.HostLuaResource ?? "" +platformtypepath +"/" + result.WebGltfUrl ?? "",
                         assetbundle = allList
                     },
                     strJson = jsonresult==null?new object(): jsonresult
@@ -374,17 +391,18 @@ namespace Nop.Web.Controllers.Api
                     bookid = "51",
                     bookname = "人教版历史七年级上册",
                     kid = "135",
-                    name = "人面鱼纹彩陶盆"
+          
+                    name = "人面鱼纹彩陶盆",
+                         imgurl="http://arbookresouce.73data.cn/book/img/sy_img_02.png",
                 },
                 new {
                     bookid = "51",
                     bookname = "人教版历史七年级上册",
                     kid = "140",
-                    name = "玉蟾岩遗址出土的稻谷"
+                    name = "玉蟾岩遗址出土的稻谷",
+                     imgurl="http://arbookresouce.73data.cn/book/img/sy_img_02.png"
                 }
-            };
-           
-
+            };          
             return Json(new
             {
                 code = 0,
@@ -395,7 +413,6 @@ namespace Nop.Web.Controllers.Api
 
         public BookNodeRoot Init()
         {
-
             var root = new BookNodeRoot();
             root.code = "1";
             // if (root.Base == null)

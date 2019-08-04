@@ -17,7 +17,7 @@ namespace Nop.Core.Domain.AIBookModel
         /// <summary>
         /// Gets or sets product-product tag mappings
         /// </summary>
-        public virtual ICollection<BookNodeBookNodeTagMapping> ProductProductTagMappings
+        public virtual ICollection<BookNodeBookNodeTagMapping> BookNodeBookNodeTagMappings
         {
             get => _bookNodeBookNodeTagMappings ?? (_bookNodeBookNodeTagMappings = new List<BookNodeBookNodeTagMapping>());
             protected set => _bookNodeBookNodeTagMappings = value;

@@ -16,6 +16,7 @@ namespace Nop.Core.Domain.AIBookModel
         /// </summary>
         public int BookNodeTagId { get; set; }
 
+     
         public virtual AiBookModel BookNode { get; set; }
 
         public virtual BookNodeTag BookNodeTag { get; set; }

@@ -114,7 +114,10 @@
                    Filters = new List<FilterParameter>
                         {
                             new FilterParameter(nameof(Model.SearchDirName)),
-                            new FilterParameter(nameof(Model.SearchStoreId))
+                            new FilterParameter(nameof(Model.SearchStoreId)),
+                            new FilterParameter(nameof(Model.CategoryID)),
+                            new FilterParameter(nameof(Model.BookID))
+
                         },
                    ColumnCollection = new List<ColumnProperty>
                         {
@@ -194,9 +197,9 @@
 
 
             //书籍类别
-            $("#@Html.IdFor(model => model.CateId)").click(function () {
+            $("#@Html.IdFor(model => model.CategoryID)").click(function () {
                 var selectedItem = $(this).val();
-                var ddlStates = $("#@Html.IdFor(model => model.BookId)");
+                var ddlStates = $("#@Html.IdFor(model => model.BookID)");
 
                 var postData = {
                     CategoryID: selectedItem,
@@ -225,7 +228,7 @@
 
 
             ///
-            $("#@Html.IdFor(model => model.BookId)").click(function () {
+            $("#@Html.IdFor(model => model.BookID)").click(function () {
                 var selectedItem = $(this).val();
                 var ddlStates = $("#@Html.IdFor(model => model.BookDirId)");
 

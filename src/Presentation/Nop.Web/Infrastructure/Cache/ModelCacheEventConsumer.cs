@@ -1,4 +1,5 @@
 ﻿using Nop.Core.Caching;
+using Nop.Core.Domain.AIBookModel;
 using Nop.Core.Domain.Blogs;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Configuration;
@@ -63,6 +64,13 @@ namespace Nop.Web.Infrastructure.Cache
         IConsumer<EntityInsertedEvent<ProductTag>>,
         IConsumer<EntityUpdatedEvent<ProductTag>>,
         IConsumer<EntityDeletedEvent<ProductTag>>,
+
+        //BookNode Tag
+        IConsumer<EntityInsertedEvent<BookNodeTag>>,
+        IConsumer<EntityUpdatedEvent<BookNodeTag>>,
+        IConsumer<EntityDeletedEvent<BookNodeTag>>,
+
+
         //specification attributes
         IConsumer<EntityUpdatedEvent<SpecificationAttribute>>,
         IConsumer<EntityDeletedEvent<SpecificationAttribute>>,
@@ -737,6 +745,42 @@ namespace Nop.Web.Infrastructure.Cache
             if (eventMessage?.Plugin?.Instance<IWidgetPlugin>() != null)
                 _cacheManager.RemoveByPrefix(NopModelCacheDefaults.WidgetPrefixCacheKey);
         }
+     
+        //public void HandleEvent(EntityUpdatedEvent<ProductTag> eventMessage)
+        //{
+        //    _cacheManager.RemoveByPrefix(NopModelCacheDefaults.ProductTagPopularPrefixCacheKey);
+        //    _cacheManager.RemoveByPrefix(NopModelCacheDefaults.ProductTagByProductPrefixCacheKey);
+        //    _cacheManager.RemoveByPrefix(NopModelCacheDefaults.SitemapPrefixCacheKey);
+        //}
+        //public void HandleEvent(EntityDeletedEvent<ProductTag> eventMessage)
+        //{
+        //    _cacheManager.RemoveByPrefix(NopModelCacheDefaults.ProductTagPopularPrefixCacheKey);
+        //    _cacheManager.RemoveByPrefix(NopModelCacheDefaults.ProductTagByProductPrefixCacheKey);
+        //    _cacheManager.RemoveByPrefix(NopModelCacheDefaults.SitemapPrefixCacheKey);
+        //}
+
+        public void HandleEvent(EntityInsertedEvent<BookNodeTag> eventMessage)
+        {
+            _cacheManager.RemoveByPrefix(NopModelCacheDefaults.BookNodesTagPrefixPopularModelKey);
+           // _cacheManager.RemoveByPrefix(NopModelCacheDefaults.ProductTagByProductPrefixCacheKey);
+            _cacheManager.RemoveByPrefix(NopModelCacheDefaults.SitemapPrefixCacheKey);
+        }
+
+        public void HandleEvent(EntityUpdatedEvent<BookNodeTag> eventMessage)
+        {
+            _cacheManager.RemoveByPrefix(NopModelCacheDefaults.BookNodesTagPrefixPopularModelKey);
+        //    _cacheManager.RemoveByPrefix(NopModelCacheDefaults.ProductTagByProductPrefixCacheKey);
+          _cacheManager.RemoveByPrefix(NopModelCacheDefaults.SitemapPrefixCacheKey);
+        }
+
+        public void HandleEvent(EntityDeletedEvent<BookNodeTag> eventMessage)
+        {
+            _cacheManager.RemoveByPrefix(NopModelCacheDefaults.BookNodesTagPrefixPopularModelKey);
+           // _cacheManager.RemoveByPrefix(NopModelCacheDefaults.ProductTagByProductPrefixCacheKey);
+            _cacheManager.RemoveByPrefix(NopModelCacheDefaults.SitemapPrefixCacheKey);
+        }
+
+
 
         #endregion
     }

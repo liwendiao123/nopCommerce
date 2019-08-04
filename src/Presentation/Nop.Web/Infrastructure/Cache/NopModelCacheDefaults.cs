@@ -168,6 +168,11 @@
         public static string ProductTagPopularModelKey => "Nop.pres.producttag.popular-{0}-{1}";
         public static string ProductTagPopularPrefixCacheKey => "Nop.pres.producttag.popular";
 
+
+        public static string BookNodesTagPrefixPopularModelKey => "Nop.pres.BookNodesTag.popular";
+
+        public static string BookNodesTagPopularModelKey => "Nop.pres.BookNodesTag.popular-{0}-{1}";
+
         /// <summary>
         /// Key for ProductManufacturers model caching
         /// </summary>

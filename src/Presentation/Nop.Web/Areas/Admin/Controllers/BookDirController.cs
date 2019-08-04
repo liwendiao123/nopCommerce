@@ -186,20 +186,15 @@ namespace Nop.Web.Areas.Admin.Controllers
 
         public IActionResult Edit(int id)
         {
-
             //try to get a category with the specified id
             //  var bookdir = _categoryService.GetCategoryById(id);
             var bookdir = _bookDirService.GetBookDirById(id);
             if (bookdir == null || bookdir.Deleted)
                 return RedirectToAction("List");
-
             //prepare model
             //var model = _categoryModelFactory.PrepareCategoryModel(null, category);
-
             var model = _bookDirFactory.PrepareBookDirModel(null,bookdir);
-
             return View(model);
-
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
@@ -212,12 +207,10 @@ namespace Nop.Web.Areas.Admin.Controllers
             var category = _bookDirService.GetBookDirById(model.Id);
             if (category == null || category.Deleted)
                 return RedirectToAction("Index");
-
             model.CreatedOnUtc = category.CreatedOnUtc; 
             if (ModelState.IsValid)
             {
                 var prevPictureId = category.PictureId;
-
                 category = model.ToEntity(category);
                 category.UpdatedOnUtc = DateTime.UtcNow;
                 //.UpdateCategory(category);
@@ -225,11 +218,8 @@ namespace Nop.Web.Areas.Admin.Controllers
                 //search engine name
                 model.SeName = _urlRecordService.ValidateSeName(category, model.SeName, category.Name, true);
                 _urlRecordService.SaveSlug(category, model.SeName, 0);
-
                 //locales
                 UpdateLocales(category, model);
-
-
                 //delete an old picture (if deleted or updated)
                 if (prevPictureId > 0 && prevPictureId != category.PictureId)
                 {
@@ -237,28 +227,20 @@ namespace Nop.Web.Areas.Admin.Controllers
                     if (prevPicture != null)
                         _pictureService.DeletePicture(prevPicture);
                 }
-
                 //update picture seo file name
                // UpdatePictureSeoNames(category);
-
                 //ACL
                 //SaveCategoryAcl(category, model);
-
                 //stores
                // SaveStoreMappings(category, model);
-
                 //activity log
                 _customerActivityService.InsertActivity("EditBookDir",
                     string.Format(_localizationService.GetResource("ActivityLog.EditBookDir"), category.Name), category);
-
                 _notificationService.SuccessNotification(_localizationService.GetResource("Admin.AibookDir.EditBookDir.Updated"));
-
                 if (!continueEditing)
                     return RedirectToAction("Index");
-
                 return RedirectToAction("Edit", new { id = category.Id });
             }
-
             //prepare model
              model = _bookDirFactory.PrepareBookDirModel(model, category);
 

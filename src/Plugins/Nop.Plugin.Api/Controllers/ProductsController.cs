@@ -461,10 +461,8 @@ namespace Nop.Plugin.Api.Controllers
         {
             if (productTags == null)
                 return;
-
             if (product == null)
                 throw new ArgumentNullException(nameof(product));
-
             //Copied from UpdateProductTags method of ProductTagService
             //product tags
             var existingProductTags = _productTagService.GetAllProductTagsByProductId(product.Id);
@@ -476,7 +474,6 @@ namespace Nop.Plugin.Api.Controllers
                 {
                     if (!existingProductTag.Name.Equals(newProductTag, StringComparison.InvariantCultureIgnoreCase))
                         continue;
-
                     found = true;
                     break;
                 }

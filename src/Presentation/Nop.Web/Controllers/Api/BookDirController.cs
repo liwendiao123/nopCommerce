@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Nop.Services.AIBookModel;
+using Nop.Services.Media;
 using Nop.Services.TableOfContent;
 using Nop.Web.Areas.Admin.Factories;
 using Nop.Web.Areas.Admin.Models.TableOfContent;
@@ -17,12 +18,14 @@ namespace Nop.Web.Controllers.Api
         private readonly IBookDirFactory _bookDirFactory;
         private readonly IBookNodeFactory _bookNodeFactory;
         private readonly IAiBookService _bookNodeService;
+        private readonly IPictureService _pictureService;
         private readonly IProductModelFactory _productModelFactory;
         public BookDirController(  
             IBookDirService bookDirService
             , IBookDirFactory bookDirFactory
             ,IBookNodeFactory bookNodeFactory
             , IAiBookService bookNodeService
+            ,IPictureService pictureService
             , IProductModelFactory productModelFactory)
         {
             _bookDirService = bookDirService;
@@ -30,6 +33,7 @@ namespace Nop.Web.Controllers.Api
             _bookNodeService  = bookNodeService;
             _bookNodeFactory = bookNodeFactory;
             _productModelFactory = productModelFactory;
+            _pictureService = pictureService;
         }
         public IActionResult Index()
         {
@@ -48,8 +52,6 @@ namespace Nop.Web.Controllers.Api
             var bookdirIds = result.Where(x=>x.IsLastNode).Select(x => x.Id).ToList();
 
           var bookNodeResult =  _bookNodeService.AiBookModelByBookDirLastNodeId(bookdirIds);
-
-
 
             result.ForEach(x =>
             {
@@ -75,6 +77,11 @@ namespace Nop.Web.Controllers.Api
           var  list = new List<BookDirTreeModel>();
             treeresult.ToList().ForEach(x =>
             {
+               
+                var imgurl = _pictureService.GetPictureUrl(x.PictureId);
+
+                
+     
                 list.Add(new BookDirTreeModel
                 {
                     Id=  x.Id,  //章节ID
@@ -88,7 +95,7 @@ namespace Nop.Web.Controllers.Api
                     DisplayOrder =  x.DisplayOrder,//展示顺序
                     IsLastNode = x.IsLastNode,  //是否为知识点
                     ComplexLevel = x.ComplexLevel, //收费费复杂知识点
-                    ImgUrl = "http://arbookresouce.73data.cn/book/img/sy_img_02.png",//封面展示
+                    ImgUrl = imgurl,//封面展示
                     BookNodeUrl =x.BookNodeUrl //获取对应知识点 Url 
                 });
 
@@ -160,8 +167,8 @@ namespace Nop.Web.Controllers.Api
             treeresult.ToList().ForEach(x =>
             {
 
-              
 
+                var imgurl = _pictureService.GetPictureUrl(x.PictureId);
 
                 list.Add(new BookDirTreeModel
                 {
@@ -176,7 +183,7 @@ namespace Nop.Web.Controllers.Api
                     DisplayOrder = x.DisplayOrder,//展示顺序
                     IsLastNode = x.IsLastNode,  //是否为知识点
                     ComplexLevel = x.ComplexLevel, //收费费复杂知识点
-                    ImgUrl = "http://arbookresouce.73data.cn/book/img/sy_img_02.png",//封面展示
+                    ImgUrl = imgurl,//封面展示
                     //获取对应知识点 Url"
                     BookNodeUrl = "http://www.73data.cn/EduProject/Sports.php?id="+ x.Id
                                    

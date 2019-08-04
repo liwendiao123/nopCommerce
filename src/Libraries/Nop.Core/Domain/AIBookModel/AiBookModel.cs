@@ -10,8 +10,7 @@ namespace Nop.Core.Domain.AIBookModel
     {
 
         private ICollection<BookNodeComment> _bookNodesComments;
-        //private ICollection<BookNodeBookNodeTagMapping> _bookNodeBookNodeTagMapping;
-
+        private ICollection<BookNodeBookNodeTagMapping> _bookNodeBookNodeTagMappings;
         /// <summary>
         /// 知识点ID
         /// </summary>
@@ -84,7 +83,7 @@ namespace Nop.Core.Domain.AIBookModel
         /// </summary>
         public DateTime UpdatedOnUtc { get; set; }
 
-    
+        public string ImgUrl { get; set; }
         /// <summary>
         /// Gets or sets the news comments
         /// </summary>
@@ -93,15 +92,14 @@ namespace Nop.Core.Domain.AIBookModel
             get => _bookNodesComments ?? (_bookNodesComments = new List<BookNodeComment>());
             protected set => _bookNodesComments = value;
         }
-
         /// <summary>
         /// Gets or sets product-product tag mappings
         /// </summary>
-        //public virtual ICollection<BookNodeBookNodeTagMapping> BookNodeBookNodeTagMappings
-        //{
-        //    get => _bookNodeBookNodeTagMapping ?? (_bookNodeBookNodeTagMapping = new List<BookNodeBookNodeTagMapping>());
-        //    protected set => _bookNodeBookNodeTagMapping = value;
-        //}
-        public string ImgUrl { get; set; }
+        public virtual ICollection<BookNodeBookNodeTagMapping> BookNodeBookNodeTagMappings
+        {
+            get => _bookNodeBookNodeTagMappings ?? (_bookNodeBookNodeTagMappings = new List<BookNodeBookNodeTagMapping>());
+            protected set => _bookNodeBookNodeTagMappings = value;
+        }
+        
     }
 }

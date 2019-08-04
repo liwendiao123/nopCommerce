@@ -152,7 +152,7 @@
                     data: postData,
                     success: function (data, textStatus, jqXHR) {
 
-                        console.log("添加数据：" + JSON.stringify(data));
+                       // console.log("添加数据：" + JSON.stringify(data));
 
                         ddlStates.html('');
                         ddlStates.append($('<option></option>').val("-1").html("无"));
@@ -184,9 +184,7 @@
                     url: "@(Url.Action("GetBookDirByBookId", "BookDir"))",
                     data: postData,
                     success: function (data, textStatus, jqXHR) {
-
-                        console.log("添加数据：" + JSON.stringify(data));
-
+                       // console.log("添加数据：" + JSON.stringify(data));
                         ddlStates.html('');
                         ddlStates.append($('<option></option>').val("-1").html("无"));
                         $.each(data, function(id, option) {

@@ -397,6 +397,23 @@ namespace Nop.Services.AIBookModel
         {
             return false;
         }
+
+
+        /// <summary>
+        /// Indicates whether a product tag exists
+        /// </summary>
+        /// <param name="product">Product</param>
+        /// <param name="productTagId">Product tag identifier</param>
+        /// <returns>Result</returns>
+        public virtual bool BookNodeTagExists(AiBookModel product, int productTagId)
+        {
+            if (product == null)
+                throw new ArgumentNullException(nameof(product));
+
+            var result = product.BookNodeBookNodeTagMappings.Any(pt => pt.BookNodeTagId == productTagId);
+            return result;
+        }
+
         #endregion
 
 

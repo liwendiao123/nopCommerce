@@ -45,7 +45,7 @@ namespace Nop.Services.AIBookModel
         /// <param name="loadCacheableCopy">A value indicating whether to load a copy that could be cached (workaround until Entity Framework supports 2-level caching)</param>
         /// <returns>Store</returns>
         AiBookModel GetAiBookModelById(int storeId, bool loadCacheableCopy = true);
-
+        bool BookNodeTagExists(AiBookModel product, int productTagId);
 
         /// <summary>
         ///根据 AR识别图名称 获取知识点
