@@ -347,6 +347,27 @@ namespace Nop.Services.Customers
             _eventPublisher.EntityDeleted(customer);
         }
 
+
+        /// <summary>
+        /// Gets a customer by GUID
+        /// </summary>
+        /// <param name="customerGuid">Customer GUID</param>
+        /// <returns>A customer</returns>
+        public virtual Customer GetCustomerByvipcode(string vipcode)
+        {
+            if (string.IsNullOrEmpty(vipcode))
+            {
+                return null;
+            }
+
+            var query = from c in _customerRepository.Table
+                        where c.VipCode == vipcode
+                        orderby c.Id
+                        select c;
+            var customer = query.FirstOrDefault();
+            return customer;
+        }
+
         /// <summary>
         /// Gets a customer
         /// </summary>
@@ -449,7 +470,6 @@ namespace Nop.Services.Customers
         {
             if (string.IsNullOrWhiteSpace(username))
                 return null;
-
             var query = from c in _customerRepository.Table
                         orderby c.Id
                         where c.Username == username && !c.Deleted

@@ -761,6 +761,9 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
                 .ForMember(model => model.LastActivityDate, options => options.Ignore())
                 .ForMember(model => model.CustomerRoleNames, options => options.Ignore())
                 .ForMember(model => model.AvatarUrl, options => options.Ignore())
+                .ForMember(model=>model.SelectedProductsIds,options=>options.Ignore())
+                .ForMember(model=>model.AvailableProducts,options =>options.Ignore())
+               // .ForMember(model => model., options => options.Ignore())
                 .ForMember(model => model.UsernamesEnabled, options => options.Ignore())
                 .ForMember(model => model.Password, options => options.Ignore())
                 .ForMember(model => model.AvailableVendors, options => options.Ignore())
@@ -1660,7 +1663,7 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
                 .ForMember(model => model.CategryID, options => options.Ignore())
                 .ForMember(model => model.Breadcrumb, options => options.Ignore())
                 .ForMember(model => model.SeName, options => options.Ignore())
-                .ForMember(model => model.SelectedCustomerRoleIds, options => options.Ignore())
+              
                 .ForMember(model => model.AvailableCustomerRoles, options => options.Ignore())
                 .ForMember(model => model.SelectedStoreIds, options => options.Ignore())
                 .ForMember(model => model.AvailableStores, options => options.Ignore())
@@ -1703,7 +1706,8 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
                .ForMember(entiy => entiy.VideoPrefebPath, options => options.Ignore())
                .ForMember(entiy => entiy.AudioPrefebPath, options => options.Ignore())
                .ForMember(entiy => entiy.CameraPrefebPath, options => options.Ignore())
-               .ForMember(entity => entity.BookId, options => options.Ignore())          
+               .ForMember(entity => entity.BookId, options => options.Ignore()) 
+               .ForMember(entity =>entity.BookNodeTags,options=>options.Ignore())
                .ForMember(entity => entity.BookNodeRoot, options => options.Ignore());
             CreateMap<AiBookModelView, AiBookModel>()
              .ForMember(entity => entity.BookNodesComments, options => options.Ignore());

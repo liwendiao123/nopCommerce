@@ -385,6 +385,10 @@ namespace Nop.Web.Areas.Admin.Models.AiBook
         [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.Active")]
         public bool Active { get; set; }
 
+
+        [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.BookNodeTags")]
+        public string BookNodeTags { get; set; }
+
         /// <summary>
         /// 是否为特例
         /// </summary>

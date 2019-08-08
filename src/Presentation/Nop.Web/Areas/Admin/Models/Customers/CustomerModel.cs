@@ -23,7 +23,8 @@ namespace Nop.Web.Areas.Admin.Models.Customers
 
             SelectedCustomerRoleIds = new List<int>();
             AvailableCustomerRoles = new List<SelectListItem>();
-
+            SelectedProductsIds = new List<int>();
+            AvailableProducts = new List<SelectListItem>();
             AvailableCountries = new List<SelectListItem>();
             AvailableStates = new List<SelectListItem>();
             AvailableVendors = new List<SelectListItem>();
@@ -77,7 +78,11 @@ namespace Nop.Web.Areas.Admin.Models.Customers
 
         [NopResourceDisplayName("Admin.Customers.Customers.Fields.FullName")]
         public string FullName { get; set; }
-
+        /// <summary>
+        ///  生成推荐码
+        /// </summary>
+        [NopResourceDisplayName("Admin.Customers.Customers.Fields.VipCode")]
+        public string VipCode { get; set; }
         public bool DateOfBirthEnabled { get; set; }
 
         [UIHint("DateNullable")]
@@ -198,6 +203,11 @@ namespace Nop.Web.Areas.Admin.Models.Customers
 
         [NopResourceDisplayName("Admin.Customers.Customers.Fields.CustomerRoles")]
         public IList<int> SelectedCustomerRoleIds { get; set; }
+
+
+        public IList<int> SelectedProductsIds { get; set; }
+    
+        public IList<SelectListItem> AvailableProducts { get; set; }
 
         //newsletter subscriptions (per store)
         [NopResourceDisplayName("Admin.Customers.Customers.Fields.Newsletter")]

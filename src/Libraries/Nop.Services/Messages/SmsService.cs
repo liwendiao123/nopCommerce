@@ -117,9 +117,9 @@ namespace Nop.Services.Messages
                     && x.IsRead == 0
                     ).OrderByDescending(x => x.CreateTime).ToList();
 
-                if (query.Count() > 0)
+                if (checkFiterResult.Count() > 0)
                 {
-                    var existrecord = query.FirstOrDefault();
+                    var existrecord = checkFiterResult.FirstOrDefault();
 
 
                     if (existrecord == null || DateTime.Now.Subtract(existrecord.CreateTime).TotalSeconds > 300)
@@ -170,9 +170,9 @@ namespace Nop.Services.Messages
 
 
 
-                if (query.Count() > 0)
+                if (checkFiterResult.Count() > 0)
                 {
-                    var existrecord = query.FirstOrDefault();
+                    var existrecord = checkFiterResult.FirstOrDefault();
 
 
                     if (existrecord == null || DateTime.Now.Subtract(existrecord.CreateTime).TotalSeconds > 300)

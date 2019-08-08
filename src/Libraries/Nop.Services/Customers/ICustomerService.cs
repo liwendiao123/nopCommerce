@@ -100,6 +100,12 @@ namespace Nop.Services.Customers
         Customer GetCustomerByGuid(Guid customerGuid);
 
         /// <summary>
+        /// 根据邀请码获取用户信息
+        /// </summary>
+        /// <param name="vipcode"></param>
+        /// <returns></returns>
+        Customer GetCustomerByvipcode(string vipcode);
+        /// <summary>
         /// Get customer by email
         /// </summary>
         /// <param name="email">Email</param>

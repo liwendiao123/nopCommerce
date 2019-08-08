@@ -244,8 +244,6 @@ namespace Nop.Plugin.Payments.WeixinPay
         {
             return _weixinPayPaymentSettings.AdditionalFee;
         }
-
-
         /// <summary>
         /// Captures payment
         /// </summary>
@@ -449,29 +447,21 @@ namespace Nop.Plugin.Payments.WeixinPay
             var settings = new WeixinPayPaymentSettings()
             {
 
-                TenPayV3_MchId = "MchId",
+                TenPayV3_MchId = "1369537202",
                 TenPayV3_Key = "Key",
-                TenPayV3_AppId = "AppId",
-                TenPayV3_AppSecret = "AppSecret",
-                TenPayV3_TenpayNotify = "http://www.yoursite.com/Plugins/PaymentWeixinPay/Notify",
+                TenPayV3_AppId = "wx2071d206df519d97",
+                TenPayV3_AppSecret = "9e61eb782446ea9cca0f81dcfb2d6821",
+                TenPayV3_TenpayNotify = "http://api.qisankeji.com/Plugins/PaymentWeixinPay/Notify",
                 TenPayV3_CertPath = @"c:\apiclient_cert.p12",
-                TenPayV3_CertPassword = "yourMchId"
-
+                TenPayV3_CertPassword = "qskj@123456"
             };
-
             _settingService.SaveSetting(settings);
-
             //locales
-
             _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Payments.WeixinPay.IsFinished", "Finished payment");
             _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Payments.WeixinPay.IsFinished",  "已完成支付", "zh-CN");
-
             _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Payments.WeixinPay.NotFinished", "Not finished payment");
             _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Payments.WeixinPay.NotFinished",  "支付遇到问题，重新支付", "zh-CN");
-
-
             _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Payments.WeixinPay.RedirectionTip", "You will be redirected to WeixinPay site to complete the order.");
-
             _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Payments.WeixinPay.TenPayV3_MchId", "Mch Id:");
             _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Payments.WeixinPay.TenPayV3_MchId.Hint", "Mch Id.");
             _localizationService.AddOrUpdatePluginLocaleResource("Plugins.Payments.WeixinPay.TenPayV3_MchId", "Mch Id:", "zh-CN");

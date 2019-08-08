@@ -14,6 +14,7 @@ using Nop.Core.Domain.Forums;
 using Nop.Core.Domain.Gdpr;
 using Nop.Core.Domain.Messages;
 using Nop.Core.Domain.Tax;
+using Nop.Services.Catalog;
 using Nop.Services.Common;
 using Nop.Services.Customers;
 using Nop.Services.ExportImport;
@@ -70,6 +71,7 @@ namespace Nop.Web.Areas.Admin.Controllers
         private readonly ITaxService _taxService;
         private readonly IWorkContext _workContext;
         private readonly IWorkflowMessageService _workflowMessageService;
+        private readonly IProductService _productService;
         private readonly TaxSettings _taxSettings;
 
         #endregion
@@ -105,6 +107,7 @@ namespace Nop.Web.Areas.Admin.Controllers
             IStoreService storeService,
             ITaxService taxService,
             IWorkContext workContext,
+            IProductService productService,
             IWorkflowMessageService workflowMessageService,
             TaxSettings taxSettings)
         {
@@ -139,6 +142,7 @@ namespace Nop.Web.Areas.Admin.Controllers
             _workContext = workContext;
             _workflowMessageService = workflowMessageService;
             _taxSettings = taxSettings;
+            _productService = productService;
         }
 
         #endregion
@@ -520,22 +524,27 @@ namespace Nop.Web.Areas.Admin.Controllers
 
             //try to get a customer with the specified id
             var customer = _customerService.GetCustomerById(model.Id);
+            customer.VipCode = model.VipCode;
             if (customer == null || customer.Deleted)
                 return RedirectToAction("List");
 
+
+
+  
             //validate customer roles
             var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
             var newCustomerRoles = new List<CustomerRole>();
             foreach (var customerRole in allCustomerRoles)
                 if (model.SelectedCustomerRoleIds.Contains(customerRole.Id))
                     newCustomerRoles.Add(customerRole);
+
             var customerRolesError = ValidateCustomerRoles(newCustomerRoles, customer.CustomerRoles);
+
             if (!string.IsNullOrEmpty(customerRolesError))
             {
                 ModelState.AddModelError(string.Empty, customerRolesError);
                 _notificationService.ErrorNotification(customerRolesError);
             }
-
             // Ensure that valid email address is entered if Registered role is checked to avoid registered customers with empty email address
             if (newCustomerRoles.Any() && newCustomerRoles.FirstOrDefault(c => c.SystemName == NopCustomerDefaults.RegisteredRoleName) != null &&
                 !CommonHelper.IsValidEmail(model.Email))
@@ -707,10 +716,49 @@ namespace Nop.Web.Areas.Admin.Controllers
                             {
                                 customer.RemoveCustomerRoleMapping(
                                     customer.CustomerCustomerRoleMappings.FirstOrDefault(mapping => mapping.CustomerRoleId == customerRole.Id));
-
                             }
                         }
                     }
+                    #region // 检验所拥有课本知识
+                    var allproducts = _productService.SearchProducts();
+                    var newproducts = new List<Product>();
+                    foreach (var product in allproducts)
+                    {
+
+                        if (model.SelectedProductsIds.Contains(product.Id))
+                        {
+                            if (customer.CustomerBooks.Count(mapping => mapping.ProductId == product.Id) == 0)
+                            {
+                                customer.CustomerBooks.Add(new CustomerBook
+                                {
+                                    ProductId = product.Id,
+                                    Status = 1,
+                                    CustomerId = customer.Id,
+                                    UpdateTime = DateTime.Now,
+                                    BookBookDirId = 0,
+                                    BookNodeId = 0,
+                                    CreateTime = DateTime.Now,
+                                    TypeLabel = 1,
+                                    Expirationtime = DateTime.Now.AddYears(10),
+
+
+
+                                });
+                            }
+                        }
+                        else
+                        {
+                            if (customer.CustomerBooks.Count(mapping => mapping.ProductId == product.Id) == 0)
+                            {
+
+                            }
+                            else
+                            {
+                                customer.CustomerBooks.Remove(customer.CustomerBooks.FirstOrDefault(x=>x.CustomerId == customer.Id && x.ProductId == product.Id));
+                            }
+                        }
+                    }
+                    #endregion
 
                     _customerService.UpdateCustomer(customer);
 

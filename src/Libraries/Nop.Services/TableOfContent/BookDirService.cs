@@ -500,6 +500,37 @@ namespace Nop.Services.TableOfContent
                 return categoriesIds;
             });
         }
+
+
+        public virtual IList<BookDir> GetChildBookDirItems(List<int> bookdirIds)
+        {
+            var cacheKey = string.Format(NopBookDirDefault.GetChildBookDirItemsByParentIdCacheKey,
+                string.Join(",", bookdirIds),
+                string.Join(",", _workContext.CurrentCustomer.GetCustomerRoleIds()),
+                _storeContext.CurrentStore.Id,
+                false);
+            return _staticCacheManager.Get(cacheKey, () =>
+            {
+                //little hack for performance optimization
+                //there's no need to invoke "GetAllCategoriesByParentCategoryId" multiple times (extra SQL commands) to load childs
+                //so we load all categories at once (we know they are cached) and process them server-side
+                var categoriesIds = new List<BookDir>();
+                //var categories = GetAllCategories(storeId: storeId, showHidden: showHidden)
+                //    .Where(c => c.ParentCategoryId == parentCategoryId);
+
+                var categories = _bookdirRepository.Table
+                                        .Where(x =>bookdirIds.Contains(x.Id))
+                                        .ToList();
+                foreach (var category in categories)
+                {
+                    categoriesIds.Add(category);
+                    categoriesIds.AddRange(GetChildBookDirItems(category.Id));
+                }
+
+                return categoriesIds;
+            });
+        }
+
         // IList<BookDir> GetBookDirBreadCrumb(BookDir bookDir, IList<BookDir> allBookDirs = null, bool showHidden = false)
     }
 }

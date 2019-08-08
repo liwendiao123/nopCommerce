@@ -31,7 +31,11 @@ namespace Nop.Web.Models.Customer
         public bool UsernamesEnabled { get; set; }
         [NopResourceDisplayName("Account.Fields.Username")]
         public string Username { get; set; }
-
+        /// <summary>
+        ///  生成推荐码
+        /// </summary> 
+        [NopResourceDisplayName("Account.Fields.VipCode")]
+        public string VipCode { get; set; }
         //form fields & properties
         public bool GenderEnabled { get; set; }
         [NopResourceDisplayName("Account.Fields.Gender")]

@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Nop.Core.Configuration;
+
 using Nop.Core.Domain.TableOfContent;
 using Nop.Services.AIBookModel;
 using Nop.Services.Catalog;
+using Nop.Services.Media;
 using Nop.Services.TableOfContent;
 using Nop.Web.Areas.Admin.Factories;
 using Nop.Web.Framework.Controllers;
@@ -20,20 +22,26 @@ namespace Nop.Web.Controllers.Api
         private readonly IAiBookService _aiBookService;
         private readonly IBookDirService _bookDirService;
         private readonly IBookNodeFactory _bookNodeFactory;
+        private readonly IBookNodeTagService _bookNodeTagService;
         private readonly IProductService _productService;
+        private readonly IPictureService _pictureService;
         private readonly NopConfig _config;
         public BookNodeController(
                     IAiBookService   aiBookService,
                     IBookDirService  bookDirService,
                     IProductService productService,
                     NopConfig config,
-                    IBookNodeFactory bookNodeFactory)
+                    IBookNodeTagService bookNodeTagService,
+                    IPictureService pictureService,
+        IBookNodeFactory bookNodeFactory)
         {
             _aiBookService = aiBookService;
             _bookNodeFactory = bookNodeFactory;
             _bookDirService = bookDirService;
             _productService = productService;
+            _bookNodeTagService = bookNodeTagService;
             _config = config;
+            _pictureService = pictureService;
         }
         public IActionResult Index()
         {
@@ -160,7 +168,7 @@ namespace Nop.Web.Controllers.Api
             {
                 if (!string.IsNullOrEmpty(x))
                 {
-                    x =( _config.HostLuaResource ?? "") + platformtypepath + "/"  + x;
+                    x =( _config.HostLuaResource ?? "") + platformtypepath + "/"  + x + "?v=" + DateTime.Now.Ticks;
 
                     allList.Add(x);
                 }
@@ -176,10 +184,11 @@ namespace Nop.Web.Controllers.Api
                     BookID = bookdir == null ? -1 : bookdir.BookID,
                     BookNodeName = result.Name,
                     BookName = product == null?"":product.Name,
+                    IsLock = false,
                     appointStrJson = new {
                         keyname = result.UniqueID??"",
                         head = _config.HostLuaResource ?? "",
-                        lua = _config.HostLuaResource ?? "" +platformtypepath +"/" + result.WebGltfUrl ?? "",
+                        lua = (_config.HostLuaResource ?? "") +platformtypepath +"/" + (result.WebGltfUrl ?? "") +"?v="+ DateTime.Now.Ticks,
                         assetbundle = allList
                     },
                     strJson = jsonresult==null?new object(): jsonresult
@@ -381,28 +390,67 @@ namespace Nop.Web.Controllers.Api
                })
             });
         }
-
-
         public IActionResult GetBookNodeKeyName(string keyname)
         {
-            List<object> ksts = new List<object>
+
+          var result=  _bookNodeTagService.GetAllBookNodeTagsByBookNodeBySearchName(keyname);
+
+
+            List<Core.Domain.AIBookModel.AiBookModel> aibookList = new List<Core.Domain.AIBookModel.AiBookModel>();
+
+
+
+            result.ToList().ForEach(x => 
             {
-                new { 
-                    bookid = "51",
-                    bookname = "人教版历史七年级上册",
-                    kid = "135",
-          
-                    name = "人面鱼纹彩陶盆",
-                         imgurl="http://arbookresouce.73data.cn/book/img/sy_img_02.png",
-                },
-                new {
-                    bookid = "51",
-                    bookname = "人教版历史七年级上册",
-                    kid = "140",
-                    name = "玉蟾岩遗址出土的稻谷",
-                     imgurl="http://arbookresouce.73data.cn/book/img/sy_img_02.png"
+                x.BookNodeBookNodeTagMappings.ToList()
+                .ForEach(y =>
+                {
+                    aibookList.Add(y.BookNode);
+                });
+
+            });
+            var ids = aibookList.Select(x => x.BookDirID).ToList();
+
+           var listBookDir = _bookDirService.GetChildBookDirItems(ids);
+
+            var pids = listBookDir.Select(x => x.BookID).ToList();
+
+            ///书籍集合
+           var bresult = _productService.GetProductsByIds(pids.ToArray());
+            //result.BookNodeBookNodeTagMappings.Select(x=>x.BookNodeTagId)
+            //var booknode = _aiBookService.ge
+
+
+            var ksts = aibookList.Select(x =>
+            {
+
+                var bookId = string.Empty;
+                var bookName = string.Empty;
+
+              var res =   listBookDir.FirstOrDefault(y=>y.Id==x.BookDirID);
+
+                if(res != null)
+                {
+                    var book = bresult.FirstOrDefault(y => y.Id == res.BookID);
+
+                    if (book != null)
+                    {
+                        bookId = book.Id.ToString();
+                        bookName = (book.Name??"");
+                    }
                 }
-            };          
+                return new
+                {
+                    bookid = bookId,
+                    bookname = bookName,
+                    kid = x.BookDirID,
+                    name = x.Name,
+                    imgurl =_pictureService.GetPictureUrl(int.Parse(x.ImgUrl??"0")),
+                };
+
+            }).ToList();
+
+            
             return Json(new
             {
                 code = 0,

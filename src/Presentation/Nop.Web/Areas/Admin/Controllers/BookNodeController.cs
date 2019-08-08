@@ -39,6 +39,7 @@ namespace Nop.Web.Areas.Admin.Controllers
         private readonly IBookDirFactory _bookDirFactory;
         private readonly IProductModelFactory _productModelFactory;
         private readonly IBookNodeFactory _bookNodeFactory;
+        private readonly IBookNodeTagService _bookNodeTagService;
         private readonly IAiBookService _bookNodeService;
         private readonly IImportManager _importManager;
 
@@ -53,8 +54,9 @@ namespace Nop.Web.Areas.Admin.Controllers
             ,IBookDirFactory bookDirFactory
             ,IProductModelFactory productModelFactory
             ,IBookNodeFactory bookNodeFactory
-            ,IAiBookService bookNodeService,
-            IImportManager importManager
+            ,IAiBookService bookNodeService
+            , IBookNodeTagService bookNodeTagService
+            ,IImportManager importManager
             )
         {
             _urlRecordService = urlRecordService;
@@ -69,12 +71,23 @@ namespace Nop.Web.Areas.Admin.Controllers
             _bookNodeFactory = bookNodeFactory;
             _bookNodeService = bookNodeService;
             _importManager = importManager;
+            _bookNodeTagService = bookNodeTagService;
 
         }
 
 
         #region 知识点
-
+        protected virtual string[] ParseBookNodeTags(string bookNodeTags)
+        {
+            var result = new List<string>();
+            if (string.IsNullOrWhiteSpace(bookNodeTags))
+                return result.ToArray();
+            var values = bookNodeTags.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var val in values)
+                if (!string.IsNullOrEmpty(val.Trim()))
+                    result.Add(val.Trim());
+            return result.ToArray();
+        }
         public IActionResult Index(AiBookSearchModelView smodel)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManagerBook))
@@ -146,6 +159,8 @@ namespace Nop.Web.Areas.Admin.Controllers
                 category.CreatedOnUtc = DateTime.UtcNow;
                 category.UpdatedOnUtc = DateTime.UtcNow;
                 category.Published = true;
+
+                model = _bookNodeFactory.PrepareBookNodeModel(new AiBookModelView(), 0);
                 //if (string.IsNullOrEmpty(category.PriceRanges))
                 //{
                 //    category.PriceRanges = "0";
@@ -166,6 +181,11 @@ namespace Nop.Web.Areas.Admin.Controllers
                 //            }
                 // _bookDirService.InsertBookDir(category);
                 _bookNodeService.InsertAiBookModel(category);
+                if (!string.IsNullOrEmpty(model.BookNodeTags))
+                {
+                    _bookNodeTagService.UpdateBookNodeTags(category, ParseBookNodeTags(model.BookNodeTags));
+                }              
+             //  _bookNodeService.u
                // _categoryService.UpdateCategory(category);
                 //update picture seo file name
               //  UpdatePictureSeoNames(category);
@@ -174,19 +194,18 @@ namespace Nop.Web.Areas.Admin.Controllers
                 //stores
                // SaveStoreMappings(category, model);
 
-//activity log
+            //activity log
             _customerActivityService.InsertActivity("AddNewBookNode",
                     string.Format(_localizationService.GetResource("ActivityLog.AddNewBookNode"), category.Name), category);
-
                 _notificationService.SuccessNotification(_localizationService.GetResource("Admin.AiBookDir.BookNode.AddNewBookNode"));
 
                 if (!continueEditing)
                     return RedirectToAction("Index");
-                
-                return RedirectToAction("Edit", new { id = category.Id });
+
+                return View(model);
             }
             //prepare model
-            model = _bookNodeFactory.PrepareBookNodeModel(new AiBookModelView(), 0);        
+                   
             //if we got this far, something failed, redisplay form
             return View(model);
         }
@@ -223,6 +242,12 @@ namespace Nop.Web.Areas.Admin.Controllers
                 model.UpdatedOnUtc = DateTime.Now;
                 result = model.ToEntity(result);
                 _bookNodeService.UpdateAiBookModel(result);
+
+                if (!string.IsNullOrEmpty(model.BookNodeTags))
+                {
+                    _bookNodeTagService.UpdateBookNodeTags(result, ParseBookNodeTags(model.BookNodeTags));
+                }
+
 
                 model = result.ToModel<AiBookModelView>();
                // _bookDirService.UpdateBookDir(category);

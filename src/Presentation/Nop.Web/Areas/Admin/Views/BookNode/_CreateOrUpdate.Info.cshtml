@@ -1,100 +1,144 @@
 ﻿@model AiBookModelView
+@using Nop.Services.AIBookModel
+@using System.Text
+
+@inject IBookNodeTagService productTagService
+
+@{ 
+
+    Html.AppendCssFileParts("~/lib/tagEditor/jquery.tag-editor.css");
+    Html.AppendScriptParts("~/lib/tagEditor/jquery.tag-editor.min.js");
+    Html.AppendScriptParts("~/lib/tagEditor/jquery.caret.min.js");
+}
+<script>
+    @{
+        //TODO move to Model
+        var bookNodeTags = productTagService.GetAllBookNodeTags();
+        var productTagsSb = new StringBuilder();
+        productTagsSb.Append("var initialProductTags = [");
+        for (var i = 0; i < bookNodeTags.Count; i++)
+        {
+            var tag = bookNodeTags[i];
+            productTagsSb.Append("'");
+            productTagsSb.Append(JavaScriptEncoder.Default.Encode(tag.Name));
+            productTagsSb.Append("'");
+            if (i != bookNodeTags.Count - 1)
+            {
+                productTagsSb.Append(",");
+            }
+        }
+        productTagsSb.Append("]");
+}
+
+        $(document).ready(function() {
+        @Html.Raw(productTagsSb.ToString())
+        $("#@Html.IdFor(model => model.BookNodeTags)").tagEditor({
+            autocomplete: {
+                delay: 0,
+                position: { collision: 'flip' },
+                source: initialProductTags
+            },
+            delimiter: ',',
+            placeholder: '@T("Admin.AiBook.BookNode.Fields.BookNodeTags")'
+        });
+    });
+</script>
 <div class="panel-body">
     @(Html.LocalizedEditor<AiBookModelView, AiBookModelLocalizedModel>("bookNode-name-localized",
-                @<div>
-    <div class="form-group">
-        <div class="col-md-3">
-            <nop-label asp-for="@Model.Locales[item].Name" />
-        </div>
-        <div class="col-md-9">
-            <nop-editor asp-for="@Model.Locales[item].Name" />
-            <span asp-validation-for="@Model.Locales[item].Name"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-md-3">
-            <nop-label asp-for="@Model.Locales[item].Desc" />
-        </div>
-        <div class="col-md-9">
-            <nop-textarea asp-for="@Model.Locales[item].Desc" />
-            <span asp-validation-for="@Model.Locales[item].Desc"></span>
-        </div>
-    </div>
+                                @<div>
+                                    <div class="form-group">
+                                        <div class="col-md-3">
+                                            <nop-label asp-for="@Model.Locales[item].Name" />
+                                        </div>
+                                        <div class="col-md-9">
+                                            <nop-editor asp-for="@Model.Locales[item].Name" />
+                                            <span asp-validation-for="@Model.Locales[item].Name"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-md-3">
+                                            <nop-label asp-for="@Model.Locales[item].Desc" />
+                                        </div>
+                                        <div class="col-md-9">
+                                            <nop-textarea asp-for="@Model.Locales[item].Desc" />
+                                            <span asp-validation-for="@Model.Locales[item].Desc"></span>
+                                        </div>
+                                    </div>
 
 
-    <div class="form-group">
-        <div class="col-md-3">
-            <nop-label asp-for="@Model.Locales[item].UniqueID" />
-        </div>
-        <div class="col-md-9">
-            <nop-textarea></nop-textarea>
-            <nop-editor asp-for="@Model.Locales[item].UniqueID" />
-            <span asp-validation-for="@Model.Locales[item].UniqueID"></span>
-        </div>
-    </div>
+                                    <div class="form-group">
+                                        <div class="col-md-3">
+                                            <nop-label asp-for="@Model.Locales[item].UniqueID" />
+                                        </div>
+                                        <div class="col-md-9">
+                                            <nop-textarea></nop-textarea>
+                                            <nop-editor asp-for="@Model.Locales[item].UniqueID" />
+                                            <span asp-validation-for="@Model.Locales[item].UniqueID"></span>
+                                        </div>
+                                    </div>
 
-    <div class="form-group">
-        <div class="col-md-3">
-            <nop-label asp-for="@Model.Locales[item].WebModelUrl" />
-        </div>
-        <div class="col-md-9">
-            <nop-textarea asp-for="@Model.Locales[item].WebModelUrl" />
-            <span asp-validation-for="@Model.Locales[item].WebModelUrl"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-md-3">
-            <nop-label asp-for="@Model.Locales[item].WebGltfUrl" />
-        </div>
-        <div class="col-md-9">
-
-
-            <nop-editor asp-for="@Model.Locales[item].WebGltfUrl" />
-            <span asp-validation-for="@Model.Locales[item].WebGltfUrl"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-md-3">
-            <nop-label asp-for="@Model.Locales[item].WebBinUrl" />
-        </div>
-        <div class="col-md-9">
-            <nop-editor asp-for="@Model.Locales[item].WebBinUrl" />
-            <span asp-validation-for="@Model.Locales[item].WebBinUrl"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-md-3">
-            <nop-label asp-for="@Model.Locales[item].AbUrl" />
-        </div>
-        <div class="col-md-9">
-            <nop-editor asp-for="@Model.Locales[item].AbUrl" />
-            <span asp-validation-for="@Model.Locales[item].AbUrl"></span>
-        </div>
-    </div>
+                                    <div class="form-group">
+                                        <div class="col-md-3">
+                                            <nop-label asp-for="@Model.Locales[item].WebModelUrl" />
+                                        </div>
+                                        <div class="col-md-9">
+                                            <nop-textarea asp-for="@Model.Locales[item].WebModelUrl" />
+                                            <span asp-validation-for="@Model.Locales[item].WebModelUrl"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-md-3">
+                                            <nop-label asp-for="@Model.Locales[item].WebGltfUrl" />
+                                        </div>
+                                        <div class="col-md-9">
 
 
-    <div class="form-group">
-        <div class="col-md-3">
-            <nop-label asp-for="@Model.Locales[item].ImgUrl" />
-        </div>
-        <div class="col-md-9">
-            <nop-editor asp-for="@Model.Locales[item].ImgUrl" />
-            <span asp-validation-for="@Model.Locales[item].ImgUrl"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-md-3">
-            <nop-label asp-for="@Model.Locales[item].StrJson" />
-        </div>
-        <div class="col-md-9">
-            <nop-textarea asp-for="@Model.Locales[item].StrJson" />
-            <span asp-validation-for="@Model.Locales[item].StrJson"></span>
-        </div>
-    </div>
+                                            <nop-editor asp-for="@Model.Locales[item].WebGltfUrl" />
+                                            <span asp-validation-for="@Model.Locales[item].WebGltfUrl"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-md-3">
+                                            <nop-label asp-for="@Model.Locales[item].WebBinUrl" />
+                                        </div>
+                                        <div class="col-md-9">
+                                            <nop-editor asp-for="@Model.Locales[item].WebBinUrl" />
+                                            <span asp-validation-for="@Model.Locales[item].WebBinUrl"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-md-3">
+                                            <nop-label asp-for="@Model.Locales[item].AbUrl" />
+                                        </div>
+                                        <div class="col-md-9">
+                                            <nop-editor asp-for="@Model.Locales[item].AbUrl" />
+                                            <span asp-validation-for="@Model.Locales[item].AbUrl"></span>
+                                        </div>
+                                    </div>
 
-    <input type="hidden" asp-for="@Model.Locales[item].LanguageId" />
-</div> ,
-                        @<div>
+
+                                    <div class="form-group">
+                                        <div class="col-md-3">
+                                            <nop-label asp-for="@Model.Locales[item].ImgUrl" />
+                                        </div>
+                                        <div class="col-md-9">
+                                            <nop-editor asp-for="@Model.Locales[item].ImgUrl" />
+                                            <span asp-validation-for="@Model.Locales[item].ImgUrl"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-md-3">
+                                            <nop-label asp-for="@Model.Locales[item].StrJson" />
+                                        </div>
+                                        <div class="col-md-9">
+                                            <nop-textarea asp-for="@Model.Locales[item].StrJson" />
+                                            <span asp-validation-for="@Model.Locales[item].StrJson"></span>
+                                        </div>
+                                    </div>
+
+                                    <input type="hidden" asp-for="@Model.Locales[item].LanguageId" />
+                                </div> ,
+                                                                                @<div>
     <div class="form-group">
         <div class="col-md-3">
             <nop-label asp-for="Name" />
@@ -102,6 +146,15 @@
         <div class="col-md-9">
             <nop-editor asp-for="Name" asp-required="true" />
             <span asp-validation-for="Name"></span>
+        </div>
+    </div>
+    <div class="form-group advanced-setting">
+        <div class="col-md-3">
+            <nop-label asp-for="BookNodeTags" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="BookNodeTags" />
+            <span asp-validation-for="BookNodeTags"></span>
         </div>
     </div>
     <div class="form-group">
@@ -224,7 +277,7 @@
 
 <script>
 
-    
+
         $(document).ready(function () {
 
 

@@ -86,7 +86,7 @@ namespace Nop.Web.Controllers.Api
                 {
                     Id=  x.Id,  //章节ID
                     PId = x.ParentBookDirId, //上级ID
-                    IsLock = true,///是否已经购买 解锁
+                    IsLock = false,///是否已经购买 解锁
                     BookID= x.BookID, //所属课本ID
                     Name=  x.Name??"", //章节名称
                     IsRead = false,

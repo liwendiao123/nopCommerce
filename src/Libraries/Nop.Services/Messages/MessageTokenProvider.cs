@@ -79,7 +79,6 @@ namespace Nop.Services.Messages
         private readonly PaymentSettings _paymentSettings;
         private readonly StoreInformationSettings _storeInformationSettings;
         private readonly TaxSettings _taxSettings;
-
         private Dictionary<string, IEnumerable<string>> _allowedTokens;
 
         #endregion

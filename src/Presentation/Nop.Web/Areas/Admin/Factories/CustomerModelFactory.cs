@@ -73,6 +73,7 @@ namespace Nop.Web.Areas.Admin.Factories
         private readonly IStoreContext _storeContext;
         private readonly IStoreService _storeService;
         private readonly ITaxService _taxService;
+        private readonly IProductService _productService;
         private readonly MediaSettings _mediaSettings;
         private readonly RewardPointsSettings _rewardPointsSettings;
         private readonly TaxSettings _taxSettings;
@@ -111,7 +112,8 @@ namespace Nop.Web.Areas.Admin.Factories
             IStoreContext storeContext,
             IStoreService storeService,
             ITaxService taxService,
-            MediaSettings mediaSettings,
+            IProductService productService,
+        MediaSettings mediaSettings,
             RewardPointsSettings rewardPointsSettings,
             TaxSettings taxSettings)
         {
@@ -148,6 +150,7 @@ namespace Nop.Web.Areas.Admin.Factories
             _mediaSettings = mediaSettings;
             _rewardPointsSettings = rewardPointsSettings;
             _taxSettings = taxSettings;
+            _productService = productService;
         }
 
         #endregion
@@ -651,6 +654,50 @@ namespace Nop.Web.Areas.Admin.Factories
             return model;
         }
 
+
+
+        public virtual void PrepareCustomerProducts(CustomerModel model)
+        {
+
+            if (model.Id > 0)
+            {
+              var result =  _customerService.GetCustomerById(model.Id);
+
+                if (result != null)
+                {
+                    result.CustomerBooks.ToList().ForEach(x =>
+                    {
+
+
+                        model.SelectedProductsIds.Add(x.ProductId);
+
+                    });
+
+                   
+                }
+              
+            }
+
+
+            var product = _productService.SearchProducts();
+
+
+            var  items = new List<SelectListItem>();
+
+            product.ToList().ForEach(x =>
+            {
+                items.Add(new SelectListItem
+                {
+                     Value = x.Id.ToString(),
+                     Text = x.Name
+
+                });
+
+            });
+
+            model.AvailableProducts = items;
+        }
+
         /// <summary>
         /// Prepare customer model
         /// </summary>
@@ -672,7 +719,7 @@ namespace Nop.Web.Areas.Admin.Factories
                 model.AllowReSendingOfActivationMessage = customer.IsRegistered() && !customer.Active &&
                     _customerSettings.UserRegistrationType == UserRegistrationType.EmailValidation;
                 model.GdprEnabled = _gdprSettings.GdprEnabled;
-
+                model.VipCode = customer.VipCode;
                 //whether to fill in some of properties
                 if (!excludeProperties)
                 {
@@ -749,7 +796,7 @@ namespace Nop.Web.Areas.Admin.Factories
                         model.SelectedCustomerRoleIds.Add(registeredRole.Id);
                 }
             }
-
+          PrepareCustomerProducts(model);
             model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
             model.AllowCustomersToSetTimeZone = _dateTimeSettings.AllowCustomersToSetTimeZone;
             model.GenderEnabled = _customerSettings.GenderEnabled;
@@ -789,6 +836,9 @@ namespace Nop.Web.Areas.Admin.Factories
 
             //prepare model customer roles
             _aclSupportedModelFactory.PrepareModelCustomerRoles(model);
+
+
+            
 
             //prepare available time zones
             _baseAdminModelFactory.PrepareTimeZones(model.AvailableTimeZones, false);

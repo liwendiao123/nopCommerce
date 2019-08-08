@@ -80,7 +80,36 @@ namespace Nop.Core.Configuration
         public string PluginsIgnoredDuringInstallation { get; set; }
 
 
+        #region 安装包配置
+        /// <summary>
+        /// 安卓安装包地址
+        /// </summary>
+        public string AndroidApkUrl { get; set; }
+        /// <summary>
+        /// 安卓客户端版本地址
+        /// </summary>
+        public string AndroidClientVersion { get; set; }
+        /// <summary>
+        /// 苹果安装包地址
+        /// </summary>
+        public string IosPackageUrl { get; set; }
+        /// <summary>
+        /// IOS客户端版本
+        /// </summary>
+        public string IosClientVersion { get; set; }
+        /// <summary>
+        /// PC 客户端版本
+        /// </summary>
+        public string PcClientVersion { get; set; }    
+        /// <summary>
+        /// PC 客户端安装包下载地址
+        /// </summary>
+        public string PcClientPackageUrl { get; set; }
+        #endregion
 
+        /// <summary>
+        /// Lua UI 资源地址
+        /// </summary>
         public string HostLuaResource { get; set; }
 
         /// <summary>

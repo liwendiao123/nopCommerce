@@ -954,7 +954,6 @@ namespace Nop.Web.Areas.Admin.Factories
             //a vendor should have access only to his products
             if (_workContext.CurrentVendor != null)
                 searchModel.SearchVendorId = _workContext.CurrentVendor.Id;
-
             //get products
             var products = _productService.SearchProducts(showHidden: true,
                 categoryIds: new List<int> { searchModel.SearchCategoryId },
@@ -964,7 +963,6 @@ namespace Nop.Web.Areas.Admin.Factories
                 productType: searchModel.SearchProductTypeId > 0 ? (ProductType?)searchModel.SearchProductTypeId : null,
                 keywords: searchModel.SearchProductName,
                 pageIndex: searchModel.Page - 1, pageSize: searchModel.PageSize);
-
             //prepare grid model
             var model = new AddRequiredProductListModel().PrepareToGrid(searchModel, products, () =>
             {

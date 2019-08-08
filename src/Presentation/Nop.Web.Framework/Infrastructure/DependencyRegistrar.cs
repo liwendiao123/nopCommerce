@@ -146,6 +146,7 @@ namespace Nop.Web.Framework.Infrastructure
             builder.RegisterType<ManufacturerTemplateService>().As<IManufacturerTemplateService>().InstancePerLifetimeScope();
             builder.RegisterType<TopicTemplateService>().As<ITopicTemplateService>().InstancePerLifetimeScope();
             builder.RegisterType<ProductTagService>().As<IProductTagService>().InstancePerLifetimeScope();
+            builder.RegisterType<BookNodeTagService>().As<IBookNodeTagService>().InstancePerLifetimeScope();
             builder.RegisterType<AddressAttributeFormatter>().As<IAddressAttributeFormatter>().InstancePerLifetimeScope();
             builder.RegisterType<AddressAttributeParser>().As<IAddressAttributeParser>().InstancePerLifetimeScope();
             builder.RegisterType<AddressAttributeService>().As<IAddressAttributeService>().InstancePerLifetimeScope();

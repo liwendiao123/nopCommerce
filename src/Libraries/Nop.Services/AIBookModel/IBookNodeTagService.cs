@@ -69,5 +69,7 @@ namespace Nop.Services.AIBookModel
         /// <param name="bookNodeTags">知识点标签</param>
         void UpdateBookNodeTags(AiBookModel bookNode, string[] bookNodeTags);
 
+        IList<BookNodeTag> GetAllBookNodeTagsByBookNodeBySearchName(string bookname);
+
     }
 }

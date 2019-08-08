@@ -17,52 +17,48 @@ namespace Nop.Core.Domain.Customers
         private ICollection<ReturnRequest> _returnRequests;
         protected ICollection<CustomerAddressMapping> _customerAddressMappings;
         private IList<CustomerRole> _customerRoles;
+        private ICollection<CustomerBook> _customerBooks;
 
         public Customer()
         {
             CustomerGuid = Guid.NewGuid();
         }
-
         /// <summary>
         /// Gets or sets the customer GUID
         /// </summary>
         public Guid CustomerGuid { get; set; }
-
         /// <summary>
         /// Gets or sets the username
         /// </summary>
         public string Username { get; set; }
-
         /// <summary>
         /// Gets or sets the email
         /// </summary>
         public string Email { get; set; }
-
+        /// <summary>
+        ///  生成推荐码
+        /// </summary>
+        public string VipCode { get; set; }
         /// <summary>
         /// Gets or sets the email that should be re-validated. Used in scenarios when a customer is already registered and wants to change an email address.
         /// </summary>
         public string EmailToRevalidate { get; set; }
-
         /// <summary>
         /// Gets or sets the admin comment
         /// </summary>
         public string AdminComment { get; set; }
-
         /// <summary>
         /// Gets or sets a value indicating whether the customer is tax exempt
         /// </summary>
         public bool IsTaxExempt { get; set; }
-
         /// <summary>
         /// Gets or sets the affiliate identifier
         /// </summary>
         public int AffiliateId { get; set; }
-
         /// <summary>
         /// Gets or sets the vendor identifier with which this customer is associated (maganer)
         /// </summary>
         public int VendorId { get; set; }
-
         /// <summary>
         /// Gets or sets a value indicating whether this customer has some products in the shopping cart
         /// <remarks>The same as if we run ShoppingCartItems.Count > 0
@@ -226,6 +222,11 @@ namespace Nop.Core.Domain.Customers
             get => _customerAddressMappings ?? (_customerAddressMappings = new List<CustomerAddressMapping>());
             protected set => _customerAddressMappings = value;
         }
+        public virtual ICollection<CustomerBook> CustomerBooks
+        {
+            get => _customerBooks ?? (_customerBooks = new List<CustomerBook>());
+            protected set => _customerBooks = value;
+        }
 
         #endregion
 
@@ -250,6 +251,7 @@ namespace Nop.Core.Domain.Customers
             CustomerCustomerRoleMappings.Remove(role);
             _customerRoles = null;
         }
+
         #endregion
     }
 }

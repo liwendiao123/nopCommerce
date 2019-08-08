@@ -131,8 +131,6 @@ namespace Nop.Plugin.Payments.WeixinPay.Controllers
                 return true;
             return false;
         }
-
-
         /*
         public static TenPayV3Info TenPayV3Info
         {
@@ -147,7 +145,6 @@ namespace Nop.Plugin.Payments.WeixinPay.Controllers
             }
         }
        */
-
         private static NameValueCollection ToNameValueCollection<tValue>(IDictionary<string, tValue> dictionary)
         {
             var collection = new NameValueCollection();
@@ -155,8 +152,6 @@ namespace Nop.Plugin.Payments.WeixinPay.Controllers
                 collection.Add(pair.Key, pair.Value.ToString());
             return collection;
         }
-
-
         [AuthorizeAdmin]
         [Area(AreaNames.Admin)]
         public IActionResult Configure()
@@ -478,7 +473,6 @@ namespace Nop.Plugin.Payments.WeixinPay.Controllers
             {
                 //获取产品信息
                 var order = new Order();
-
                 if (orderId > 0)
                 {
                     order = _orderService.GetOrderById(orderId);
@@ -529,6 +523,8 @@ namespace Nop.Plugin.Payments.WeixinPay.Controllers
 
                 string data = packageReqHandler.ParseXML();
 
+
+              //  TenPayV3.Unifiedorder()
 
                 var result = TenPayV3.Unifiedorder(data);
 

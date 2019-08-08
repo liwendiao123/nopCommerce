@@ -39,14 +39,14 @@ namespace Nop.Core.Domain.Customers
         /// 客户信息
         /// </summary>
         public virtual Customer Customer { get; set; }
-        /// <summary>
-        /// 书籍目录信息
-        /// </summary>
-        public virtual BookDir BookDir { get; set; }
-        /// <summary>
-        /// 书籍节点信息
-        /// </summary>
-        public virtual AiBookModel BookNode { get; set; }   
+        ///// <summary>
+        ///// 书籍目录信息
+        ///// </summary>
+        //public virtual BookDir BookDir { get; set; }
+        ///// <summary>
+        ///// 书籍节点信息
+        ///// </summary>
+        //public virtual AiBookModel BookNode { get; set; }   
         /// <summary>
         /// 书籍
         /// </summary>

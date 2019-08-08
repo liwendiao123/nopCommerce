@@ -15,7 +15,6 @@ namespace Nop.Web.Controllers.Api
         {
             _categoryService = categoryService;
         }
-
         public IActionResult Index()
         {
             return View();
@@ -25,7 +24,6 @@ namespace Nop.Web.Controllers.Api
         {
 
           var result =   _categoryService.GetAllCategoriesByParentCategoryId(14);
-
             return Json(new
             {
                 code = 0,

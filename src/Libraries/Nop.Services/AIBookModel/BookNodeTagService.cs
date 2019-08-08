@@ -108,6 +108,21 @@ namespace Nop.Services.AIBookModel
             });
         }
 
+        public IList<BookNodeTag> GetAllBookNodeTagsByBookNodeBySearchName(string bookname)
+        {
+            var key = string.Format(NopBookNodeDefault.BookNodesTagAllByProductIdCacheKey, bookname);
+            return _cacheManager.Get(key, () =>
+            {
+                var query = from pt in _bookNodeTagRepository.Table
+                            join ppt in _bookNodeBookNodeTagMappingRepository.Table on pt.Id equals ppt.BookNodeTagId
+                            where pt.Name.Contains(bookname)
+                            orderby pt.Id
+                            select pt;
+
+                var productTags = query.ToList();
+                return productTags;
+            });
+        }
         public int GetBookNodeCount(int bookNodeTagId, int storeId, bool showHidden = false)
         {
             //var dictionary = GetBookNodeCount(storeId, showHidden);
@@ -239,6 +254,8 @@ namespace Nop.Services.AIBookModel
             //cache
             _staticCacheManager.RemoveByPrefix(NopBookNodeDefault.BookNodesTagPrefixCacheKey);
         }
+
+    
 
 
         #endregion

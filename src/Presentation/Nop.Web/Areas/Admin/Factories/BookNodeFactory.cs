@@ -53,6 +53,7 @@ namespace Nop.Web.Areas.Admin.Factories
         private readonly IProductService _productService;
         private readonly IBookDirFactory _bookDirFactory;
         private readonly IBookDirService _bookdirService;
+        private readonly IBookNodeTagService _bookNodeTagService;
      
 
         #endregion
@@ -78,6 +79,7 @@ namespace Nop.Web.Areas.Admin.Factories
                               ,IBookDirFactory bookdirFactory
                               ,IBookDirService bookdirService
                               ,ILocalizationService localizationService
+                             ,IBookNodeTagService bookNodeTagService
                               ,ILocalizedModelFactory localizedModelFactory
                                 )
         {
@@ -98,6 +100,7 @@ namespace Nop.Web.Areas.Admin.Factories
             _bookdirService = bookdirService;
             _localizationService = localizationService;
             _productService = productService;
+            _bookNodeTagService = bookNodeTagService;
             _localizedModelFactory = localizedModelFactory;
         }
 
@@ -106,12 +109,14 @@ namespace Nop.Web.Areas.Admin.Factories
         public AiBookModelView PrepareBookNodeModel(AiBookModelView bookModelModel, int? filterByBookId)
         {
 
-            var model = new AiBookModel();
+            var model = bookModelModel.ToEntity<AiBookModel>();
             if (bookModelModel == null)
                 throw new ArgumentNullException(nameof(bookModelModel));
 
             Action<AiBookModelLocalizedModel, int> localizedModelConfiguration = null;
             //prepare nested search models
+
+            bookModelModel.BookNodeTags = string.Join(", ", _bookNodeTagService.GetAllBookNodeTagsByBookNodeId(bookModelModel.Id).Select(tag => tag.Name));
             //Prepare Categories
             _baseAdminModelFactory.PrepareCategories(bookModelModel.AvailableCategories,
                defaultItemText: _localizationService.GetResource("Admin.Catalog.Categories.Fields.Parent.None"));
@@ -122,7 +127,6 @@ namespace Nop.Web.Areas.Admin.Factories
                 {
                     bookModelModel.BookId = bookdir.BookID;
                 }
-
                 var result = _productService.GetProductById(bookModelModel.BookId);
                 if (result != null)
                 {
@@ -166,7 +170,7 @@ namespace Nop.Web.Areas.Admin.Factories
             };
 
            
-                bookModelModel.Locales = _localizedModelFactory.PrepareLocalizedModels(localizedModelConfiguration);
+            bookModelModel.Locales = _localizedModelFactory.PrepareLocalizedModels(localizedModelConfiguration);
             return bookModelModel;
         }
 
@@ -220,22 +224,17 @@ namespace Nop.Web.Areas.Admin.Factories
         {
             if (searchModel == null)
                 throw new ArgumentNullException(nameof(searchModel));
-
-
             _baseAdminModelFactory.PrepareCategories(searchModel.AvailableCategories,
               defaultItemText: _localizationService.GetResource("Admin.Catalog.Categories.Fields.Parent.None"));
             if (searchModel.BookDirId > 0)
             {
-
                var bookdir = _bookdirService.GetBookDirById(searchModel.BookDirId);
-
                 if (bookdir != null)
                 {
                     searchModel.BookId = bookdir.BookID;
                 }
                 searchModel.AvailableBookDirs = SelectListHelper.GetBookDirList(_bookdirService);
             }
-
             if (searchModel.BookId > 0)
             {
                 var result = _productService.GetProductById(searchModel.BookId);

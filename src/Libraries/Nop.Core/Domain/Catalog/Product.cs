@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nop.Core.Domain.Customers;
 using Nop.Core.Domain.Discounts;
 using Nop.Core.Domain.Localization;
 using Nop.Core.Domain.Security;
@@ -25,7 +26,7 @@ namespace Nop.Core.Domain.Catalog
         protected ICollection<TierPrice> _tierPrices;
         protected ICollection<DiscountProductMapping> _discountProductMappings;
         private ICollection<ProductWarehouseInventory> _productWarehouseInventory;
-
+        //private ICollection<CustomerBook> _customerBooks;
         /// <summary>
         /// Gets or sets the product type identifier
         /// </summary>
@@ -729,5 +730,12 @@ namespace Nop.Core.Domain.Catalog
             get => _productWarehouseInventory ?? (_productWarehouseInventory = new List<ProductWarehouseInventory>());
             protected set => _productWarehouseInventory = value;
         }
+
+
+        //public virtual ICollection<CustomerBook> CustomerBooks
+        //{
+        //    get => _customerBooks ?? (_customerBooks = new List<CustomerBook>());
+        //    protected set => _customerBooks = value;
+        //}
     }
 }

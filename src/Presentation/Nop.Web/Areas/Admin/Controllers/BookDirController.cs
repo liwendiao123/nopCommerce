@@ -257,7 +257,6 @@ namespace Nop.Web.Areas.Admin.Controllers
             if (bookNode == null)
                 return RedirectToAction("Index");
             _bookDirService.DeleteBookDir(bookNode);
-
             return RedirectToAction("Index");
          //   return View();
         }

@@ -394,6 +394,30 @@ namespace Nop.Web.Controllers.Api
                             data = false
                         });
                     }
+
+                    if (!string.IsNullOrEmpty(model.InviteCode))
+                    {
+                        var custo = _customerService.GetCustomerByvipcode(model.InviteCode);
+
+                        if (custo != null || "001".Equals(model.InviteCode))
+                        {
+
+                        }
+                        else
+                        {
+                            return Json(new
+                            {
+                                code = -1,
+                                msg = "邀请码不存在",
+                                data = false
+                            });
+                        }
+                    }
+
+                    else if (!string.IsNullOrEmpty(model.ImgUrl))
+                    {
+                        registrationRequest.IsApproved = false;
+                    }
                 }
                 else if (model.Occupation == 8)
                 {
@@ -531,7 +555,11 @@ namespace Nop.Web.Controllers.Api
                     data= false
                 });
             }
-            _smsService.ApplySms(record);
+          var ressms =  _smsService.ApplySms(record);
+
+            if (ressms.Result)
+            {
+            }
             return Json(               
                 new {
                 code = 0,
@@ -756,8 +784,6 @@ namespace Nop.Web.Controllers.Api
 
             SmsMsgRecord smr = new SmsMsgRecord
             {
-
-
                 AppId = AliSmsManager.accessKeyId,
                 Phone = userName,
                 TemplateCode = code,
@@ -777,37 +803,47 @@ namespace Nop.Web.Controllers.Api
                     _customer = loginresut;
                 }
 
-                _eventPublisher.Publish(new CustomerLoggedinEvent(loginresut));
-
-                //activity log
-                _customerActivityService.InsertActivity(loginresut, "PublicStore.Login",
-                    _localizationService.GetResource("ActivityLog.PublicStore.Login"), loginresut);
-
-                var imgurl = _genericAttributeService.GetAttribute<string>(_customer, NopCustomerDefaults.IdCardImgAttribute);
-                var name = _genericAttributeService.GetAttribute<string>(_customer, NopCustomerDefaults.LastNameAttribute);
-                var dep = _departmentService.GetDepById(_customer.DepartmentId);
-                var inviteCode = _genericAttributeService.GetAttribute<string>(_customer, NopCustomerDefaults.InviteCodeAttribute);
-                return Json(new
+                if (loginresut != null)
                 {
-                    code = 0,
-                    msg = "登录成功",
-                    data = new
-                    {
-                        Id = _customer.Id,
-                        UserName = _customer.Username ?? "",
-                        Name = name ?? "",
-                        Phone = _customer.Username ?? "",
-                        Email = _customer.Email ?? "",
-                        Token = "",
-                        InviteCode = inviteCode ?? "",
-                        CardImgUrl = imgurl ?? "",
-                        SchoolName = dep == null ? "七三科技" : dep.Name,
-                        DepartmentId = _customer.DepartmentId,
-                        Role = string.Join(",", _customer.CustomerCustomerRoleMappings.Select(x => x.CustomerRole.SystemName).ToList()),
-                        IsTeacher = string.Join(",", _customer.CustomerCustomerRoleMappings.Select(x => x.CustomerRole.Name).ToList()).Contains("Teacher")
-                    }
-                });
+                    _eventPublisher.Publish(new CustomerLoggedinEvent(loginresut));
+                    //activity log
+                    _customerActivityService.InsertActivity(loginresut, "PublicStore.Login",
+                        _localizationService.GetResource("ActivityLog.PublicStore.Login"), loginresut);
 
+                    var imgurl = _genericAttributeService.GetAttribute<string>(_customer, NopCustomerDefaults.IdCardImgAttribute);
+                    var name = _genericAttributeService.GetAttribute<string>(_customer, NopCustomerDefaults.LastNameAttribute);
+                    var dep = _departmentService.GetDepById(_customer.DepartmentId);
+                    var inviteCode = _genericAttributeService.GetAttribute<string>(_customer, NopCustomerDefaults.InviteCodeAttribute);
+                    return Json(new
+                    {
+                        code = 0,
+                        msg = "登录成功",
+                        data = new
+                        {
+                            Id = _customer.Id,
+                            UserName = _customer.Username ?? "",
+                            Name = name ?? "",
+                            Phone = _customer.Username ?? "",
+                            Email = _customer.Email ?? "",
+                            Token = "",
+                            InviteCode = inviteCode ?? "",
+                            CardImgUrl = imgurl ?? "",
+                            SchoolName = dep == null ? "七三科技" : dep.Name,
+                            DepartmentId = _customer.DepartmentId,
+                            Role = string.Join(",", _customer.CustomerCustomerRoleMappings.Select(x => x.CustomerRole.SystemName).ToList()),
+                            IsTeacher = string.Join(",", _customer.CustomerCustomerRoleMappings.Select(x => x.CustomerRole.Name).ToList()).Contains("Teacher")
+                        }
+                    });
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        code = -1,
+                        msg = "用户不存在",
+                        data = new { }
+                    });
+                }
             }
             else
             {
@@ -897,6 +933,41 @@ namespace Nop.Web.Controllers.Api
 
           
         }
+
+
+        public IActionResult CheckSmsCode(string phone, int type)
+        {
+           var  record = new SmsMsgRecord
+            {
+                Phone = phone,
+                Type = type,
+                AppId = AliSmsManager.accessKeyId,
+                //TemplateCode = model.SmsCode
+            };
+            var result = _smsService.CheckMsgValid(record);
+
+            if (result.Result)
+            {
+                return Json(new
+                {
+                    code = 0,
+                    msg = "验证码可用",
+                    data = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "验证码不可可用",
+                    data = false
+
+                });
+            }
+         
+        }
+
         /// <summary>
         /// 短信验证手机号码
         /// </summary>
@@ -925,7 +996,6 @@ namespace Nop.Web.Controllers.Api
                 SysName = "Ali",
                 Title = title,               
             };
-
             var sms = new SmsObject
             {
                 Mobile = request.Phone ?? "18588276558",
@@ -969,9 +1039,9 @@ namespace Nop.Web.Controllers.Api
             {
                 return Json(new
                 {
-                    code = 0,
+                    code = -1,
                     msg = result.Msg,
-                    data = smr.TemplateCode
+                    data = ""
                 });
             }
             sms.Data = data;
@@ -987,7 +1057,7 @@ namespace Nop.Web.Controllers.Api
                 return Json(new
                 {
                     code = -1,
-                    msg  = "发送验证码失败：原因："+ res.response
+                    msg  = "验证码发送过多"
                 });
             }
 
@@ -1420,8 +1490,11 @@ namespace Nop.Web.Controllers.Api
         }
         public virtual IActionResult ValidInviteCode(string code)
         {
-           ///
-            if (code.Equals("001"))
+
+
+           var result = _customerService.GetCustomerByvipcode(code);
+
+            if (result != null || code.Equals("001"))
             {
                 return Json(new
                 {
@@ -1438,7 +1511,23 @@ namespace Nop.Web.Controllers.Api
                     msg = "邀请码不存在",
                     data = false
                 });
+            }
+
+           ///
+            if (code.Equals("001"))
+            {
+               
+            }
+            else
+            {
+               
             }               
+        }
+
+
+        public virtual IActionResult CheckSMSCode(string phone, string code, int type)
+        {
+            return View();
         }
     }
 }
