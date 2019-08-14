@@ -2330,16 +2330,13 @@ namespace Nop.Services.ExportImport
                                 for (var ci = 2; ci < 1000; ci++)
                                 {
                                     VideoNewInfo vni = new VideoNewInfo();
-
                                     vni.id = curworksheet.Cells[ci, 1].Value?.ToString()??"";
                                     var path = curworksheet.Cells[ci,3].Value?.ToString()??"";
-
                                     var pathitem = VideoPrefebPath .FirstOrDefault(x => !string.IsNullOrEmpty(path) && path.Contains(x.Text));
                                     if (pathitem != null)
                                     {
                                         vni.path = pathitem.Value;
                                     }
-
                                     var enventid = curworksheet.Cells[ci, 4].Value?.ToString()??"";
                                     var enventUrl = curworksheet.Cells[ci, 5].Value?.ToString()??"";
                                     var enventpos = curworksheet.Cells[ci, 6].Value?.ToString()??"";
@@ -3077,6 +3074,11 @@ namespace Nop.Services.ExportImport
             {
                 Value = "K/Audio/CKAudio",
                 Text = "音源预制"
+            });
+            AudioPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Audio/CKLoopAudio",
+                Text = "循环音源"
             });
             #endregion
 

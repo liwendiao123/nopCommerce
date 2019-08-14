@@ -1536,7 +1536,6 @@ namespace Nop.Web.Areas.Admin.Controllers
                     var encryptedCardCvv2 = _encryptionService.EncryptText(decryptedCardCvv2, newEncryptionPrivateKey);
                     var encryptedCardExpirationMonth = _encryptionService.EncryptText(decryptedCardExpirationMonth, newEncryptionPrivateKey);
                     var encryptedCardExpirationYear = _encryptionService.EncryptText(decryptedCardExpirationYear, newEncryptionPrivateKey);
-
                     order.CardType = encryptedCardType;
                     order.CardName = encryptedCardName;
                     order.CardNumber = encryptedCardNumber;
@@ -1546,29 +1545,24 @@ namespace Nop.Web.Areas.Admin.Controllers
                     order.CardExpirationYear = encryptedCardExpirationYear;
                     _orderService.UpdateOrder(order);
                 }
-
                 //update password information
                 //optimization - load only passwords with PasswordFormat.Encrypted
                 var customerPasswords = _customerService.GetCustomerPasswords(passwordFormat: PasswordFormat.Encrypted);
                 foreach (var customerPassword in customerPasswords)
                 {
                     var decryptedPassword = _encryptionService.DecryptText(customerPassword.Password, oldEncryptionPrivateKey);
-                    var encryptedPassword = _encryptionService.EncryptText(decryptedPassword, newEncryptionPrivateKey);
-
+                    var encryptedPassword = _encryptionService.EncryptText(decryptedPassword, newEncryptionPrivateKey);                   
                     customerPassword.Password = encryptedPassword;
                     _customerService.UpdateCustomerPassword(customerPassword);
                 }
-
                 securitySettings.EncryptionKey = newEncryptionPrivateKey;
                 _settingService.SaveSetting(securitySettings);
-
                 _notificationService.SuccessNotification(_localizationService.GetResource("Admin.Configuration.Settings.GeneralCommon.EncryptionKey.Changed"));
             }
             catch (Exception exc)
             {
                 _notificationService.ErrorNotification(exc);
             }
-
             return RedirectToAction("GeneralCommon");
         }
         [HttpPost, ActionName("GeneralCommon")]

@@ -273,8 +273,6 @@ namespace Nop.Web.Controllers.Api
                         Tel = model.Phone,
                         VatCode = Guid.NewGuid().ToString("N"),
                         UpdatedOnUtc = DateTime.Now
-
-
                     };
                     var deps = _departmentService.GetAllDeps(true);
                     var cschool = deps.FirstOrDefault(x => x.Name.Equals(model.SchoolName));
@@ -287,12 +285,10 @@ namespace Nop.Web.Controllers.Api
                     {
                         result = true;
                     }
-                   
-
-
+                    deps = _departmentService.GetAllDeps(true);
+                    cschool = deps.FirstOrDefault(x => x.Name.Equals(model.SchoolName));
                     if (result)
-                    {
-                      
+                    {                    
                         if (cschool == null)
                         {
                             return Json(new
@@ -448,7 +444,6 @@ namespace Nop.Web.Controllers.Api
                             _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.GenderAttribute, model.Gender);
                         // _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.FirstNameAttribute, model.FirstName);
                         _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.LastNameAttribute, model.Name);
-
                         if (_customerSettings.CompanyEnabled)
                             _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.CompanyAttribute, model.Company);
                         ///保存电话号码
@@ -555,23 +550,57 @@ namespace Nop.Web.Controllers.Api
                     data= false
                 });
             }
-          var ressms =  _smsService.ApplySms(record);
-
+            var ressms =  _smsService.ApplySms(record);
             if (ressms.Result)
             {
             }
+            string dutyName = string.Empty;
+
+            if (model.Occupation == 6)
+            {
+                dutyName = "老师";
+            }
+            else if (model.Occupation == 7)
+            {
+                dutyName = "学生";
+            }
+            else if (model.Occupation == 8)
+            {
+                dutyName = "家长";
+            }
+            else
+            {
+                dutyName = "未指定";
+            }
+
+          var resl =  _customerService.GetCustomerByUsername(model.UserName);
+
+
             return Json(               
                 new {
                 code = 0,
                 msg = "信息获取成功",
                 data=new{
-                    Id = model.UserName??"",
-                    Phone = model.Phone??"",
-                    Name = model.LastName ?? "",
-                    Email = model.Email ?? "",
-                    Occupation = model.Occupation == 7 ? "学生" : "老师",
-                    SchoolName = depName??"",
-                    DepId = model.DepartmentId
+                    //--- Id = model.UserName??"",
+                    //--- Phone = model.Phone??"",
+                    //--- Name = model.LastName ?? "",
+                    //--- Email = model.Email ?? "",
+                    //--- Occupation = dutyName,
+                    //--- SchoolName = depName??"",
+                    //--- DepId = model.DepartmentId
+                    Id = resl.Id,
+                    UserName = resl.Username ?? "",
+                    Name = model.Name ?? "",
+                    Phone = model.Phone ?? "",
+                    Email = model.Email ??"",
+                    Token = "",
+                    InviteCode = model.InviteCode ?? "",
+                    CardImgUrl = model.ImgUrl ?? "",
+                    SchoolName = model.SchoolName,
+                    DepId = model.DepartmentId,
+                    RoleId = string.Join(",", resl.CustomerCustomerRoleMappings.Where(x => "Registered" != x.CustomerRole.Name).Select(x => x.CustomerRole.Id)),
+                    Role = string.Join(",", resl.CustomerCustomerRoleMappings.Where(x => "Registered" != x.CustomerRole.Name).Select(x => x.CustomerRole.SystemName).ToList()),
+                    IsTeacher = string.Join(",", resl.CustomerCustomerRoleMappings.Select(x => x.CustomerRole.Name).ToList()).Contains("Teacher")
                 }            
             });
             //return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.Disabled });
@@ -709,6 +738,19 @@ namespace Nop.Web.Controllers.Api
                             name = _genericAttributeService.GetAttribute<string>(_customer, NopCustomerDefaults.LastNameAttribute);
                             var dep = _departmentService.GetDepById(_customer.DepartmentId);
                             inviteCode = _genericAttributeService.GetAttribute<string>(_customer, NopCustomerDefaults.InviteCodeAttribute);
+
+                            string email = _customer.Email;
+
+
+                            if (string.IsNullOrEmpty(_customer.Email) || _customer.Email.Length == 40)
+                            {
+                                email = string.Empty;
+                            }
+                            else
+                            {
+
+                            }
+
                             return Json(new {
                                 code = 0,
                                 msg="登录成功",
@@ -717,12 +759,13 @@ namespace Nop.Web.Controllers.Api
                                     UserName = _customer.Username??"",
                                     Name = name??"",
                                     Phone = _customer.Username??"",
-                                    Email = _customer.Email??"",
+                                    Email = email,
                                     Token = "",
                                     InviteCode = inviteCode??"",
                                     CardImgUrl = imgurl??"",
                                     SchoolName =dep==null ?"七三科技":dep.Name,
                                     DepartmentId = _customer.DepartmentId,
+                                    RoleId =string.Join( ",",_customer.CustomerCustomerRoleMappings.Where(x => "Registered" != x.CustomerRole.Name).Select(x=>x.CustomerRole.Id)),
                                     Role =string.Join(",", _customer.CustomerCustomerRoleMappings.Where(x=> "Registered" != x.CustomerRole.Name).Select(x=>x.CustomerRole.SystemName).ToList()),
                                     IsTeacher = string.Join(",", _customer.CustomerCustomerRoleMappings.Select(x => x.CustomerRole.Name).ToList()).Contains("Teacher")
                                 }
@@ -761,11 +804,132 @@ namespace Nop.Web.Controllers.Api
             model = _customerModelFactory.PrepareLoginModel(model.CheckoutAsGuest);
             return Json(new {
                 code = -1,
-                 msg ="登录失败;原因："+string.Join(",", ModelState.Root.Errors.Select(x=>x.ErrorMessage))              
+                 msg ="登录失败;原因：账号或密码错误"
             });
           //  return View(model);
         }
 
+
+        [HttpPost]
+        public IActionResult CheckOldPwd(string userName, string password)
+        {
+            string name = "";
+            string inviteCode = string.Empty;
+            string imgurl = string.Empty;
+            LoginModel model = new LoginModel()
+            {
+                Email = "li@163.com",
+                Username = userName,
+                Password = password
+            };
+
+            Customer _customer = null;
+
+            if (ModelState.IsValid)
+            {
+                if (_customerSettings.UsernamesEnabled && model.Username != null)
+                {
+                    model.Username = model.Username.Trim();
+                }
+                var loginResult = _customerRegistrationService.ValidateCustomer(_customerSettings.UsernamesEnabled ? model.Username : model.Email, model.Password);
+                switch (loginResult)
+                {
+                    case CustomerLoginResults.Successful:
+                        {
+                            var customer = _customerSettings.UsernamesEnabled
+                                ? _customerService.GetCustomerByUsername(model.Username)
+                                : _customerService.GetCustomerByEmail(model.Email);
+
+                            //migrate shopping cart
+                            //_shoppingCartService.MigrateShoppingCart(_workContext.CurrentCustomer, customer, true);
+                            _customer = customer;
+                            //sign in new customer
+                            _authenticationService.SignIn(customer, model.RememberMe);
+
+                            //raise event       
+                            _eventPublisher.Publish(new CustomerLoggedinEvent(customer));
+
+                            //activity log
+                            _customerActivityService.InsertActivity(customer, "PublicStore.Login",
+                                _localizationService.GetResource("ActivityLog.PublicStore.Login"), customer);
+
+                            imgurl = _genericAttributeService.GetAttribute<string>(_customer, NopCustomerDefaults.IdCardImgAttribute);
+                            name = _genericAttributeService.GetAttribute<string>(_customer, NopCustomerDefaults.LastNameAttribute);
+                            var dep = _departmentService.GetDepById(_customer.DepartmentId);
+                            inviteCode = _genericAttributeService.GetAttribute<string>(_customer, NopCustomerDefaults.InviteCodeAttribute);
+
+                            string email = _customer.Email;
+
+
+                            if (string.IsNullOrEmpty(_customer.Email) || _customer.Email.Length == 40)
+                            {
+                                email = string.Empty;
+                            }
+                            else
+                            {
+
+                            }
+
+                            return Json(new
+                            {
+                                code = 0,
+                                msg = "登录成功",
+                                data = new
+                                {
+                                    Id = _customer.Id,
+                                    UserName = _customer.Username ?? "",
+                                    Name = name ?? "",
+                                    Phone = _customer.Username ?? "",
+                                    Email = email,
+                                    Token = "",
+                                    InviteCode = inviteCode ?? "",
+                                    CardImgUrl = imgurl ?? "",
+                                    SchoolName = dep == null ? "七三科技" : dep.Name,
+                                    DepartmentId = _customer.DepartmentId,
+                                    RoleId = string.Join(",", _customer.CustomerCustomerRoleMappings.Where(x => "Registered" != x.CustomerRole.Name).Select(x => x.CustomerRole.Id)),
+                                    Role = string.Join(",", _customer.CustomerCustomerRoleMappings.Where(x => "Registered" != x.CustomerRole.Name).Select(x => x.CustomerRole.SystemName).ToList()),
+                                    IsTeacher = string.Join(",", _customer.CustomerCustomerRoleMappings.Select(x => x.CustomerRole.Name).ToList()).Contains("Teacher")
+                                }
+
+
+                            });
+                            //if (string.IsNullOrEmpty(returnUrl) || !Url.IsLocalUrl(returnUrl))
+                            //    return RedirectToRoute("Homepage");
+
+                            //return Redirect(returnUrl);
+                        }
+                    //break;
+                    case CustomerLoginResults.CustomerNotExist:
+                        ModelState.AddModelError("", _localizationService.GetResource("Account.Login.WrongCredentials.CustomerNotExist"));
+                        break;
+                    case CustomerLoginResults.Deleted:
+                        ModelState.AddModelError("", _localizationService.GetResource("Account.Login.WrongCredentials.Deleted"));
+                        break;
+                    case CustomerLoginResults.NotActive:
+                        ModelState.AddModelError("", _localizationService.GetResource("Account.Login.WrongCredentials.NotActive"));
+                        break;
+                    case CustomerLoginResults.NotRegistered:
+                        ModelState.AddModelError("", _localizationService.GetResource("Account.Login.WrongCredentials.NotRegistered"));
+                        break;
+                    case CustomerLoginResults.LockedOut:
+                        ModelState.AddModelError("", _localizationService.GetResource("Account.Login.WrongCredentials.LockedOut"));
+                        break;
+                    case CustomerLoginResults.WrongPassword:
+                    default:
+                        ModelState.AddModelError("", _localizationService.GetResource("Account.Login.WrongCredentials"));
+                        break;
+                }
+            }
+
+            //If we got this far, something failed, redisplay form
+            model = _customerModelFactory.PrepareLoginModel(model.CheckoutAsGuest);
+            return Json(new
+            {
+                code = -1,
+                msg = "检验密码失败;原因：密码错误"
+            });
+            //  return View(model);
+        }
         [HttpPost]
         public IActionResult LoginCode(string userName, string code)
         {
@@ -777,20 +941,15 @@ namespace Nop.Web.Controllers.Api
                     code = -1,
                     msg = "信息不完整",
                     data = false
-
                 });
             }
-
-
             SmsMsgRecord smr = new SmsMsgRecord
             {
                 AppId = AliSmsManager.accessKeyId,
                 Phone = userName,
                 TemplateCode = code,
                 Type = 2,
-
             };
-
             var result = _smsService.ApplySms(smr);
 
 
@@ -809,11 +968,18 @@ namespace Nop.Web.Controllers.Api
                     //activity log
                     _customerActivityService.InsertActivity(loginresut, "PublicStore.Login",
                         _localizationService.GetResource("ActivityLog.PublicStore.Login"), loginresut);
-
                     var imgurl = _genericAttributeService.GetAttribute<string>(_customer, NopCustomerDefaults.IdCardImgAttribute);
                     var name = _genericAttributeService.GetAttribute<string>(_customer, NopCustomerDefaults.LastNameAttribute);
                     var dep = _departmentService.GetDepById(_customer.DepartmentId);
                     var inviteCode = _genericAttributeService.GetAttribute<string>(_customer, NopCustomerDefaults.InviteCodeAttribute);
+                    string email = _customer.Email;
+                    if (string.IsNullOrEmpty(_customer.Email) || _customer.Email.Length == 40)
+                    {
+                        email = string.Empty;
+                    }
+                    else
+                    {
+                    }
                     return Json(new
                     {
                         code = 0,
@@ -824,12 +990,13 @@ namespace Nop.Web.Controllers.Api
                             UserName = _customer.Username ?? "",
                             Name = name ?? "",
                             Phone = _customer.Username ?? "",
-                            Email = _customer.Email ?? "",
+                            Email = email,
                             Token = "",
                             InviteCode = inviteCode ?? "",
                             CardImgUrl = imgurl ?? "",
                             SchoolName = dep == null ? "七三科技" : dep.Name,
                             DepartmentId = _customer.DepartmentId,
+                            RoleId = string.Join(",", _customer.CustomerCustomerRoleMappings.Where(x => "Registered" != x.CustomerRole.Name).Select(x => x.CustomerRole.Id)),
                             Role = string.Join(",", _customer.CustomerCustomerRoleMappings.Select(x => x.CustomerRole.SystemName).ToList()),
                             IsTeacher = string.Join(",", _customer.CustomerCustomerRoleMappings.Select(x => x.CustomerRole.Name).ToList()).Contains("Teacher")
                         }
@@ -853,7 +1020,6 @@ namespace Nop.Web.Controllers.Api
                     msg = "验证码错误",
                     data = false                  
                 });
-
             }
 
 
@@ -874,6 +1040,104 @@ namespace Nop.Web.Controllers.Api
 
             });
         }
+
+
+        //[HttpPost]
+        //public IActionResult ResetPwd(string userName, string password, string code)
+        //{
+        //    Customer _customer = null;
+        //    if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(code))
+        //    {
+        //        return Json(new
+        //        {
+        //            code = -1,
+        //            msg = "信息不完整",
+        //            data = false
+        //        });
+        //    }
+        //    SmsMsgRecord smr = new SmsMsgRecord
+        //    {
+        //        AppId = AliSmsManager.accessKeyId,
+        //        Phone = userName,
+        //        TemplateCode = code,
+        //        Type = 0,
+        //    };
+        //    var result = _smsService.ApplySms(smr);
+
+
+        //    if (result.Result)
+        //    {
+        //        var customer = _customerService.GetCustomerByUsername(userName);
+
+
+        //        if (customer == null)
+        //        {
+        //            return Json(new
+        //            {
+        //                code = -1,
+        //                 msg = "账号不存在"
+
+        //            });
+        //        }
+        //        if (ModelState.IsValid)
+        //        {
+
+        //            //CustomerPassword npassword = new CustomerPassword {
+        //            //    PasswordFormat = PasswordFormat.Hashed,
+        //            //    CustomerId = customer.Id,
+        //            //    Password = password
+
+        //            //};
+        //            //_customerService.UpdateCustomerPassword(npassword);
+        //            var changePasswordRequest = new ChangePasswordRequest()
+
+
+        //            //var changePasswordRequest = new ChangePasswordRequest(customer.Email, customer.Username,
+        //            //    true, _customerSettings.DefaultPasswordFormat, model.NewPassword, model.OldPassword);
+        //            //var changePasswordResult = _customerRegistrationService.ChangePassword(changePasswordRequest);
+        //            //if (changePasswordResult.Success)
+        //            //{
+        //            //    model.Result = _localizationService.GetResource("Account.ChangePassword.Success");
+        //            //    return Json(new
+        //            //    {
+        //            //        code = 0,
+        //            //        msg = "密码修改成功", //model.Result,
+        //            //        data = true
+        //            //    });
+        //            //}
+
+        //            ////errors
+        //            //foreach (var error in changePasswordResult.Errors)
+        //            //    ModelState.AddModelError("", error);
+        //        }
+
+        //        //If we got this far, something failed, redisplay form
+        //        return Json(new
+        //        {
+        //            code = -1,
+        //            msg ="重置失败",
+        //            data = false
+
+        //        });
+        //    }
+        //    else
+        //    {
+        //        return Json(new
+        //        {
+        //            code = -1,
+        //            msg = "验证码错误",
+        //            data = false
+        //        });
+        //    }
+
+
+
+
+
+
+
+   
+        //}
         public IActionResult CheckPhone(string phone)
         {
 
@@ -1161,19 +1425,26 @@ namespace Nop.Web.Controllers.Api
                     data = false
                 });
             }
-
+            if (string.IsNullOrEmpty(ucim.Email))
+            {
+                ucim.Email = customer.Email;
+            }
            /// 2.0获取用户所有角色
             var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
-
+        
             var curroleId = allCustomerRoles.FirstOrDefault(x => x.Id == ucim.RoleId);
-
             var newCustomerRoles = new List<CustomerRole>();
             foreach (var customerRole in allCustomerRoles)
             {
                 if (ucim.RoleId == (customerRole.Id))
                     newCustomerRoles.Add(customerRole);
             }
-            
+            var results =   customer.CustomerCustomerRoleMappings.Select(x => x.CustomerRole).ToList();
+            results = results.Where(x => x.Name.Equals("Registered")).ToList();
+            if(results.Count >0&&!newCustomerRoles.Exists(x=>x.Name == "Registered"))
+            {
+                newCustomerRoles.Add(results.FirstOrDefault());
+            }
             var customerRolesError = ValidateCustomerRoles(newCustomerRoles, customer.CustomerRoles);
             if (!string.IsNullOrEmpty(customerRolesError))
             {
@@ -1208,7 +1479,15 @@ namespace Nop.Web.Controllers.Api
                 if (!string.IsNullOrWhiteSpace(ucim.Username))
                     _customerRegistrationService.SetUsername(customer, ucim.Username);
                 else
-                    customer.Username = ucim.Username;
+                {
+                    return Json(new
+                    {
+                        code = -1,
+                        msg = "账号信息不能为空",
+                        data = false
+                    });
+                }
+                    //customer.Username = ucim.Username;
             }     
             //email
             if (!string.IsNullOrWhiteSpace(ucim.Email))
@@ -1217,11 +1496,8 @@ namespace Nop.Web.Controllers.Api
                 customer.Email = ucim.Email;
             customer.DepartmentId = ucim.DepId;
            // customer.InivteCode = ucim.InviteCode;
-
             if (_customerSettings.PhoneEnabled)
                 _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.PhoneAttribute, ucim.Phone);
-
-
             //customer roles
             foreach (var customerRole in allCustomerRoles)
             {
@@ -1231,11 +1507,34 @@ namespace Nop.Web.Controllers.Api
                     !_workContext.CurrentCustomer.IsAdmin())
                     continue;
 
-                if (ucim.RoleId==(customerRole.Id))
+
+                if (newCustomerRoles.Exists(x=>x.Id==(customerRole.Id)))
                 {
+
+                 
+
                     //new role
                     if (customer.CustomerCustomerRoleMappings.Count(mapping => mapping.CustomerRoleId == customerRole.Id) == 0)
+                    {
+                        if (customerRole.Name == "Teacher")
+                        {
+
+                         var ccustomer =   _customerService.GetCustomerByvipcode(ucim.InviteCode);
+
+                            if (ccustomer == null && !"001".Equals(ucim.InviteCode) && string.IsNullOrEmpty(ucim.Imgurl))
+                            {
+                                return Json(new
+                                {
+                                    code = -1,
+                                    msg = "变更角色信息失败:请指定邀请码",
+                                    data = false
+                                });
+                            }
+                        }
+
                         customer.AddCustomerRoleMapping(new CustomerCustomerRoleMapping { CustomerRole = customerRole });
+                    }
+                        
                 }
                 else
                 {
@@ -1245,9 +1544,8 @@ namespace Nop.Web.Controllers.Api
                        // _notificationService.ErrorNotification(_localizationService.GetResource("Admin.Customers.Customers.AdminAccountShouldExists.DeleteRole"));
                         continue;
                     }
-
                     //remove role
-                    if (customer.CustomerCustomerRoleMappings.Count(mapping => mapping.CustomerRoleId == customerRole.Id) > 0)
+                    if ( customer.CustomerCustomerRoleMappings.Count(mapping => mapping.CustomerRoleId == customerRole.Id) > 0)
                     {
                         customer.RemoveCustomerRoleMapping(
                             customer.CustomerCustomerRoleMappings.FirstOrDefault(mapping => mapping.CustomerRoleId == customerRole.Id));
@@ -1319,7 +1617,7 @@ namespace Nop.Web.Controllers.Api
             {
                 var changePasswordRequest = new ChangePasswordRequest(customer.Email,userName,
                     true, _customerSettings.DefaultPasswordFormat, model.NewPassword, model.OldPassword);
-                var changePasswordResult = _customerRegistrationService.ChangePassword(changePasswordRequest);
+                var changePasswordResult = _customerRegistrationService.ResetPassword(changePasswordRequest);
                 if (changePasswordResult.Success)
                 {
                     model.Result = _localizationService.GetResource("Account.ChangePassword.Success");
@@ -1342,7 +1640,85 @@ namespace Nop.Web.Controllers.Api
                 data = false
 
             });
-        }       
+        }
+
+        [HttpPost]
+        public IActionResult ResetPassword(string password, string userName,string code)
+        {
+            //if (!_workContext.CurrentCustomer.IsRegistered())
+            //    return Challenge();
+
+
+            if (string.IsNullOrEmpty(password))
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "密码不能为空",
+                    data = false,
+
+                });
+            }
+           if(password.Length <6)
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "密码至少六位数",
+                    data = false,
+
+                });
+            }
+
+            if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(code))
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "信息不完整",
+                    data = false
+                });
+            }
+            SmsMsgRecord smr = new SmsMsgRecord
+            {
+                AppId = AliSmsManager.accessKeyId,
+                Phone = userName,
+                TemplateCode = code,
+                Type = 1,
+            };
+            var result = _smsService.ApplySms(smr);
+            var customer = _customerService.GetCustomerByUsername(userName);
+            if (ModelState.IsValid)
+            {
+                //CustomerPassword
+                var changePasswordRequest = new ChangePasswordRequest(customer.Email,customer.Username,
+                    true, _customerSettings.DefaultPasswordFormat,password,"");
+                var changePasswordResult = _customerRegistrationService.ChangePassword(changePasswordRequest);
+                if (changePasswordResult.Success)
+                {
+                    //model.Result = _localizationService.GetResource("Account.ChangePassword.Success");
+                    return Json(new
+                    {
+                        code = 0,
+                        msg = "密码重置成功", //model.Result,
+                        data = true
+                    });
+                }
+
+                //errors
+                foreach (var error in changePasswordResult.Errors)
+                    ModelState.AddModelError("", error);
+            }
+
+            //If we got this far, something failed, redisplay form
+            return Json(new
+            {
+                code = -1,
+                msg = "重置失败",
+                data = false
+
+            });
+        }
         public IActionResult GetMyCollection(string userName)
         {
             BookDirSearchModel searchModel = new BookDirSearchModel

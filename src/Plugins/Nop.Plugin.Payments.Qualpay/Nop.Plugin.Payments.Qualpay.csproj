@@ -1,11 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="Current">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <Copyright>Copyright © Nop Solutions, Ltd</Copyright>
     <Company>Nop Solutions, Ltd</Company>
     <Authors>Nop Solutions, Ltd</Authors>
-    <PackageLicenseUrl></PackageLicenseUrl>
+    <PackageLicenseUrl>
+    </PackageLicenseUrl>
     <PackageProjectUrl>https://www.nopcommerce.com/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/nopSolutions/nopCommerce</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
@@ -13,8 +13,10 @@
     <OutDir>$(OutputPath)</OutDir>
     <!--Set this parameter to true to get the dlls copied from the NuGet cache to the output of your project. You need to set this parameter to true if your plugin has a nuget package to ensure that the dlls copied from the NuGet cache to the output of your project-->
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <FileUpgradeFlags>40</FileUpgradeFlags>
+    <UpgradeBackupLocation>F:\liwendiao\aibookversion2\editcode\Nop\src\Backup\Plugins\Nop.Plugin.Payments.Qualpay\</UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
   </PropertyGroup>
-  
   <ItemGroup>
     <None Remove="logo.png" />
     <None Remove="plugin.json" />
@@ -22,7 +24,6 @@
     <None Remove="Views\Customer\_CreateOrUpdate.Qualpay.cshtml" />
     <None Remove="Views\PaymentInfo.cshtml" />
   </ItemGroup>
-  
   <ItemGroup>
     <Content Include="logo.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -43,7 +44,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-
   <ItemGroup>
     <None Update="qpPg.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -55,7 +55,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
   <ItemGroup>
     <Reference Include="qpPg">
       <HintPath>qpPg.dll</HintPath>
@@ -64,16 +63,13 @@
       <HintPath>qpPlatform.dll</HintPath>
     </Reference>
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\Presentation\Nop.Web\Nop.Web.csproj" />
     <ClearPluginAssemblies Include="$(MSBuildProjectDirectory)\..\..\Build\ClearPluginAssemblies.proj" />
   </ItemGroup>
-
   <!-- This target execute after "Build" target -->
   <Target Name="NopTarget" AfterTargets="Build">
     <!-- Delete unnecessary libraries from plugins path -->
     <MSBuild Projects="@(ClearPluginAssemblies)" Properties="PluginPath=$(MSBuildProjectDirectory)\$(OutDir)" Targets="NopClear" />
   </Target>
-
 </Project>

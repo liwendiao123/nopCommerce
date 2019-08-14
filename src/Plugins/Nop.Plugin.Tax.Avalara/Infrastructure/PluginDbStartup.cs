@@ -19,13 +19,12 @@ namespace Nop.Plugin.Tax.Avalara.Infrastructure
         /// <param name="configuration">Configuration of the application</param>
         public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
-            //add object context
-            services.AddDbContext<TaxTransactionLogObjectContext>(optionsBuilder =>
+           //add object context
+           services.AddDbContext<TaxTransactionLogObjectContext>(optionsBuilder =>
             {
                 optionsBuilder.UseSqlServerWithLazyLoading(services);
             });
         }
-
         /// <summary>
         /// Configure the using of added middleware
         /// </summary>
@@ -33,7 +32,6 @@ namespace Nop.Plugin.Tax.Avalara.Infrastructure
         public void Configure(IApplicationBuilder application)
         {
         }
-
         /// <summary>
         /// Gets order of this startup configuration implementation
         /// </summary>

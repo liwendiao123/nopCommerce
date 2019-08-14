@@ -38,7 +38,7 @@ namespace Nop.Services.Customers
         /// <param name="request">Request</param>
         /// <returns>Result</returns>
         ChangePasswordResult ChangePassword(ChangePasswordRequest request);
-
+        ChangePasswordResult ResetPassword(ChangePasswordRequest request);
         /// <summary>
         /// Sets a user email
         /// </summary>

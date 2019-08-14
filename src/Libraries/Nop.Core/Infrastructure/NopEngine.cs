@@ -191,7 +191,6 @@ namespace Nop.Core.Infrastructure
             //find startup configurations provided by other assemblies
             var typeFinder = Resolve<ITypeFinder>();
             var startupConfigurations = typeFinder.FindClassesOfType<INopStartup>();
-
             //create and sort instances of startup configurations
             var instances = startupConfigurations
                 .Select(startup => (INopStartup)Activator.CreateInstance(startup))

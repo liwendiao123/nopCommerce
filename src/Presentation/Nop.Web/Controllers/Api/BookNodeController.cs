@@ -405,6 +405,9 @@ namespace Nop.Web.Controllers.Api
                 x.BookNodeBookNodeTagMappings.ToList()
                 .ForEach(y =>
                 {
+
+                 // var oldaibook = aibookList.FirstOrDefault(y=>y.Id == x.)
+
                     aibookList.Add(y.BookNode);
                 });
 
@@ -448,7 +451,7 @@ namespace Nop.Web.Controllers.Api
                     imgurl =_pictureService.GetPictureUrl(int.Parse(x.ImgUrl??"0")),
                 };
 
-            }).ToList();
+            }).Distinct().ToList();
 
             
             return Json(new

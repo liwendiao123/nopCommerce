@@ -172,10 +172,8 @@ namespace Nop.Web.Models.Api.BookNode
 
         public OffsetXY pos { get; set; }
         public OffsetXY size { get; set; }
-        public string eventid { get; set; }
-
+        public string eventid { get; set; }   
         public string highlightedurl { get; set; }
-
         public string pressedurl { get; set; }
         public string bg { get; set; }
         public string text { get; set; }
@@ -284,7 +282,7 @@ namespace Nop.Web.Models.Api.BookNode
         public OffsetXY pos { get; set; }
         public OffsetXY size { get; set; }
     }
-    public class ModelInfo:BaseModel
+    public class ModelInfo : BaseModel
     {
         public ModelInfo()
         {
@@ -292,11 +290,31 @@ namespace Nop.Web.Models.Api.BookNode
             rot = new OffsetXYZ();
             scale = new OffsetXYZ();
             clips = new List<Dic>();
+            type = new List<TypeEvents>();
         }
         public OffsetXYZ pos { get; set; }
         public OffsetXYZ rot { get; set; }
         public OffsetXYZ scale { get; set; }
         public List<Dic> clips { get; set; }
+
+        public List<TypeEvents> type { get; set; }
+    }
+
+
+    public class TypeEvents {
+
+
+        public TypeEvents()
+        {
+
+        }
+        public OffsetXYZ pos { get; set; }
+        public OffsetXYZ rot { get; set; }
+        public OffsetXYZ scale { get; set; }
+
+        public string key { get; set; }
+
+
     }
     public class CameraInfo:BaseModel
     {

@@ -454,6 +454,103 @@ namespace Nop.Services.Customers
             return result;
         }
 
+
+        /// <summary>
+        /// Change password
+        /// </summary>
+        /// <param name="request">Request</param>
+        /// <returns>Result</returns>
+        public virtual ChangePasswordResult ResetPassword(ChangePasswordRequest request)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            var result = new ChangePasswordResult();
+            if (string.IsNullOrWhiteSpace(request.Email) && string.IsNullOrEmpty(request.UserName))
+            {
+                result.AddError(_localizationService.GetResource("Account.ChangePassword.Errors.EmailIsNotProvided"));
+                return result;
+            }
+
+            if (string.IsNullOrWhiteSpace(request.NewPassword))
+            {
+                result.AddError(_localizationService.GetResource("Account.ChangePassword.Errors.PasswordIsNotProvided"));
+                return result;
+            }
+
+            var customer = _customerService.GetCustomerByEmail(request.Email);
+            if (customer == null)
+            {
+
+                if (!string.IsNullOrEmpty(request.UserName))
+                {
+                    customer = _customerService.GetCustomerByUsername(request.UserName);
+                    if (customer == null)
+                    {
+                        result.AddError(_localizationService.GetResource("Account.ChangePassword.Errors.EmailNotFound"));
+                    }
+                }
+
+
+                return result;
+            }
+
+
+
+
+
+            //request isn't valid
+            //if (request.ValidateRequest && !PasswordsMatch(_customerService.GetCurrentPassword(customer.Id), request.OldPassword))
+            //{
+            //    result.AddError(_localizationService.GetResource("Account.ChangePassword.Errors.OldPasswordDoesntMatch"));
+            //    return result;
+            //}
+
+            //check for duplicates
+            //if (_customerSettings.UnduplicatedPasswordsNumber > 0)
+            //{
+            //    //get some of previous passwords
+            //    var previousPasswords = _customerService.GetCustomerPasswords(customer.Id, passwordsToReturn: _customerSettings.UnduplicatedPasswordsNumber);
+
+            //    var newPasswordMatchesWithPrevious = previousPasswords.Any(password => PasswordsMatch(password, request.NewPassword));
+            //    if (newPasswordMatchesWithPrevious)
+            //    {
+            //        result.AddError(_localizationService.GetResource("Account.ChangePassword.Errors.PasswordMatchesWithPrevious"));
+            //        return result;
+            //    }
+            //}
+
+            //at this point request is valid
+            var customerPassword = new CustomerPassword
+            {
+                Customer = customer,
+                PasswordFormat = request.NewPasswordFormat,
+                CreatedOnUtc = DateTime.UtcNow
+            };
+            switch (request.NewPasswordFormat)
+            {
+                case PasswordFormat.Clear:
+                    customerPassword.Password = request.NewPassword;
+                    break;
+                case PasswordFormat.Encrypted:
+                    customerPassword.Password = _encryptionService.EncryptText(request.NewPassword);
+                    break;
+                case PasswordFormat.Hashed:
+                    var saltKey = _encryptionService.CreateSaltKey(NopCustomerServiceDefaults.PasswordSaltKeySize);
+                    customerPassword.PasswordSalt = saltKey;
+                    customerPassword.Password = _encryptionService.CreatePasswordHash(request.NewPassword, saltKey,
+                        request.HashedPasswordFormat ?? _customerSettings.HashedPasswordFormat);
+                    break;
+            }
+
+            _customerService.InsertCustomerPassword(customerPassword);
+
+            //publish event
+            _eventPublisher.Publish(new CustomerPasswordChangedEvent(customerPassword));
+
+            return result;
+        }
+
         /// <summary>
         /// Sets a user email
         /// </summary>
