@@ -10,7 +10,7 @@ using Nop.Web.Models.Api.Book;
 
 namespace Nop.Web.Controllers.Api
 {
-    public class BookController : Controller
+    public class BookController : BasePublicController
     {
 
         private readonly IProductService _productService;

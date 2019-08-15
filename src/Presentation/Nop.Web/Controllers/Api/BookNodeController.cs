@@ -17,7 +17,7 @@ using Nop.Web.Models.Api.BookNode;
 
 namespace Nop.Web.Controllers.Api
 {
-    public class BookNodeController : BaseController
+    public class BookNodeController : BasePublicController
     {
         private readonly IAiBookService _aiBookService;
         private readonly IBookDirService _bookDirService;
@@ -90,8 +90,6 @@ namespace Nop.Web.Controllers.Api
         }
         public IActionResult GetJsonData(int id,string platformtype)
         {
-
-
             string platformtypepath = "windows";
             switch (platformtype)
             {
@@ -104,7 +102,6 @@ namespace Nop.Web.Controllers.Api
                 case "3":
                     platformtypepath = "windows";
                     break;
-
             }
 
 

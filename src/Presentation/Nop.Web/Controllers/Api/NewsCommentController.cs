@@ -21,7 +21,7 @@ using Nop.Web.Models.Api.BookNode;
 namespace Nop.Web.Controllers.Api
 {
 
-    public class NewsCommentController : Controller
+    public class NewsCommentController : BasePublicController
     {
         #region Fields
 

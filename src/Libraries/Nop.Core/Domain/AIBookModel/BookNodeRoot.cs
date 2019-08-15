@@ -132,6 +132,8 @@ namespace Nop.Core.Domain.AIBookModel
         public OpenEventState()
         {
             objectids = new List<string>();
+            enventid = string.Empty;
+            name = string.Empty;
         }
         public string enventid { get; set; }
 
@@ -140,12 +142,27 @@ namespace Nop.Core.Domain.AIBookModel
     }
     public class OffsetXY
     {
+
+        public OffsetXY()
+        {
+            x = string.Empty;
+            y = string.Empty;
+            
+        }
         public string x { get; set; }
 
         public string y { get; set; }
     }
     public class OffsetXYZ
     {
+
+        public OffsetXYZ()
+        {
+            x = string.Empty;
+            y = string.Empty;
+            z = string.Empty;
+        }
+
         public string x { get; set; }
         public string y { get; set; }
         public string z { get; set; }
@@ -157,10 +174,11 @@ namespace Nop.Core.Domain.AIBookModel
         {
             pos = new OffsetXY();
             size = new OffsetXY();
-
             highlightedurl = string.Empty;
-
             pressedurl = string.Empty;
+            eventid = string.Empty;
+            bg = string.Empty;
+            text = string.Empty;
         }
 
         public OffsetXY pos { get; set; }
@@ -175,6 +193,12 @@ namespace Nop.Core.Domain.AIBookModel
     }
     public class Dic
     {
+
+        public Dic()
+        {
+            key = string.Empty;
+            val = string.Empty;
+        }
         public string key { get; set; }
         public string val { get; set; }
     }
@@ -185,6 +209,8 @@ namespace Nop.Core.Domain.AIBookModel
         {
             pos = new OffsetXY();
             size = new OffsetXY();
+            key = string.Empty;
+            val = string.Empty;
         }
 
         public OffsetXY pos { get; set; }
@@ -198,6 +224,7 @@ namespace Nop.Core.Domain.AIBookModel
         public TextDic()
         {
             dic = new List<RichText>();
+            key = string.Empty;
         }
 
         public string key { get; set; }
@@ -272,6 +299,7 @@ namespace Nop.Core.Domain.AIBookModel
             pos = new OffsetXY();
             size = new OffsetXY();
             dic = new List<RichText>();
+            key = string.Empty;
         }
 
 
@@ -289,12 +317,31 @@ namespace Nop.Core.Domain.AIBookModel
             rot = new OffsetXYZ();
             scale = new OffsetXYZ();
             clips = new List<Dic>();
+            type = new List<TypeEvents>();
         }
         public OffsetXYZ pos { get; set; }
         public OffsetXYZ rot { get; set; }
         public OffsetXYZ scale { get; set; }
         public List<Dic> clips { get; set; }
+
+        public List<TypeEvents> type { get; set; }
     }
+
+    public class TypeEvents
+    {
+        public TypeEvents()
+        {
+            key = string.Empty;
+            pos = new OffsetXYZ();
+            rot = new OffsetXYZ();
+            scale = new OffsetXYZ();
+        }
+        public OffsetXYZ pos { get; set; }
+        public OffsetXYZ rot { get; set; }
+        public OffsetXYZ scale { get; set; }
+        public string key { get; set; }
+    }
+
     public class CameraInfo : BaseModel
     {
         public CameraInfo()
@@ -326,6 +373,11 @@ namespace Nop.Core.Domain.AIBookModel
         public RichText()
         {
             sort = "0";
+            b = false;
+            i = false;
+            size = "20";
+            color = "#333";
+            val = string.Empty;
         }
         public bool b { get; set; }
         public bool i { get; set; }
@@ -338,6 +390,13 @@ namespace Nop.Core.Domain.AIBookModel
     }
     public class Rect
     {
+        public Rect()
+        {
+            x = string.Empty;
+            y = string.Empty;
+            w = string.Empty;
+            h = string.Empty;
+        }
         public string x { get; set; }
 
         public string y { get; set; }
@@ -354,6 +413,8 @@ namespace Nop.Core.Domain.AIBookModel
             pos = new OffsetXY();
             size = new OffsetXY();
             dic = new List<Dic>();
+            path = string.Empty;
+            id = string.Empty;
         }
 
         public OffsetXY pos { get; set; }
@@ -373,6 +434,8 @@ namespace Nop.Core.Domain.AIBookModel
         {
 
             dic = new List<NewDic>();
+            path = string.Empty;
+            id = string.Empty;
         }
 
 
@@ -386,6 +449,11 @@ namespace Nop.Core.Domain.AIBookModel
     }
     public class ClickInfo
     {
+        public ClickInfo()
+        {
+            name = string.Empty;
+            eventid = string.Empty;
+        }
         public string name { get; set; }
 
         public string eventid { get; set; }

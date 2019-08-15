@@ -189,6 +189,12 @@ namespace Nop.Web.Framework
 
                 Customer customer = null;
 
+
+                //if (_httpContextAccessor.HttpContext.Request.Form["Token"] != null)
+                //{
+
+                //}
+
                 //check whether request is made by a background (schedule) task
                 if (_httpContextAccessor.HttpContext == null ||
                     _httpContextAccessor.HttpContext.Request.Path.Equals(new PathString($"/{NopTaskDefaults.ScheduleTaskPath}"), StringComparison.InvariantCultureIgnoreCase))

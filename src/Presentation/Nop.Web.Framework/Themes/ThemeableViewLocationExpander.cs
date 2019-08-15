@@ -43,8 +43,6 @@ namespace Nop.Web.Framework.Themes
                     }
                     .Concat(viewLocations);
             }
-
-
             return viewLocations;
         }
     }

@@ -12,7 +12,7 @@ using Nop.Web.Models.AiBook;
 
 namespace Nop.Web.Controllers.Api
 {
-    public class BookDirController : Controller
+    public class BookDirController : BasePublicController
     {
         private readonly IBookDirService _bookDirService;
         private readonly IBookDirFactory _bookDirFactory;

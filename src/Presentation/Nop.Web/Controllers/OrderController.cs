@@ -230,7 +230,6 @@ namespace Nop.Web.Controllers
                 //redirection or POST has been done in PostProcessPayment
                 return Content("Redirected");
             }
-
             //if no redirection has been done (to a third-party payment page)
             //theoretically it's not possible
             return RedirectToRoute("OrderDetails", new { orderId = orderId });
@@ -243,11 +242,9 @@ namespace Nop.Web.Controllers
             var shipment = _shipmentService.GetShipmentById(shipmentId);
             if (shipment == null)
                 return Challenge();
-
             var order = shipment.Order;
             if (order == null || order.Deleted || _workContext.CurrentCustomer.Id != order.CustomerId)
                 return Challenge();
-
             var model = _orderModelFactory.PrepareShipmentDetailsModel(shipment);
             return View(model);
         }

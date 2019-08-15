@@ -7,7 +7,7 @@ using Nop.Core.Configuration;
 using Nop.Web.Models.Api;
 namespace Nop.Web.Controllers.Api
 {
-    public class MobileClientController : Controller
+    public class MobileClientController : BasePublicController
     {
 
         private readonly NopConfig _config;

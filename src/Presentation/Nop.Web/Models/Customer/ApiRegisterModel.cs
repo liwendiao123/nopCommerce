@@ -4,10 +4,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Nop.Web.Framework.Mvc.ModelBinding;
+using Nop.Web.Models.Api;
 
 namespace Nop.Web.Models.Customer
 {
-    public class ApiRegisterModel
+    public class ApiRegisterModel:BaseApiRequest
     {
         public bool PhoneEnabled { get; set; }
         public bool PhoneRequired { get; set; }

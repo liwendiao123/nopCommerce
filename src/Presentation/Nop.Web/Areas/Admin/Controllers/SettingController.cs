@@ -1479,9 +1479,7 @@ namespace Nop.Web.Areas.Admin.Controllers
             //this behavior can increase performance because cached settings will not be cleared 
             //and loaded from database after each update
             adminAreaSettings.UseRichEditorInMessageTemplates = model.AdminAreaSettings.UseRichEditorInMessageTemplates;
-
             _settingService.SaveSettingOverridablePerStore(adminAreaSettings, x => x.UseRichEditorInMessageTemplates, model.AdminAreaSettings.UseRichEditorInMessageTemplates_OverrideForStore, storeScope, false);
-
             //now clear settings cache
             _settingService.ClearCache();
 

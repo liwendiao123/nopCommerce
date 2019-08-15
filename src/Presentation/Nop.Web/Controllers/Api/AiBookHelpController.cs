@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Nop.Web.Controllers.Api
 {
-    public class AiBookHelpController : Controller
+    public class AiBookHelpController : BasePublicController
     {
         public IActionResult Index()
         {

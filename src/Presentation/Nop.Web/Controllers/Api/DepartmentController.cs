@@ -9,7 +9,7 @@ using Nop.Web.Models.Customer;
 
 namespace Nop.Web.Controllers.Api
 {
-    public class DepartmentController : Controller
+    public class DepartmentController : BasePublicController
     {
 
         private IDepartmentService _departmentService;

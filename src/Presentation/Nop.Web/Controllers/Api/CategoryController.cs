@@ -7,7 +7,7 @@ using Nop.Services.Catalog;
 
 namespace Nop.Web.Controllers.Api
 {
-    public class CategoryController : Controller
+    public class CategoryController : BasePublicController
     {
 
         private readonly ICategoryService _categoryService;

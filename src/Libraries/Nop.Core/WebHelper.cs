@@ -130,7 +130,6 @@ namespace Nop.Core
         {
             if (!IsRequestAvailable())
                 return string.Empty;
-
             var result = string.Empty;
             try
             {
@@ -146,7 +145,6 @@ namespace Nop.Core
                         //in these cases an administrator can specify a custom Forwarded HTTP header (e.g. CF-Connecting-IP, X-FORWARDED-PROTO, etc)
                         forwardedHttpHeaderKey = _hostingConfig.ForwardedHttpHeader;
                     }
-
                     var forwardedHeader = _httpContextAccessor.HttpContext.Request.Headers[forwardedHttpHeaderKey];
                     if (!StringValues.IsNullOrEmpty(forwardedHeader))
                         result = forwardedHeader.FirstOrDefault();
@@ -172,7 +170,6 @@ namespace Nop.Core
             else if (!string.IsNullOrEmpty(result))
                 //remove port
                 result = result.Split(':').FirstOrDefault();
-
             return result;
         }
 

@@ -1129,7 +1129,6 @@ namespace Nop.Web.Controllers
             var model = _checkoutModelFactory.PrepareOnePageCheckoutModel(cart);
             return View(model);
         }
-
         public virtual IActionResult OpcSaveBilling(CheckoutBillingAddressModel model, IFormCollection form)
         {
             try
@@ -1269,7 +1268,6 @@ namespace Nop.Web.Controllers
                 return Json(new { error = 1, message = exc.Message });
             }
         }
-
         public virtual IActionResult OpcSaveShipping(CheckoutShippingAddressModel model, IFormCollection form)
         {
             try
@@ -1277,18 +1275,13 @@ namespace Nop.Web.Controllers
                 //validation
                 if (_orderSettings.CheckoutDisabled)
                     throw new Exception(_localizationService.GetResource("Checkout.Disabled"));
-
                 var cart = _shoppingCartService.GetShoppingCart(_workContext.CurrentCustomer, ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
-
                 if (!cart.Any())
                     throw new Exception("Your cart is empty");
-
                 if (!_orderSettings.OnePageCheckoutEnabled)
                     throw new Exception("One page checkout is disabled");
-
                 if (_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed)
-                    throw new Exception("Anonymous checkout is not allowed");
-
+                    throw new Exception("Anonymous checkout is not allowed");         
                 if (!_shoppingCartService.ShoppingCartRequiresShipping(cart))
                     throw new Exception("Shipping is not required");
 

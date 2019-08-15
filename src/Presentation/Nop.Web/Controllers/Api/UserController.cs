@@ -49,6 +49,7 @@ using Nop.Web.Areas.Admin.Models.TableOfContent;
 using Nop.Web.Models.AiBook;
 using Nop.Services.TableOfContent;
 using Nop.Core.Infrastructure.Ex;
+using Nop.Core.LoginInfo;
 
 namespace Nop.Web.Controllers.Api
 {
@@ -77,7 +78,6 @@ namespace Nop.Web.Controllers.Api
         private readonly IBookDirService _bookDirService;
         private readonly IDepartmentService _departmentService;
        /// private readonly
-
         private readonly ICustomerRegistrationService _customerRegistrationService;
         private readonly ICustomerService _customerService;
         private readonly IEventPublisher _eventPublisher;
@@ -219,6 +219,9 @@ namespace Nop.Web.Controllers.Api
         [CheckAccessPublicStore(true)]
         public IActionResult Register(ApiRegisterModel model, string returnUrl, bool captchaValid, IFormCollection form)
         {
+
+            string email = model.Email;
+
             if (string.IsNullOrEmpty(model.Email))
             {
                 model.Email = Guid.NewGuid().ToString("N") + "@163.com";
@@ -326,10 +329,8 @@ namespace Nop.Web.Controllers.Api
             {
                 //Already registered customer. 
                 _authenticationService.SignOut();
-
                 //raise logged out event       
                 _eventPublisher.Publish(new CustomerLoggedOutEvent(_workContext.CurrentCustomer));
-
                 //Save a new record
                 _workContext.CurrentCustomer = _customerService.InsertGuestCustomer();
             }
@@ -470,16 +471,12 @@ namespace Nop.Web.Controllers.Api
                         }
                         //save customer attributes
                         _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.CustomCustomerAttributes, customerAttributesXml);
-
-
                         //notifications
                         if (_customerSettings.NotifyNewCustomerRegistration)
                             _workflowMessageService.SendCustomerRegisteredNotificationMessage(customer,
                                 _localizationSettings.DefaultAdminLanguageId);
-
                         //raise event       
                         _eventPublisher.Publish(new CustomerRegisteredEvent(customer));
-
                         //switch (_customerSettings.UserRegistrationType)
                         //{
                         //    case UserRegistrationType.EmailValidation:
@@ -512,12 +509,9 @@ namespace Nop.Web.Controllers.Api
                         //        }
                         //}
                     }
-
                     //errors
                     foreach (var error in registrationResult.Errors)
                         ModelState.AddModelError("", error);
-
-
                     if (registrationResult.Errors.Count > 0)
                     {
                         return Json(new
@@ -525,7 +519,6 @@ namespace Nop.Web.Controllers.Api
                             code = -1,
                             msg = string.Join(",", registrationResult.Errors),
                             data = false
-
                         });
                     }
                 }
@@ -536,10 +529,8 @@ namespace Nop.Web.Controllers.Api
                         code = -1,
                         msg = ex.Message,
                         data = false
-
                     });
-                }
-         
+                }         
             }
             else
             {
@@ -555,7 +546,6 @@ namespace Nop.Web.Controllers.Api
             {
             }
             string dutyName = string.Empty;
-
             if (model.Occupation == 6)
             {
                 dutyName = "老师";
@@ -575,7 +565,13 @@ namespace Nop.Web.Controllers.Api
 
           var resl =  _customerService.GetCustomerByUsername(model.UserName);
 
-
+            AccountToken token = new AccountToken
+            {
+                ClientId = model.qs_clientid,
+                ExpireTime = DateTime.Now.AddDays(30).Ticks,
+                ID = resl.Id.ToString(),
+                UserName = resl.Username
+            };
             return Json(               
                 new {
                 code = 0,
@@ -592,12 +588,13 @@ namespace Nop.Web.Controllers.Api
                     UserName = resl.Username ?? "",
                     Name = model.Name ?? "",
                     Phone = model.Phone ?? "",
-                    Email = model.Email ??"",
-                    Token = "",
+                    Email = email??"",
+                    Token = token.Serialize(),
                     InviteCode = model.InviteCode ?? "",
                     CardImgUrl = model.ImgUrl ?? "",
                     SchoolName = model.SchoolName,
                     DepId = model.DepartmentId,
+                    Occupation = dutyName,
                     RoleId = string.Join(",", resl.CustomerCustomerRoleMappings.Where(x => "Registered" != x.CustomerRole.Name).Select(x => x.CustomerRole.Id)),
                     Role = string.Join(",", resl.CustomerCustomerRoleMappings.Where(x => "Registered" != x.CustomerRole.Name).Select(x => x.CustomerRole.SystemName).ToList()),
                     IsTeacher = string.Join(",", resl.CustomerCustomerRoleMappings.Select(x => x.CustomerRole.Name).ToList()).Contains("Teacher")
@@ -692,7 +689,7 @@ namespace Nop.Web.Controllers.Api
            return View();
         }
         [HttpPost]
-        public IActionResult Login(string userName,string password)
+        public IActionResult Login(string userName,string password,string qs_clientid)
         {
             string name = "";
             string inviteCode = string.Empty;
@@ -703,9 +700,7 @@ namespace Nop.Web.Controllers.Api
                  Username = userName,
                  Password = password
             };
-
             Customer _customer = null;
-
             if (ModelState.IsValid)
             {
                 if (_customerSettings.UsernamesEnabled && model.Username != null)
@@ -750,7 +745,13 @@ namespace Nop.Web.Controllers.Api
                             {
 
                             }
-
+                            AccountToken token = new AccountToken
+                            {
+                                ClientId = qs_clientid,
+                                ExpireTime = DateTime.Now.AddDays(30).Ticks,
+                                ID = _customer.Id.ToString(),
+                                UserName = _customer.Username
+                            };
                             return Json(new {
                                 code = 0,
                                 msg="登录成功",
@@ -760,7 +761,7 @@ namespace Nop.Web.Controllers.Api
                                     Name = name??"",
                                     Phone = _customer.Username??"",
                                     Email = email,
-                                    Token = "",
+                                    Token = token.Serialize(),
                                     InviteCode = inviteCode??"",
                                     CardImgUrl = imgurl??"",
                                     SchoolName =dep==null ?"七三科技":dep.Name,
@@ -808,8 +809,6 @@ namespace Nop.Web.Controllers.Api
             });
           //  return View(model);
         }
-
-
         [HttpPost]
         public IActionResult CheckOldPwd(string userName, string password)
         {
@@ -822,9 +821,7 @@ namespace Nop.Web.Controllers.Api
                 Username = userName,
                 Password = password
             };
-
             Customer _customer = null;
-
             if (ModelState.IsValid)
             {
                 if (_customerSettings.UsernamesEnabled && model.Username != null)
@@ -845,7 +842,6 @@ namespace Nop.Web.Controllers.Api
                             _customer = customer;
                             //sign in new customer
                             _authenticationService.SignIn(customer, model.RememberMe);
-
                             //raise event       
                             _eventPublisher.Publish(new CustomerLoggedinEvent(customer));
 
@@ -931,7 +927,7 @@ namespace Nop.Web.Controllers.Api
             //  return View(model);
         }
         [HttpPost]
-        public IActionResult LoginCode(string userName, string code)
+        public IActionResult LoginCode(string userName, string code,string qs_clientid)
         {
             Customer _customer = null;
             if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(code))
@@ -980,6 +976,14 @@ namespace Nop.Web.Controllers.Api
                     else
                     {
                     }
+
+                    AccountToken token = new AccountToken
+                    {
+                        ClientId = qs_clientid,
+                        ExpireTime = DateTime.Now.AddDays(30).Ticks,
+                        ID = _customer.Id.ToString(),
+                        UserName = _customer.Username
+                    };
                     return Json(new
                     {
                         code = 0,
@@ -991,7 +995,7 @@ namespace Nop.Web.Controllers.Api
                             Name = name ?? "",
                             Phone = _customer.Username ?? "",
                             Email = email,
-                            Token = "",
+                            Token = token.Serialize(),
                             InviteCode = inviteCode ?? "",
                             CardImgUrl = imgurl ?? "",
                             SchoolName = dep == null ? "七三科技" : dep.Name,
@@ -1041,6 +1045,95 @@ namespace Nop.Web.Controllers.Api
             });
         }
 
+        [HttpPost]
+        public IActionResult CheckToken(string token, string qs_clientid)
+        {
+            AccountToken apitoken = AccountToken.Deserialize(token);
+            Customer _customer = null;
+
+            if (apitoken != null && apitoken.ExpireTime < DateTime.Now.AddDays(30).Ticks && qs_clientid.Equals( apitoken.ClientId))
+            {
+
+
+                var loginresut = _customerService.GetCustomerByUsername(apitoken.UserName);
+
+                if (loginresut != null)
+                {
+                    _customer = loginresut;
+                }
+
+                if (loginresut != null)
+                {
+                    _eventPublisher.Publish(new CustomerLoggedinEvent(loginresut));
+                    //activity log
+                    _customerActivityService.InsertActivity(loginresut, "PublicStore.Login",
+                        _localizationService.GetResource("ActivityLog.PublicStore.Login"), loginresut);
+                    var imgurl = _genericAttributeService.GetAttribute<string>(_customer, NopCustomerDefaults.IdCardImgAttribute);
+                    var name = _genericAttributeService.GetAttribute<string>(_customer, NopCustomerDefaults.LastNameAttribute);
+                    var dep = _departmentService.GetDepById(_customer.DepartmentId);
+                    var inviteCode = _genericAttributeService.GetAttribute<string>(_customer, NopCustomerDefaults.InviteCodeAttribute);
+                    string email = _customer.Email;
+                    if (string.IsNullOrEmpty(_customer.Email) || _customer.Email.Length == 40)
+                    {
+                        email = string.Empty;
+                    }
+                    else
+                    {
+                    }
+
+                    AccountToken apitetoken = new AccountToken
+                    {
+                        ClientId = qs_clientid,
+                        ExpireTime = DateTime.Now.AddDays(30).Ticks,
+                        ID = _customer.Id.ToString(),
+                        UserName = _customer.Username
+                    };
+                    return Json(new
+                    {
+                        code = 0,
+                        msg = "登录成功",
+                        data = new
+                        {
+                           Id = _customer.Id,
+                         UserName = _customer.Username ?? "",
+                            Name = name ?? "",
+                           Phone = _customer.Username ?? "",
+                           Email = email,
+                           Token = apitetoken.Serialize(),
+                      InviteCode = inviteCode ?? "",
+                      CardImgUrl = imgurl ?? "",
+                      SchoolName = dep == null ? "七三科技" : dep.Name,
+                    DepartmentId = _customer.DepartmentId,
+                          RoleId = string.Join(",", _customer.CustomerCustomerRoleMappings.Where(x => "Registered" != x.CustomerRole.Name).Select(x => x.CustomerRole.Id)),
+                            Role = string.Join(",", _customer.CustomerCustomerRoleMappings.Where(x => "Registered" != x.CustomerRole.Name).Select(x => x.CustomerRole.SystemName).ToList()),
+                       IsTeacher = string.Join(",", _customer.CustomerCustomerRoleMappings.Select(x => x.CustomerRole.Name).ToList()).Contains("Teacher")
+                        }
+                    });
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        code = -1,
+                        msg = "用户不存在",
+                        data = new { }
+                    });
+                }
+
+
+                return Json(new {
+                    code = 0,
+                    msg  = "校验成功",
+                    data = true
+                });
+            }
+            return Json(new
+            {
+                code = -1,
+                msg = "校验失败",
+                data =false
+            });
+        }
 
         //[HttpPost]
         //public IActionResult ResetPwd(string userName, string password, string code)
@@ -1136,7 +1229,7 @@ namespace Nop.Web.Controllers.Api
 
 
 
-   
+
         //}
         public IActionResult CheckPhone(string phone)
         {
@@ -1197,8 +1290,6 @@ namespace Nop.Web.Controllers.Api
 
           
         }
-
-
         public IActionResult CheckSmsCode(string phone, int type)
         {
            var  record = new SmsMsgRecord
@@ -1231,7 +1322,6 @@ namespace Nop.Web.Controllers.Api
             }
          
         }
-
         /// <summary>
         /// 短信验证手机号码
         /// </summary>
@@ -1641,7 +1731,6 @@ namespace Nop.Web.Controllers.Api
 
             });
         }
-
         [HttpPost]
         public IActionResult ResetPassword(string password, string userName,string code)
         {

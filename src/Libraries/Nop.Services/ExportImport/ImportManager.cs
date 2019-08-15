@@ -2013,9 +2013,19 @@ namespace Nop.Services.ExportImport
                                     var modelrot = curworksheet.Cells[ci, 6].Value?.ToString()??"";
                                     var modelscale = curworksheet.Cells[ci, 7].Value?.ToString()??"";
 
+
+                                    var teventpos = curworksheet.Cells[ci, 10].Value?.ToString() ?? "";
+                                    var tmodelrot = curworksheet.Cells[ci, 11].Value?.ToString() ?? "";
+                                    var tmodelscale = curworksheet.Cells[ci, 12].Value?.ToString() ?? "";
+
                                     eventpos = eventpos.Replace("，", ",");
                                     modelrot = modelrot.Replace("，", ",");
                                     modelscale = modelscale.Replace("，", ",");
+
+                                    teventpos = teventpos.Replace("，", ",");
+                                    tmodelrot = tmodelrot.Replace("，", ",");
+                                    tmodelscale = tmodelscale.Replace("，", ",");
+
 
 
                                     modelinfo.url = curworksheet.Cells[ci, 8].Value?.ToString()??"";
@@ -2023,11 +2033,16 @@ namespace Nop.Services.ExportImport
                                     Dic dic = new Dic
                                     {
                                         key = eventids,
-                                        val = clipName
-                                       
+                                        val = clipName                                       
                                     };
 
-                                    modelinfo.clips.Add(dic);
+
+
+
+                               
+
+
+                                    
                                     if (!string.IsNullOrEmpty(eventpos) && eventpos.IndexOf(",") > 0)
                                     {
                                         var posarray = eventpos.Split(",");
@@ -2043,8 +2058,6 @@ namespace Nop.Services.ExportImport
                                         modelinfo.rot.y = eventrotarray[1];
                                         modelinfo.rot.z = eventrotarray[2];
                                     }
-
-
                                     if (!string.IsNullOrEmpty(modelscale) && modelscale.IndexOf(",") > 0)
                                     {
                                         var eventscalearray = modelscale.Split(",");
@@ -2053,6 +2066,89 @@ namespace Nop.Services.ExportImport
                                         modelinfo.scale.z = eventscalearray[2];
                                     }
 
+                                    #region 新增数据类型
+
+
+                                    bool additem = true;
+                                    TypeEvents typeitem = new TypeEvents
+                                    {
+                                        key = eventids                                       
+                                    };
+                                    if (!string.IsNullOrEmpty(teventpos) && teventpos.IndexOf(",") > 0)
+                                    {
+                                        var posarray = teventpos.Split(",");
+
+                                        if (posarray.Length < 3)
+                                        {
+                                            additem = false;
+                                        }
+                                        else
+                                        {
+                                            typeitem.pos.x = posarray[0];
+                                            typeitem.pos.y = posarray[1];
+                                            typeitem.pos.z = posarray[2];
+                                        }
+                                       
+                                    }
+                                    else
+                                    {
+                                        additem = false;
+                                    }
+                                    if (!string.IsNullOrEmpty(tmodelrot) && tmodelrot.IndexOf(",") > 0)
+                                    {
+                                        var eventrotarray = tmodelrot.Split(",");
+
+                                        if (eventrotarray.Length > 2)
+                                        {
+                                            typeitem.rot.x = eventrotarray[0];
+                                            typeitem.rot.y = eventrotarray[1];
+                                            typeitem.rot.z = eventrotarray[2];
+                                        }
+                                        else
+                                        {
+                                            additem = false;
+                                        }
+
+                                        
+                                    }
+                                    else
+                                    {
+                                        additem = false;
+                                    }
+                                    if (!string.IsNullOrEmpty(tmodelscale) && tmodelscale.IndexOf(",") > 0)
+                                    {
+                                        var eventscalearray = tmodelscale.Split(",");
+
+                                        if (eventscalearray.Length > 2)
+                                        {
+                                            typeitem.scale.x = eventscalearray[0];
+                                            typeitem.scale.y = eventscalearray[1];
+                                            typeitem.scale.z = eventscalearray[2];
+                                        }
+                                        else
+                                        {
+                                            additem = false;
+                                        }
+                              
+                                    }
+                                    else
+                                    {
+                                        additem = false;
+                                    }
+
+                                    #endregion
+
+                                    if (additem)
+                                    {
+                                        
+                                        modelinfo.type.Add(typeitem);
+                                    }
+
+
+                                    if (dic != null && !string.IsNullOrEmpty(dic.val))
+                                    {
+                                        modelinfo.clips.Add(dic);
+                                    }
                                     //imginfo.di = curworksheet.Cells[ci, 4].Value?.ToString();
                                     if (string.IsNullOrEmpty(modelinfo.id) )
                                     {
@@ -2075,7 +2171,17 @@ namespace Nop.Services.ExportImport
                                         }
                                         else
                                         {
-                                            texxt.clips.Add(dic);
+                                          
+                                            if (dic != null && !string.IsNullOrEmpty(dic.val))
+                                            {
+                                                texxt.clips.Add(dic);
+                                               
+                                            }
+                                            if (additem)
+                                            {
+                                                texxt.type.Add(typeitem);
+                                            }
+                                           
                                         }
                                     }
                                 }

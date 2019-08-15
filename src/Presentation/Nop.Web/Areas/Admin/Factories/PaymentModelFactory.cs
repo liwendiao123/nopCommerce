@@ -92,13 +92,11 @@ namespace Nop.Web.Areas.Admin.Factories
                 {
                     //fill in model values from the entity
                     var paymentMethodModel = method.ToPluginModel<PaymentMethodModel>();
-
                     //fill in additional values (not existing in the entity)
                     paymentMethodModel.IsActive = _paymentPluginManager.IsPluginActive(method);
                     paymentMethodModel.ConfigurationUrl = method.GetConfigurationPageUrl();
                     paymentMethodModel.LogoUrl = _paymentPluginManager.GetPluginLogoUrl(method);
                     paymentMethodModel.RecurringPaymentType = _localizationService.GetLocalizedEnum(method.RecurringPaymentType);
-
                     return paymentMethodModel;
                 });
             });
