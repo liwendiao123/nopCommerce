@@ -836,7 +836,6 @@ namespace Nop.Web.Controllers.Api
                             var customer = _customerSettings.UsernamesEnabled
                                 ? _customerService.GetCustomerByUsername(model.Username)
                                 : _customerService.GetCustomerByEmail(model.Email);
-
                             //migrate shopping cart
                             //_shoppingCartService.MigrateShoppingCart(_workContext.CurrentCustomer, customer, true);
                             _customer = customer;
@@ -916,15 +915,13 @@ namespace Nop.Web.Controllers.Api
                         break;
                 }
             }
-
             //If we got this far, something failed, redisplay form
             model = _customerModelFactory.PrepareLoginModel(model.CheckoutAsGuest);
             return Json(new
             {
                 code = -1,
                 msg = "检验密码失败;原因：密码错误"
-            });
-            //  return View(model);
+            });           
         }
         [HttpPost]
         public IActionResult LoginCode(string userName, string code,string qs_clientid)
@@ -1782,7 +1779,7 @@ namespace Nop.Web.Controllers.Api
                 //CustomerPassword
                 var changePasswordRequest = new ChangePasswordRequest(customer.Email,customer.Username,
                     true, _customerSettings.DefaultPasswordFormat,password,"");
-                var changePasswordResult = _customerRegistrationService.ChangePassword(changePasswordRequest);
+                var changePasswordResult = _customerRegistrationService.ResetPassword(changePasswordRequest);
                 if (changePasswordResult.Success)
                 {
                     //model.Result = _localizationService.GetResource("Account.ChangePassword.Success");

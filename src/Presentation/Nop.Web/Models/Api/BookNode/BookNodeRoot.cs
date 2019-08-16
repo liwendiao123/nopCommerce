@@ -116,7 +116,7 @@ namespace Nop.Web.Models.Api.BookNode
         public List<CameraInfo> camerainfo { get; set; }
         public List<AudioInfo> audioinfo { get; set; }
         public List<VideoNewInfo> videoinfo { get; set; }
-        public List<ClickInfo> clickinfo { get; set; }
+        public List<ClickInfo> clickinfo { get; set; }     
     }
     public class BaseModel
     {

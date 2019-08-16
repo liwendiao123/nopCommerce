@@ -1296,6 +1296,12 @@ namespace Nop.Web.Controllers
             return View(model);
         }
 
+
+        /// <summary>
+        /// 更新购物车
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("updatecart")]
         public virtual IActionResult UpdateCart(IFormCollection form)
@@ -1359,6 +1365,11 @@ namespace Nop.Web.Controllers
             return View(model);
         }
 
+
+        /// <summary>
+        /// 继续
+        /// </summary>
+        /// <returns></returns>
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("continueshopping")]
         public virtual IActionResult ContinueShopping()
@@ -1605,15 +1616,12 @@ namespace Nop.Web.Controllers
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.EnableWishlist))
                 return RedirectToRoute("Homepage");
-
             var customer = customerGuid.HasValue ?
                 _customerService.GetCustomerByGuid(customerGuid.Value)
                 : _workContext.CurrentCustomer;
             if (customer == null)
                 return RedirectToRoute("Homepage");
-
             var cart = _shoppingCartService.GetShoppingCart(customer, ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
-
             var model = new WishlistModel();
             model = _shoppingCartModelFactory.PrepareWishlistModel(model, cart, !customerGuid.HasValue);
             return View(model);
