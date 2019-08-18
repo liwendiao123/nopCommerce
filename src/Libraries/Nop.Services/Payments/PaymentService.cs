@@ -102,19 +102,14 @@ namespace Nop.Services.Payments
             var paymentMethod = _paymentPluginManager.LoadPluginBySystemName(order.PaymentMethodSystemName);
             if (paymentMethod == null)
                 return false; //Payment method couldn't be loaded (for example, was uninstalled)
-
             if (paymentMethod.PaymentMethodType != PaymentMethodType.Redirection)
                 return false;   //this option is available only for redirection payment methods
-
             if (order.Deleted)
                 return false;  //do not allow for deleted orders
-
             if (order.OrderStatus == OrderStatus.Cancelled)
                 return false;  //do not allow for cancelled orders
-
             if (order.PaymentStatus != PaymentStatus.Pending)
                 return false;  //payment status should be Pending
-
             return paymentMethod.CanRePostProcessPayment(order);
         }
 
@@ -145,7 +140,7 @@ namespace Nop.Services.Payments
 
             return result;
         }
-
+   
         /// <summary>
         /// Gets a value indicating whether capture is supported by payment method
         /// </summary>

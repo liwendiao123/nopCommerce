@@ -477,49 +477,36 @@ namespace Nop.Plugin.Payments.WeixinPay.Controllers
 
             try
             {
+              //  var pathtest = System.IO.Path.Combine(_env.WebRootPath, "images") + "\\" + orderId.ToString() + ".jpg";
                 //获取产品信息
                 var order = new Order();
-
                 if (orderId > 0)
                 {
                     order = _orderService.GetOrderById(orderId);
-
                 }
                 else
                 {
-
                     return Content("查找订单失败");
-
                 }
-
-
                 string timeStamp = "";
                 string nonceStr = "";
                 string paySign = "";
-
                 string sp_billno = "";
                 //当前时间 yyyyMMdd
                 string date = DateTime.Now.ToString("yyyyMMdd");
                 sp_billno = orderId.ToString();
-
                 //创建支付应答对象
                 RequestHandler packageReqHandler = new RequestHandler(null);
                 //初始化
                 packageReqHandler.Init();
-
                 timeStamp = TenPayV3Util.GetTimestamp();
                 nonceStr = TenPayV3Util.GetNoncestr();
-
                 string body = "";
                 foreach (var item in order.OrderItems)
                 {
                     body = item.Product.Name + item.Quantity.ToString() + " ";
-
                 }
-
                 //设置package订单参数
-
-
                 decimal totalFee = order.OrderTotal;
                 var currencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
                 if (currencyCode != "CNY")
@@ -527,26 +514,19 @@ namespace Nop.Plugin.Payments.WeixinPay.Controllers
                     Currency currency = _currencyService.GetCurrencyByCode("CNY");
                     totalFee = _currencyService.ConvertFromPrimaryStoreCurrency(totalFee, currency);
                 }
-
                   packageReqHandler.SetParameter("appid", _weixinPayPaymentSettings.TenPayV3_AppId);          //公众账号ID
                   packageReqHandler.SetParameter("mch_id", _weixinPayPaymentSettings.TenPayV3_MchId);         //商户号
                   packageReqHandler.SetParameter("nonce_str", nonceStr);                    //随机字符串
                   packageReqHandler.SetParameter("body", body);    //商品信息
                   packageReqHandler.SetParameter("out_trade_no", sp_billno);      //商家订单号
                   packageReqHandler.SetParameter("total_fee", (totalFee * 100).ToString().Split('.')[0]);                    //商品金额,以分为单位(money * 100).ToString()
-
                   packageReqHandler.SetParameter("spbill_create_ip", Request.HttpContext.Features.Get<IHttpConnectionFeature>().RemoteIpAddress.ToString());   //用户的公网ip，不是商户服务器IP
                   packageReqHandler.SetParameter("notify_url", _weixinPayPaymentSettings.TenPayV3_TenpayNotify);
-
-                   packageReqHandler.SetParameter("trade_type", "NATIVE");
-
+                  packageReqHandler.SetParameter("trade_type", "NATIVE");
                   string sign = packageReqHandler.CreateMd5Sign("key", _weixinPayPaymentSettings.TenPayV3_Key);
                   packageReqHandler.SetParameter("sign", sign);                       //签名
-
-                  string data = packageReqHandler.ParseXML();
-                
-                
-               var result = TenPayV3.Unifiedorder(data);
+                  string data = packageReqHandler.ParseXML();                         
+                  var result = TenPayV3.Unifiedorder(data);
 
                 //get code_url
 
