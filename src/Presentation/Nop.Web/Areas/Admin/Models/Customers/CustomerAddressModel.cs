@@ -20,9 +20,7 @@ namespace Nop.Web.Areas.Admin.Models.Customers
         #region Properties
 
         public int CustomerId { get; set; }
-
         public AddressModel Address { get; set; }
-
         #endregion
     }
 }

@@ -9,6 +9,8 @@ namespace Nop.Services.Messages
     {
         QSResult<bool> SendMsg(SmsMsgRecord record);
         QSResult<bool> CheckMsgValid(SmsMsgRecord record);
+
+        QSResult<bool> CheckMsgValidWithCode(SmsMsgRecord record);
         QSResult<bool> ApplySms(SmsMsgRecord record);
 
         

@@ -96,6 +96,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Controllers\AiBookWebApi\" />
     <Folder Include="Plugins\" />
   </ItemGroup>
   <ItemGroup>

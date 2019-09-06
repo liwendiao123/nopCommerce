@@ -1,0 +1,89 @@
+@model OrderCodeModel
+
+<div asp-validation-summary="ModelOnly"></div>
+<input type="hidden" asp-for="CustomerId" />
+<input type="hidden" asp-for="Id" />
+<div class="content">
+    <div class="form-horizontal">
+        <div class="panel-group">
+            @await Component.InvokeAsync("AdminWidget", new { widgetZone = AdminWidgetZones.CustomerAddressDetailsTop, additionalData = Model })
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <label asp-for="OrderCode" asp-postfix=":"></label>
+                        </div>
+                        <div class="col-md-9">
+                            <input asp-for="OrderCode" />
+                            <nop-required />
+                            <span asp-validation-for="OrderCode"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <label asp-for="ValidDays" asp-postfix=":"></label>
+                        </div>
+                        <div class="col-md-9">
+                            <input asp-for="ValidDays" />
+                            <span asp-validation-for="ValidDays"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <label asp-for="IsValid"></label>
+                        </div>
+                        <div class="col-md-9">
+                            <input asp-for="IsValid" />
+                            <nop-required />
+                            <span asp-validation-for="IsValid"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <label asp-for="CodeType" asp-postfix=":"></label>
+                        </div>
+                        <div class="col-md-9">
+                            <select asp-for="CodeType" asp-items="Model.CodTypeList"></select>
+                            <nop-required />
+                            <span asp-validation-for="CodeType"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <label asp-for="Phone"></label>
+                        </div>
+                        <div class="col-md-9">
+
+                            <nop-editor asp-for="Phone" />
+                       
+                            <span asp-validation-for="Phone"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <label asp-for="ProductId"></label>
+                        </div>
+                        <div class="col-md-9">
+                            <select asp-for="ProductId" asp-items="Model.ProductList"></select>
+                            <nop-required />
+                            <span asp-validation-for="ProductId"></span>
+                        </div>
+                    </div>
+                    @*<div class="form-group">
+                        <div class="col-md-3">
+                            <label asp-for="OwnerId"></label>
+                        </div>
+                        <div class="col-md-9">
+                            <select asp-for="OwnerId" asp-items="Model.OwnerCustomerList"></select>
+                            <nop-required />
+                            <span asp-validation-for="OwnerId"></span>
+                        </div>
+                    </div>*@
+                </div>
+            </div>
+            @await Component.InvokeAsync("AdminWidget", new { widgetZone = AdminWidgetZones.CustomerAddressDetailsBottom, additionalData = Model })
+        </div>
+    </div>
+</div>

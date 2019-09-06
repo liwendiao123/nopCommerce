@@ -249,15 +249,12 @@ namespace Nop.Plugin.Api.Controllers
             }
 
             // We doesn't have to check for value because this is done by the order validator.
-            var customer = CustomerService.GetCustomerById(orderDelta.Dto.CustomerId.Value);
-            
+            var customer = CustomerService.GetCustomerById(orderDelta.Dto.CustomerId.Value);           
             if (customer == null)
             {
                 return Error(HttpStatusCode.NotFound, "customer", "not found");
             }
-
             var shippingRequired = false;
-
             if (orderDelta.Dto.OrderItems != null)
             {
                 var shouldReturnError = AddOrderItemsToCart(orderDelta.Dto.OrderItems, customer, orderDelta.Dto.StoreId ?? _storeContext.CurrentStore.Id);
@@ -265,7 +262,6 @@ namespace Nop.Plugin.Api.Controllers
                 {
                     return Error(HttpStatusCode.BadRequest);
                 }
-
                 shippingRequired = IsShippingAddressRequired(orderDelta.Dto.OrderItems);
             }
 
@@ -280,22 +276,17 @@ namespace Nop.Plugin.Api.Controllers
                                             BuildShoppingCartItemsFromOrderItemDtos(orderDelta.Dto.OrderItems.ToList(), 
                                                                                     customer.Id, 
                                                                                     orderDelta.Dto.StoreId ?? _storeContext.CurrentStore.Id));
-
                 if (!isValid)
                 {
                     return Error(HttpStatusCode.BadRequest);
                 }
             }
-
             var newOrder = _factory.Initialize();
             orderDelta.Merge(newOrder);
-
             customer.BillingAddress = newOrder.BillingAddress;
             customer.ShippingAddress = newOrder.ShippingAddress;
-
             // If the customer has something in the cart it will be added too. Should we clear the cart first? 
             newOrder.Customer = customer;
-
             // The default value will be the currentStore.id, but if it isn't passed in the json we need to set it by hand.
             if (!orderDelta.Dto.StoreId.HasValue)
             {
@@ -303,7 +294,7 @@ namespace Nop.Plugin.Api.Controllers
             }
             
             var placeOrderResult = PlaceOrder(newOrder, customer);
-
+        
             if (!placeOrderResult.Success)
             {
                 foreach (var error in placeOrderResult.Errors)
@@ -533,10 +524,7 @@ namespace Nop.Plugin.Api.Controllers
                 CustomerId = customer.Id,
                 PaymentMethodSystemName = newOrder.PaymentMethodSystemName
             };
-
-
             var placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest);
-
             return placeOrderResult;
         }
 
@@ -556,7 +544,13 @@ namespace Nop.Plugin.Api.Controllers
 
             return shippingAddressRequired;
         }
-
+        /// <summary>
+        /// 将订单项加入到购物车
+        /// </summary>
+        /// <param name="orderItems">订单项</param>
+        /// <param name="customer">用户信息</param>
+        /// <param name="storeId">指定门店</param>
+        /// <returns></returns>
         private bool AddOrderItemsToCart(ICollection<OrderItemDto> orderItems, Customer customer, int storeId)
         {
             var shouldReturnError = false;

@@ -39,10 +39,8 @@ namespace Nop.Web
         public void Configure(IApplicationBuilder application)
         {
             #region .NET Core默认不支持GB2312
-
             //http://www.mamicode.com/info-detail-2225481.html
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
             #endregion
             application.UseCors("AnyOrigin");
             application.ConfigureRequestPipeline();

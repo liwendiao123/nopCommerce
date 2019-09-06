@@ -114,6 +114,7 @@ namespace Nop.Services.Messages
                     x => x.AppId == record.AppId
                     && x.Phone == record.Phone
                     && x.Type == record.Type
+                    //&& x.TemplateCode == record.TemplateCode
                     && x.IsRead == 0
                     ).OrderByDescending(x => x.CreateTime).ToList();
 
@@ -146,6 +147,54 @@ namespace Nop.Services.Messages
                 return Result(false,ex.Message ,ErrorCode.sys_fail);
             }
            
+
+            //throw new NotImplementedException();
+        }
+
+
+        public QSResult<bool> CheckMsgValidWithCode(SmsMsgRecord record)
+        {
+
+            if (record == null)
+            {
+                return Result(false, ErrorCode.sys_param_format_error);
+            }
+            try
+            {
+                var query = _smsRecordRepository.Table;
+                var checkFiterResult = query.Where(
+                    x => x.AppId == record.AppId
+                    && x.Phone == record.Phone
+                    && x.Type == record.Type
+                    && x.TemplateCode == record.TemplateCode
+                    && x.IsRead == 0
+                    ).OrderByDescending(x => x.CreateTime).ToList();
+
+                if (checkFiterResult.Count() > 0)
+                {
+                    var existrecord = checkFiterResult.FirstOrDefault();
+                    if (existrecord == null || DateTime.Now.Subtract(existrecord.CreateTime).TotalSeconds  <= 300)
+                    {
+                        // _smsRecordRepository.Insert(record);
+                        return Result(true);
+                    }
+                    else
+                    {
+                        record.TemplateCode = existrecord.TemplateCode;
+                        return Result(false, "频繁发送信息", ErrorCode.mobile_sms_frequently);
+                    }
+                }
+                else
+                {
+                    return Result(false, "验证码无效", ErrorCode.sys_fail);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return Result(false, ex.Message, ErrorCode.sys_fail);
+            }
+
 
             //throw new NotImplementedException();
         }

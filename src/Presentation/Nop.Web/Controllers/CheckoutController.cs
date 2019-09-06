@@ -684,7 +684,8 @@ namespace Nop.Web.Controllers
             //validation
             if (_orderSettings.CheckoutDisabled)
                 return RedirectToRoute("ShoppingCart");
-
+             
+             
             var cart = _shoppingCartService.GetShoppingCart(_workContext.CurrentCustomer, ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
             if (!cart.Any())
@@ -827,6 +828,8 @@ namespace Nop.Web.Controllers
                 return RedirectToRoute("CheckoutConfirm");
             }
 
+             
+
             //model
             var model = _checkoutModelFactory.PreparePaymentInfoModel(paymentMethod);
             return View(model);
@@ -874,7 +877,6 @@ namespace Nop.Web.Controllers
                 var paymentInfo = paymentMethod.GetPaymentInfo(form);
                 //set previous order GUID (if exists)
                 GenerateOrderGuid(paymentInfo);
-
                 //session save
                 HttpContext.Session.Set("OrderPaymentInfo", paymentInfo);
                 return RedirectToRoute("CheckoutConfirm");
@@ -941,9 +943,9 @@ namespace Nop.Web.Controllers
                     //Check whether payment workflow is required
                     if (_orderProcessingService.IsPaymentWorkflowRequired(cart))
                         return RedirectToRoute("CheckoutPaymentInfo");
-
                     processPaymentRequest = new ProcessPaymentRequest();
                 }
+
                 GenerateOrderGuid(processPaymentRequest);
                 processPaymentRequest.StoreId = _storeContext.CurrentStore.Id;
                 processPaymentRequest.CustomerId = _workContext.CurrentCustomer.Id;
@@ -986,6 +988,12 @@ namespace Nop.Web.Controllers
 
         #region Methods (one page checkout)
 
+
+        /// <summary>
+        /// 选择发货地址后执行====》选择发货方式
+        /// </summary>
+        /// <param name="cart"></param>
+        /// <returns></returns>
         protected virtual JsonResult OpcLoadStepAfterShippingAddress(IList<ShoppingCartItem> cart)
         {
             var shippingMethodModel = _checkoutModelFactory.PrepareShippingMethodModel(cart, _workContext.CurrentCustomer.ShippingAddress);
@@ -1010,14 +1018,21 @@ namespace Nop.Web.Controllers
                 goto_section = "shipping_method"
             });
         }
+
+        /// <summary>
+        /// 指定装运方式后的处理===》
+        /// </summary>
+        /// <param name="cart"></param>
+        /// <returns></returns>
         protected virtual JsonResult OpcLoadStepAfterShippingMethod(IList<ShoppingCartItem> cart)
         {
-            //Check whether payment workflow is required
-            //we ignore reward points during cart total calculation
+            //Check whether payment workflow is required----支付流程是否必须
+            //we ignore reward points during cart total calculation 
+            //我们在计算购物车总数时忽略奖励积分
             var isPaymentWorkflowRequired = _orderProcessingService.IsPaymentWorkflowRequired(cart, false);
             if (isPaymentWorkflowRequired)
             {
-                //filter by country
+                //filter by country  ----按国家筛选
                 var filterByCountryId = 0;
                 if (_addressSettings.CountryEnabled &&
                     _workContext.CurrentCustomer.BillingAddress != null &&
@@ -1059,11 +1074,9 @@ namespace Nop.Web.Controllers
                     goto_section = "payment_method"
                 });
             }
-
             //payment is not required
             _genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
-                NopCustomerDefaults.SelectedPaymentMethodAttribute, null, _storeContext.CurrentStore.Id);
-
+                NopCustomerDefaults.SelectedPaymentMethodAttribute, null, _storeContext.CurrentStore.Id);       
             var confirmOrderModel = _checkoutModelFactory.PrepareConfirmOrderModel(cart);
             return Json(new
             {
@@ -1075,7 +1088,12 @@ namespace Nop.Web.Controllers
                 goto_section = "confirm_order"
             });
         }
-
+        /// <summary>
+        /// 选择支付方式之后
+        /// </summary>
+        /// <param name="paymentMethod"></param>
+        /// <param name="cart"></param>
+        /// <returns></returns>
         protected virtual JsonResult OpcLoadStepAfterPaymentMethod(IPaymentMethod paymentMethod, IList<ShoppingCartItem> cart)
         {
             if (paymentMethod.SkipPaymentInfo ||
@@ -1109,6 +1127,11 @@ namespace Nop.Web.Controllers
             });
         }
 
+
+        /// <summary>
+        /// 去结算
+        /// </summary>
+        /// <returns></returns>
         public virtual IActionResult OnePageCheckout()
         {
             //validation
@@ -1126,9 +1149,18 @@ namespace Nop.Web.Controllers
             if (_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed)
                 return Challenge();
 
+
+            ////1.0预览购物清单
             var model = _checkoutModelFactory.PrepareOnePageCheckoutModel(cart);
             return View(model);
         }
+
+        /// <summary>
+        /// 计费
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="form"></param>
+        /// <returns></returns>
         public virtual IActionResult OpcSaveBilling(CheckoutBillingAddressModel model, IFormCollection form)
         {
             try
@@ -1185,9 +1217,9 @@ namespace Nop.Web.Controllers
                             update_section = new UpdateSectionJsonModel
                             {
                                 name = "billing",
-                                html = RenderPartialViewToString("OpcBillingAddress", billingAddressModel)
+                                html=RenderPartialViewToString("OpcBillingAddress", billingAddressModel)
                             },
-                            wrong_billing_address = true,
+                            wrong_billing_address=true,
                         });
                     }
 
@@ -1268,6 +1300,7 @@ namespace Nop.Web.Controllers
                 return Json(new { error = 1, message = exc.Message });
             }
         }
+
         public virtual IActionResult OpcSaveShipping(CheckoutShippingAddressModel model, IFormCollection form)
         {
             try
@@ -1403,6 +1436,12 @@ namespace Nop.Web.Controllers
             }
         }
 
+
+        /// <summary>
+        /// 保存装运方式
+        /// </summary>
+        /// <param name="shippingoption"></param>
+        /// <returns></returns>
         public virtual IActionResult OpcSaveShippingMethod(string shippingoption)
         {
             try
@@ -1410,15 +1449,16 @@ namespace Nop.Web.Controllers
                 //validation
                 if (_orderSettings.CheckoutDisabled)
                     throw new Exception(_localizationService.GetResource("Checkout.Disabled"));
-
+                ///获取购物车
                 var cart = _shoppingCartService.GetShoppingCart(_workContext.CurrentCustomer, ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
-                if (!cart.Any())
+                if (!cart.Any()) // ---购物车不能为空
                     throw new Exception("Your cart is empty");
 
-                if (!_orderSettings.OnePageCheckoutEnabled)
+                if (!_orderSettings.OnePageCheckoutEnabled)//--是否启用单页结帐	
                     throw new Exception("One page checkout is disabled");
-
+                
+                //--允许匿名用户结算
                 if (_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed)
                     throw new Exception("Anonymous checkout is not allowed");
 
@@ -1428,6 +1468,7 @@ namespace Nop.Web.Controllers
                 //parse selected method 
                 if (string.IsNullOrEmpty(shippingoption))
                     throw new Exception("Selected shipping method can't be parsed");
+
                 var splittedOption = shippingoption.Split(new[] { "___" }, StringSplitOptions.RemoveEmptyEntries);
                 if (splittedOption.Length != 2)
                     throw new Exception("Selected shipping method can't be parsed");
@@ -1468,7 +1509,6 @@ namespace Nop.Web.Controllers
                 return Json(new { error = 1, message = exc.Message });
             }
         }
-
         public virtual IActionResult OpcSavePaymentMethod(string paymentmethod, CheckoutPaymentMethodModel model)
         {
             try
@@ -1537,7 +1577,6 @@ namespace Nop.Web.Controllers
                 return Json(new { error = 1, message = exc.Message });
             }
         }
-
         public virtual IActionResult OpcSavePaymentInfo(IFormCollection form)
         {
             try

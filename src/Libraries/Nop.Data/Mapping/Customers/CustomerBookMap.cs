@@ -13,16 +13,12 @@ namespace Nop.Data.Mapping.Customers
         {
             builder.ToTable(nameof(CustomerBook));
             builder.HasKey(mapping => new { mapping.ProductId, mapping.CustomerId });
-
             //builder.Property(mapping => mapping.CustomerId).HasColumnName("CustomerId");
             //builder.Property(mapping => mapping.ProductId).HasColumnName("ProductId");
-
-
             builder.HasOne(mapping => mapping.Customer)
                .WithMany(customer => customer.CustomerBooks)
                .HasForeignKey(mapping => mapping.CustomerId)
                .IsRequired();
-
             builder.HasOne(mapping => mapping.Product)
                 .WithMany()
                 .HasForeignKey(mapping => mapping.ProductId)

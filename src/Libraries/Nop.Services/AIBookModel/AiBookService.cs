@@ -126,32 +126,16 @@ namespace Nop.Services.AIBookModel
         {
             if (booknodeId == 0)
                 return null;
-            AiBookModel LoadStoreFunc()
-            {
-              var item = _bookNodeRepository.GetById(booknodeId);
+            var item = _bookNodeRepository.GetById(booknodeId);
 
-                //if (item != null && item.BookDirID > 0)
-                //{
-                //  var bookdir =  _bookDirService.GetBookDirById(item.BookDirID);
+            //if (item != null && item.BookDirID > 0)
+            //{
+            //  var bookdir =  _bookDirService.GetBookDirById(item.BookDirID);
 
-                //   // item.BookDir = bookdir;
-                //}
+            //   // item.BookDir = bookdir;
+            //}
 
-                return item;
-            }
-
-            if (!loadCacheableCopy)
-                return LoadStoreFunc();
-
-            //cacheable copy
-            var key = string.Format(NopBookNodeDefault.BookNodesByIdCacheKey, booknodeId);
-            return _cacheManager.Get(key, () =>
-            {
-                var store = LoadStoreFunc();
-                if (store == null)
-                    return null;
-                return store;
-            });
+            return item;
         }
 
 
@@ -291,7 +275,10 @@ namespace Nop.Services.AIBookModel
         public IPagedList<AiBookModel> SearchAiBookModels(string aibookNodeName,int pageIndex = 0, int pageSize = int.MaxValue, IList<int> categoryIds = null, int bookId = 0, int bookdirId = 0, int vendorId = 0, bool visibleIndividuallyOnly = false,  string keywords = null,     bool showHidden = false)
         {
 
-
+            if (categoryIds == null)
+            {
+                categoryIds = new List<int>();
+            }
             var query = _bookNodeRepository.Table;
             if (!showHidden)
                 query = query.Where(c => c.Published);
@@ -319,7 +306,7 @@ namespace Nop.Services.AIBookModel
 
                 query = query.Where(x => bookdirIds.Contains(x.BookDirID));
             }
-            else if (categoryIds.Where(c=>c > 0).Count() > 0)
+            else if (categoryIds != null&& categoryIds.Where(c=>c > 0).Count() > 0)
             {
 
                 var cateId = categoryIds.FirstOrDefault();

@@ -10,7 +10,6 @@ namespace Nop.Core.Domain.Customers
     public class CustomerBook : BaseEntity
     {
 
-
         public int CustomerId { get; set; }
         /// <summary>
         /// 课本id

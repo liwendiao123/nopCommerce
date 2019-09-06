@@ -577,15 +577,12 @@ namespace Nop.Web.Areas.Admin.Factories
             searchModel.CompanyEnabled = _customerSettings.CompanyEnabled;
             searchModel.PhoneEnabled = _customerSettings.PhoneEnabled;
             searchModel.ZipPostalCodeEnabled = _customerSettings.ZipPostalCodeEnabled;
-
             //search registered customers by default
             var registeredRole = _customerService.GetCustomerRoleBySystemName(NopCustomerDefaults.RegisteredRoleName);
             if (registeredRole != null)
                 searchModel.SelectedCustomerRoleIds.Add(registeredRole.Id);
-
             //prepare available customer roles
             _aclSupportedModelFactory.PrepareModelCustomerRoles(searchModel);
-
             //prepare page parameters
             searchModel.SetGridPageSize();
 
@@ -938,6 +935,9 @@ namespace Nop.Web.Areas.Admin.Factories
             return model;
         }
 
+
+      
+
         /// <summary>
         /// Prepare customer address model
         /// </summary>
@@ -1275,5 +1275,199 @@ namespace Nop.Web.Areas.Admin.Factories
         }
 
         #endregion
+
+
+        #region OrderCode
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="searchModel"></param>
+        /// <param name="customer"></param>
+        /// <returns></returns>
+        public virtual CustomerOrderCodeListModel PrepareCustomerOrderCodeListModel(CustomerOrderCodeSearchModel searchModel, Customer customer)
+        {
+            if (searchModel == null)
+                throw new ArgumentNullException(nameof(searchModel));
+
+            if (customer == null)
+                throw new ArgumentNullException(nameof(customer));
+
+            //get customer addresses
+            var addresses = customer.CustomerOrderCodes
+                .OrderByDescending(address => address.CreateTime).ThenByDescending(address => address.Id).ToList()
+                .ToPagedList(searchModel);
+
+            //prepare list model
+            var model = new CustomerOrderCodeListModel().PrepareToGrid(searchModel, addresses, () =>
+            {
+                return addresses.Select(address =>
+                {
+                    //fill in model values from the entity        
+                    var addressModel = address.ToModel<OrderCodeModel>();
+                    // addressModel.CountryName = address.Country?.Name;
+                    //addressModel.StateProvinceName = address.StateProvince?.Name;
+
+                    if (addressModel != null)
+                    {
+                        if (addressModel.ProductId > 0)
+                        {
+                          var res=  _productService.GetProductById(addressModel.ProductId);
+
+                            if (res != null)
+                            {
+                                addressModel.ProductName = res.Name;
+                            }
+                        }
+                        if (addressModel.OwnerId > 0)
+                        {
+                            var owner = _customerService.GetCustomerById(addressModel.OwnerId);
+
+                            if (owner != null)
+                            {
+                                addressModel.OwnerName = owner.SystemName;
+                            }
+                        }
+                    }
+
+                   
+                    //fill in additional values (not existing in the entity)
+                  //  PrepareModelAddressHtml(addressModel, address);
+
+                    return addressModel;
+                });
+            });
+
+            return model;
+        }
+
+
+        public virtual CustomerOrderCodeModel PrepareCustomerOrderCode(Customer customer, CustomerOrderCodeModel customerOrderCodeModel)
+        {
+
+            if (customer == null)
+            {
+                return null;
+            }
+            var codetypeitems = new List<SelectListItem>() {
+                             new SelectListItem{
+                                  Value = "0",
+                                   Text="兑换码"
+                             },
+                             new SelectListItem{
+                                 Value = "1",
+                                   Text="推荐码"
+                             }
+                        };
+
+            var product = _productService.SearchProducts();
+            var items = new List<SelectListItem>();
+            product.ToList().ForEach(x =>
+            {
+                items.Add(new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.Name
+                });
+            });
+            if (customerOrderCodeModel == null || customerOrderCodeModel.CustomerId <1)
+            {
+
+
+
+                var model = new CustomerOrderCodeModel()
+                {
+                    CustomerId = customer.Id,
+                    OrderCodeModel = new Models.Common.OrderCodeModel
+                    {
+                        CustomerId = customer.Id,
+                        CustomerName = customer.SystemName,
+                        IsValid = true,
+                        IsActived = false,
+                        OwnerName = string.Empty,
+                        OwnerId = -1,
+                        CodTypeList = codetypeitems,
+                        ProductList = items,
+                        OrderCode = DateTime.Now.Ticks.ToString(),
+                        CreateTime = DateTime.Now
+                    }
+                };
+
+                return model;
+            }
+            else
+            {
+                var model = customer.CustomerOrderCodes
+                                    .Where(x => x.Id == customerOrderCodeModel.OrderCodeModel.Id).FirstOrDefault();
+                if (model != null)
+                {
+                    string owerName = string.Empty;
+                    string productName = string.Empty;
+                    if (model.OwenerId > 0)
+                    {
+                       var onweir = _customerService.GetCustomerById(model.OwenerId);
+                        if (onweir != null)
+                        {
+                            owerName = onweir.SystemName;
+                        }
+
+                    }
+
+                    if (model.ProductId > 0)
+                    {
+                        var pitem = product.FirstOrDefault(x => x.Id == model.ProductId);
+                        if(pitem != null)
+                        {
+                            productName = pitem.Name;
+                        }
+                    }
+
+                    var modeltes = new CustomerOrderCodeModel()
+                    {
+                        CustomerId = customer.Id,
+                        OrderCodeModel = new Models.Common.OrderCodeModel
+                        {
+                            CustomerId = customer.Id,
+                            CustomerName = customer.SystemName,
+                            IsValid = model.IsValid,
+                            IsActived = model.IsActived,
+                            OwnerName = owerName,
+                            OwnerId = model.OwenerId,
+                            CodeType = model.CodeType,
+                            CodTypeList = codetypeitems,
+                            ProductId = model.ProductId,
+                             ProductName = productName,
+                              ValidDays = model.ValidDays,
+                               Phone = model.Phone,
+                                Id = model.Id,
+                            ProductList = items,
+                            OrderCode = model.OrderCode,
+                             CreateTime = model.CreateTime,
+                        }
+                    };
+                    return modeltes;
+                }               
+            }
+
+            return  new CustomerOrderCodeModel()
+            {
+                CustomerId = customer.Id,
+                OrderCodeModel = new Models.Common.OrderCodeModel
+                {
+                    CustomerId = customer.Id,
+                    CustomerName = customer.SystemName,
+                    IsValid = true,
+                    IsActived = false,
+                    OwnerName = string.Empty,
+                    OwnerId = -1,
+                    CodTypeList = codetypeitems,
+                    ProductList = items,
+                    OrderCode = DateTime.Now.Ticks.ToString(),
+                     CreateTime = DateTime.Now
+                }
+            };
+            
+        }
+
+        #endregion 
     }
 }

@@ -218,6 +218,9 @@ namespace Nop.Services.Authentication.External
             //raise event       
             _eventPublisher.Publish(new CustomerLoggedinEvent(user));
 
+
+
+
             //activity log
             _customerActivityService.InsertActivity(user, "PublicStore.Login",
                 _localizationService.GetResource("ActivityLog.PublicStore.Login"), user);

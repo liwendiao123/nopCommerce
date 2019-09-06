@@ -277,6 +277,11 @@ namespace Nop.Web.Areas.Admin.Models.AiBook
                 Value = "K/Camera/Camera",
                 Text = "动态视角相机"
             });
+            CameraPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Camera/DefaultOrthographicCamera",
+                Text = "正交镜头（静态）"
+            });
             #endregion
 
             #region
@@ -340,8 +345,8 @@ namespace Nop.Web.Areas.Admin.Models.AiBook
         public string PrefabPath { get; set; }
         [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.EventId")]
         public string EventId { get; set; }
-
-
+        [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.PriceRanges")]
+        public string PriceRanges { get; set; }
         [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.Book")]
         public int BookId { get; set; }
         [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.BookDir")]

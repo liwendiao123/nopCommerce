@@ -124,6 +124,8 @@ namespace Nop.Web.Areas.Admin.Controllers
         {  if (!_permissionService.Authorize(StandardPermissionProvider.ManageCategories))
                 return AccessDeniedView();
 
+          
+
             if (ModelState.IsValid)
             {
                 var category = model.ToEntity<BookDir>();
@@ -131,7 +133,7 @@ namespace Nop.Web.Areas.Admin.Controllers
                 category.UpdatedOnUtc = DateTime.UtcNow;
                 if (string.IsNullOrEmpty(category.PriceRanges))
                 {
-                    category.PriceRanges = "0";
+                    category.PriceRanges = "1";
                 }
                
 

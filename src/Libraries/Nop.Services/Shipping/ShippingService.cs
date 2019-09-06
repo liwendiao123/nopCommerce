@@ -745,8 +745,8 @@ namespace Nop.Services.Shipping
                 }
             }
 
-            //multiple locations?
-            //currently we just compare warehouses
+            //multiple locations? /多个位置
+            //currently we just compare warehouses  目前我们只比较仓库
             //but we should also consider cases when several warehouses are located in the same address
             shippingFromMultipleLocations = requests.Select(x => x.Key).Distinct().Count() > 1;
 
@@ -758,13 +758,22 @@ namespace Nop.Services.Shipping
 
         /// <summary>
         ///  Gets available shipping options
+        ///  获取可用的运输选项
         /// </summary>
-        /// <param name="cart">Shopping cart</param>
-        /// <param name="shippingAddress">Shipping address</param>
-        /// <param name="customer">Load records allowed only to a specified customer; pass null to ignore ACL permissions</param>
-        /// <param name="allowedShippingRateComputationMethodSystemName">Filter by shipping rate computation method identifier; null to load shipping options of all shipping rate computation methods</param>
-        /// <param name="storeId">Load records allowed only in a specified store; pass 0 to load all records</param>
-        /// <returns>Shipping options</returns>
+        /// <param name="cart">Shopping cart 《===》 购物车</param>
+        /// <param name="shippingAddress">Shipping address ===== 送货地址 </param>
+        /// <param name="customer">Load records allowed only to a specified customer; pass null to ignore ACL permissions、仅允许为指定客户加载记录;传递 null 以忽略 ACL 权限</param>
+        /// <param name="allowedShippingRateComputationMethodSystemName">
+        /// Filter by shipping rate computation method identifier; null to load shipping options of all shipping rate computation methods
+        /// 按运率计算方法标识符进行筛选;空以加载所有运费计算方法的装运选项
+        /// </param>
+        /// <param name="storeId">
+        /// Load records allowed only in a specified store; pass 0 to load all records
+        /// 只允许在指定存储区加载记录;因此，在指定存储区中允许加载记录。传递 0 加载所有记录
+        /// </param>
+        /// <returns>
+        /// Shipping options 运输选项
+        /// </returns>
         public virtual GetShippingOptionResponse GetShippingOptions(IList<ShoppingCartItem> cart,
             Address shippingAddress, Customer customer = null, string allowedShippingRateComputationMethodSystemName = "",
             int storeId = 0)
@@ -905,9 +914,15 @@ namespace Nop.Services.Shipping
 
         /// <summary>
         /// Whether the shopping cart item is ship enabled
+        /// 购物车项目是否启用发货
         /// </summary>
-        /// <param name="shoppingCartItem">Shopping cart item</param>
-        /// <returns>True if the shopping cart item requires shipping; otherwise false</returns>
+        /// <param name="shoppingCartItem">
+        ///Shopping cart item
+        /// 购物车项目
+        /// </param>
+        /// <returns>True if the shopping cart item requires shipping; otherwise false
+        /// 如果购物车项目需要装运，则为 True;否则false
+        /// </returns>
         public virtual bool IsShipEnabled(ShoppingCartItem shoppingCartItem)
         {
             //whether the product requires shipping

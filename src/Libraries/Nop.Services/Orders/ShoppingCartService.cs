@@ -282,18 +282,21 @@ namespace Nop.Services.Orders
 
         /// <summary>
         /// Validates required products (products which require some other products to be added to the cart)
+        /// 验证所需产品（需要将某些其他产品添加到购物车中的产品）
         /// </summary>
-        /// <param name="customer">Customer</param>
-        /// <param name="shoppingCartType">Shopping cart type</param>
-        /// <param name="product">Product</param>
-        /// <param name="storeId">Store identifier</param>
-        /// <param name="quantity">Quantity</param>
-        /// <param name="addRequiredProducts">Whether to add required products</param>
-        /// <param name="shoppingCartItemId">Shopping cart identifier; pass 0 if it's a new item</param>
+        /// <param name="customer">Customer  用户信息</param>
+        /// <param name="shoppingCartType">Shopping cart type  购物车类型</param>
+        /// <param name="product">Product 产品信息</param>
+        /// <param name="storeId">Store identifier 门店ID</param>
+        /// <param name="quantity">Quantity 数量</param>
+        /// <param name="addRequiredProducts">Whether to add required products 是否增加所需产品</param>
+        /// <param name="shoppingCartItemId">Shopping cart identifier; pass 0 if it's a new item 购物车标识符；如果是新商品，则传递0</param>
         /// <returns>Warnings</returns>
         public virtual IList<string> GetRequiredProductWarnings(Customer customer, ShoppingCartType shoppingCartType, Product product,
             int storeId, int quantity, bool addRequiredProducts, int shoppingCartItemId)
         {
+
+
             if (customer == null)
                 throw new ArgumentNullException(nameof(customer));
 
@@ -366,12 +369,13 @@ namespace Nop.Services.Orders
 
         /// <summary>
         /// Validates a product for standard properties
+        /// 验证产品的标准属性
         /// </summary>
-        /// <param name="customer">Customer</param>
-        /// <param name="shoppingCartType">Shopping cart type</param>
-        /// <param name="product">Product</param>
-        /// <param name="attributesXml">Attributes in XML format</param>
-        /// <param name="customerEnteredPrice">Customer entered price</param>
+        /// <param name="customer">Customer 用户信息</param>
+        /// <param name="shoppingCartType">Shopping cart type 购物车类型</param>
+        /// <param name="product">Product 产品信息</param>
+        /// <param name="attributesXml">Attributes in XML format 属性格式化</param>
+        /// <param name="customerEnteredPrice">Customer entered price 用户输入价格</param>
         /// <param name="quantity">Quantity</param>
         /// <returns>Warnings</returns>
         public virtual IList<string> GetStandardWarnings(Customer customer, ShoppingCartType shoppingCartType,
@@ -1193,7 +1197,6 @@ namespace Nop.Services.Orders
                     storeId, attributesXml,
                     customerEnteredPrice, rentalStartDate, rentalEndDate,
                     newQuantity, addRequiredProducts, shoppingCartItem.Id));
-
                 if (warnings.Any())
                     return warnings;
 

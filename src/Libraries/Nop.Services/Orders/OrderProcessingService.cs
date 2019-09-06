@@ -1077,12 +1077,18 @@ namespace Nop.Services.Orders
         /// <param name="order">Order</param>
         protected virtual void ProcessOrderPaid(Order order)
         {
+
+         //   _logger.Information("已支付，进入订单处理课本信息");
+            /// _customerActivityService.InsertActivity("微信扫码支付 - 模式二", string.Format("购买了新书：【{0}】", "oritem.Product.Name"), order);
             if (order == null)
+            {
                 throw new ArgumentNullException(nameof(order));
 
+            }
+        //    _logger.Information("已支付，进入订单处理课本信息3434------");
             //raise event
             _eventPublisher.Publish(new OrderPaidEvent(order));
-
+         //   _logger.Information("已支付，进入订单处理课本信息dfdsgfg5------");
             //order paid email notification
             if (order.OrderTotal != decimal.Zero)
             {
@@ -1108,7 +1114,7 @@ namespace Nop.Services.Orders
 
                 //TODO add "order paid email sent" order note
             }
-
+         //   _logger.Information("已支付，进入订单处理课本信息dfdffdsdsgfg5fete3------");
             //customer roles with "purchased with product" specified
             ProcessCustomerRolesWithPurchasedProductSpecified(order, true);
         }
@@ -1140,41 +1146,102 @@ namespace Nop.Services.Orders
                     }
                 }
             }
-
+            var customer = order.Customer;
             //list of customer roles
             var customerRoles = _customerService
                 .GetAllCustomerRoles(true)
                 .Where(cr => purchasedProductIds.Contains(cr.PurchasedWithProductId))
                 .ToList();
 
-            if (!customerRoles.Any())
-                return;
-
-            var customer = order.Customer;
-            foreach (var customerRole in customerRoles)
+            if (customerRoles.Any())
             {
-                if (customer.CustomerCustomerRoleMappings.Count(mapping => mapping.CustomerRoleId == customerRole.Id) == 0)
+               
+                foreach (var customerRole in customerRoles)
                 {
-                    //not in the list yet
-                    if (add)
+                    if (customer.CustomerCustomerRoleMappings.Count(mapping => mapping.CustomerRoleId == customerRole.Id) == 0)
                     {
-                        //add
-                        customer.AddCustomerRoleMapping(new CustomerCustomerRoleMapping { CustomerRole = customerRole });
+                        //not in the list yet
+                        if (add)
+                        {
+                            //add
+                            customer.AddCustomerRoleMapping(new CustomerCustomerRoleMapping { CustomerRole = customerRole });
+                        }
                     }
-                }
-                else
-                {
-                    //already in the list
-                    if (!add)
+                    else
                     {
-                        //remove
-                        customer.RemoveCustomerRoleMapping(
-                            customer.CustomerCustomerRoleMappings.FirstOrDefault(mapping => mapping.CustomerRoleId == customerRole.Id));
+                        //already in the list
+                        if (!add)
+                        {
+                            //remove
+                            customer.RemoveCustomerRoleMapping(
+                                customer.CustomerCustomerRoleMappings.FirstOrDefault(mapping => mapping.CustomerRoleId == customerRole.Id));
+                        }
                     }
                 }
             }
+           
 
-            _customerService.UpdateCustomer(customer);
+
+
+            #region  ///将产品与客户绑定
+
+            try
+            {
+
+              
+               //var customerBook = order.Customer.CustomerBooks.ToList();
+                foreach (var oritem in order.OrderItems)
+                {
+
+
+                    //_customerActivityService.InsertActivity("微信扫码支付 - 模式二", string.Format("购买了新书：【{0}】", oritem.Product.Name), order);
+                    _logger.Information(string.Format("客户【{1}】购买了新书：【{0}】", oritem.Product.Name,order.Customer.Username));
+                    if (customer.CustomerBooks.Count(mapping => mapping.CustomerId == order.CustomerId && mapping.ProductId == oritem.ProductId) == 0)
+                        {
+                        //not in the list yet
+                      //  _logger.Information("已支付，进入订单处理课本信息33333333333");
+                        //add
+                        customer.CustomerBooks.Add(new CustomerBook
+                            {
+                                ProductId = oritem.ProductId,
+                                Status = 1,
+                                CustomerId = customer.Id,
+                                UpdateTime = DateTime.Now,
+                                BookBookDirId = 0,
+                                BookNodeId = 0,
+                                CreateTime = DateTime.Now,
+                                TypeLabel = 1,
+                                Expirationtime = DateTime.Now.AddYears(10),
+                            });
+
+                        }
+                        else
+                        {
+                            ////already in the list
+                            //if (!add)
+                            //{
+                            //    //remove
+                            //    customer.RemoveCustomerRoleMapping(
+                            //        customer.CustomerCustomerRoleMappings.FirstOrDefault(mapping => mapping.CustomerRoleId == customerRole.Id));
+                            //}
+                        }
+                    
+                }
+
+                _customerService.UpdateCustomer(customer);
+            }
+            catch (Exception ex)
+            {
+
+               // _logger.Information("已支付，进入订单处理课本信息555555");
+                _customerActivityService.InsertActivity("微信扫码支付 - 模式二", ex.Message, order);
+            }
+
+          
+            #endregion
+
+
+
         }
 
         /// <summary>
@@ -2425,11 +2492,9 @@ namespace Nop.Services.Orders
 
             if (!CanMarkOrderAsPaid(order))
                 throw new NopException("You can't mark this order as paid");
-
             order.PaymentStatusId = (int)PaymentStatus.Paid;
             order.PaidDateUtc = DateTime.UtcNow;
             _orderService.UpdateOrder(order);
-
             //add a note
             AddOrderNote(order, "Order has been marked as paid");
 
@@ -2437,6 +2502,7 @@ namespace Nop.Services.Orders
 
             if (order.PaymentStatus == PaymentStatus.Paid)
             {
+                _logger.Information("已支付，准备处理课本信息");
                 ProcessOrderPaid(order);
             }
         }
@@ -2942,6 +3008,7 @@ namespace Nop.Services.Orders
 
         /// <summary>
         /// Place order items in current user shopping cart.
+        /// 将订单项放入当前用户购物车。
         /// </summary>
         /// <param name="order">The order</param>
         public virtual void ReOrder(Order order)

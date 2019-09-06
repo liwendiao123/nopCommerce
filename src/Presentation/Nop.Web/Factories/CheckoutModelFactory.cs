@@ -328,17 +328,13 @@ namespace Nop.Web.Factories
                         ShippingRateComputationMethodSystemName = shippingOption.ShippingRateComputationMethodSystemName,
                         ShippingOption = shippingOption,
                     };
-
                     //adjust rate
                     var shippingTotal = _orderTotalCalculationService.AdjustShippingRate(shippingOption.Rate, cart, out var _);
-
                     var rateBase = _taxService.GetShippingPrice(shippingTotal, _workContext.CurrentCustomer);
                     var rate = _currencyService.ConvertFromPrimaryStoreCurrency(rateBase, _workContext.WorkingCurrency);
                     soModel.Fee = _priceFormatter.FormatShippingPrice(rate, true);
-
                     model.ShippingMethods.Add(soModel);
                 }
-
                 //find a selected (previously) shipping method
                 var selectedShippingOption = _genericAttributeService.GetAttribute<ShippingOption>(_workContext.CurrentCustomer,
                         NopCustomerDefaults.SelectedShippingOptionAttribute, _storeContext.CurrentStore.Id);
@@ -364,7 +360,6 @@ namespace Nop.Web.Factories
                         shippingOptionToSelect.Selected = true;
                     }
                 }
-
                 //notify about shipping from multiple locations
                 if (_shippingSettings.NotifyCustomerAboutShippingFromMultipleLocations)
                 {
@@ -458,7 +453,6 @@ namespace Nop.Web.Factories
 
             return model;
         }
-
         /// <summary>
         /// Prepare payment info model
         /// </summary>
@@ -472,7 +466,6 @@ namespace Nop.Web.Factories
                 DisplayOrderTotals = _orderSettings.OnePageCheckoutDisplayOrderTotalsOnPaymentInfoTab
             };
         }
-
         /// <summary>
         /// Prepare confirm order model
         /// </summary>
@@ -495,7 +488,6 @@ namespace Nop.Web.Factories
             }
             return model;
         }
-
         /// <summary>
         /// Prepare checkout completed model
         /// </summary>
@@ -505,14 +497,12 @@ namespace Nop.Web.Factories
         {
             if (order == null)
                 throw new ArgumentNullException(nameof(order));
-
             var model = new CheckoutCompletedModel
             {
                 OrderId = order.Id,
                 OnePageCheckoutEnabled = _orderSettings.OnePageCheckoutEnabled,
                 CustomOrderNumber = order.CustomOrderNumber
             };
-
             return model;
         }
 
@@ -536,7 +526,6 @@ namespace Nop.Web.Factories
         {
             if (cart == null)
                 throw new ArgumentNullException(nameof(cart));
-
             var model = new OnePageCheckoutModel
             {
                 ShippingRequired = _shoppingCartService.ShoppingCartRequiresShipping(cart),

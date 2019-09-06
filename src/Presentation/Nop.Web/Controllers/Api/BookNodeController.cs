@@ -5,10 +5,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Nop.Core.Configuration;
-
+using Nop.Core.Domain.Customers;
+using Nop.Core.Domain.Logging;
 using Nop.Core.Domain.TableOfContent;
+using Nop.Core.LoginInfo;
 using Nop.Services.AIBookModel;
 using Nop.Services.Catalog;
+using Nop.Services.Customers;
+using Nop.Services.Logging;
 using Nop.Services.Media;
 using Nop.Services.TableOfContent;
 using Nop.Web.Areas.Admin.Factories;
@@ -25,12 +29,16 @@ namespace Nop.Web.Controllers.Api
         private readonly IBookNodeTagService _bookNodeTagService;
         private readonly IProductService _productService;
         private readonly IPictureService _pictureService;
+        private readonly ICustomerService _customerService;
+        private readonly ICustomerActivityService _customerActivityService;
         private readonly NopConfig _config;
         public BookNodeController(
                     IAiBookService   aiBookService,
                     IBookDirService  bookDirService,
                     IProductService productService,
+                    ICustomerService customerService,
                     NopConfig config,
+                    ICustomerActivityService customerActivityService,
                     IBookNodeTagService bookNodeTagService,
                     IPictureService pictureService,
         IBookNodeFactory bookNodeFactory)
@@ -41,6 +49,8 @@ namespace Nop.Web.Controllers.Api
             _productService = productService;
             _bookNodeTagService = bookNodeTagService;
             _config = config;
+            _customerService = customerService;
+            _customerActivityService = customerActivityService;
             _pictureService = pictureService;
         }
         public IActionResult Index()
@@ -52,7 +62,6 @@ namespace Nop.Web.Controllers.Api
         }
         public IActionResult GetData(int id)
         {
-
             var result = _aiBookService.GetAiBookModelById(id);
             if (result == null)
             {
@@ -69,12 +78,7 @@ namespace Nop.Web.Controllers.Api
                 catch (Exception ex)
                 {
                     return Json( new List<string>());
-                }
-
-         
-
-              
-
+                }                   
             }
             else
             {
@@ -84,12 +88,67 @@ namespace Nop.Web.Controllers.Api
                     //msg = "json解析失败",
                     data = new List<string>()
                 });
-
-            }
-          
+            }      
         }
-        public IActionResult GetJsonData(int id,string platformtype)
+        public IActionResult GetJsonData(int id,string platformtype, string token, string qs_clientid)
         {
+            var tokenresult = ValidateToken(token, qs_clientid, _customerService);
+            if (tokenresult == 1)
+            {
+                return Json(new
+                {
+                    code = -2,
+                    msg = "该账号已在另一个地点登录,如不是本人操作，您的密码已经泄露,请及时修改密码！",
+                    data = false
+
+                });
+            }
+
+            if (tokenresult == 3)
+            {
+                return Json(new
+                {
+                    code = -3,
+                    msg = "该账号已被禁用！",
+                    data = false
+
+                });
+            }
+
+            Customer customer = null;
+            var apitetoken = new AccountToken();
+            apitetoken = AccountToken.Deserialize(token);    
+            var islogin = false;
+            if (apitetoken != null)
+            {
+
+                int cid = 0;
+                Int32.TryParse(apitetoken.ID, out cid);
+
+
+                
+                 customer = _customerService.GetCustomerById(cid);
+                if (customer != null)
+                {
+
+                    if (DateTime.Now.Subtract(customer.CreatedOnUtc).TotalDays <= 7)
+                    {
+                        islogin = true;
+                    }
+
+                    var roleList = customer.CustomerCustomerRoleMappings.Select(x => x.CustomerRole).ToList();
+                    if (roleList.Count > 0)
+                    {
+                        if (roleList.Exists(x => !x.Name.Equals("Registered") && x.IsSystemRole))
+                        {
+                            islogin = true;
+                        }
+                    }
+                }
+
+               
+               
+            }
             string platformtypepath = "windows";
             switch (platformtype)
             {
@@ -103,9 +162,7 @@ namespace Nop.Web.Controllers.Api
                     platformtypepath = "windows";
                     break;
             }
-
-
-           var result = _aiBookService.SearchAiBookModels("",0,int.MaxValue,null,0,id).FirstOrDefault();
+           var result = _aiBookService.SearchAiBookModels("",0,int.MaxValue,null,0,id).FirstOrDefault();       
             if (result == null)
             {
                 return Json(new
@@ -128,28 +185,65 @@ namespace Nop.Web.Controllers.Api
                     data = new object()
                 });
             }
+
+            var resultnode = customer.CustomerBookNodes.Where(x => x.BookNodeId == result.Id).FirstOrDefault();
+            if (resultnode != null)
+            {
+                resultnode.IsRead = true;
+            }
+            else
+            {
+                customer.CustomerBookNodes.Add(new CustomerBookNode
+                {
+                    CustomerId = customer.Id,
+                    BookNodeId = result.Id,
+                    IsRead = true,
+                    CreateTime = DateTime.Now,
+                    UpdateTime = DateTime.Now,
+                    IsFocus = false,
+                    ReadTime = 0,
+                });
+
+                _customerService.UpdateCustomer(customer);
+            }
             BookDir bookdir = null;
             if (result != null && result.BookDirID > 0)
             {
-                 bookdir = _bookDirService.GetBookDirById(result.BookDirID);          
+                 bookdir = _bookDirService.GetBookDirById(result.BookDirID);
+
+                if (bookdir != null && ("0" == bookdir.PriceRanges))
+                {
+                    islogin = true;
+                }
             }
             var ttbookdir = bookdir == null ? -1 : bookdir.BookID;
             var bookid = ttbookdir;
             var product = _productService.GetProductById(bookid);
+
+
+            if (product.Price <= 0)
+            {
+                islogin = true;
+            }
+            if (customer !=null&& customer.CustomerBooks.Where(x => x.ProductId == bookid).Count() > 0)
+            {
+                islogin = true;
+            }
             BookNodeNewRoot jsonresult = new BookNodeNewRoot();
             try
             {
                 jsonresult = JsonConvert.DeserializeObject<BookNodeNewRoot>(result.UnityStrJson);
-                jsonresult.Base.buttoninfo = jsonresult.Base.buttoninfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
-                jsonresult.Base.textinfo = jsonresult.Base.textinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+                jsonresult.Base.buttoninfo= jsonresult.Base.buttoninfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+                jsonresult.Base.textinfo =  jsonresult.Base.textinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
                 jsonresult.Base.imageinfo = jsonresult.Base.imageinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
                 jsonresult.Base.videoinfo = jsonresult.Base.videoinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
                 jsonresult.Base.audioinfo = jsonresult.Base.audioinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
-                jsonresult.Base.camerainfo = jsonresult.Base.camerainfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+                jsonresult.Base.camerainfo= jsonresult.Base.camerainfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
                 jsonresult.Base.clickinfo = jsonresult.Base.clickinfo.Where(x => !string.IsNullOrEmpty(x.eventid)).ToList();
                 jsonresult.Base.modelinfo = jsonresult.Base.modelinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
                 jsonresult.Base.openeventstate = jsonresult.Base.openeventstate.Where(x => !string.IsNullOrEmpty(x.enventid)).ToList();
                 jsonresult.Base.closeeventstate = jsonresult.Base.closeeventstate.Where(x => !string.IsNullOrEmpty(x.enventid)).ToList();
+
             }
             catch (Exception ex)
             {
@@ -181,10 +275,12 @@ namespace Nop.Web.Controllers.Api
                     BookID = bookdir == null ? -1 : bookdir.BookID,
                     BookNodeName = result.Name,
                     BookName = product == null?"":product.Name,
-                    IsLock = false,
+                    IsLock = !islogin,
+                    mapperid = bookdir == null ? -1 : bookdir.Id,
+                    realid = result.Id,
                     appointStrJson = new {
                         keyname = result.UniqueID??"",
-                        head = _config.HostLuaResource ?? "",
+                        head = (_config.HostLuaResource ?? "")  +(platformtypepath + "/"),
                         lua = (_config.HostLuaResource ?? "") +platformtypepath +"/" + (result.WebGltfUrl ?? "") +"?v="+ DateTime.Now.Ticks,
                         assetbundle = allList
                     },
@@ -192,8 +288,31 @@ namespace Nop.Web.Controllers.Api
                 }
             });
         }
-        public IActionResult GetKnowledgeById(int id)
+        public IActionResult GetKnowledgeById(int id, string token, string qs_clientid)
         {
+            var tokenresult = ValidateToken(token, qs_clientid, _customerService);
+
+            if (tokenresult == 1)
+            {
+                return Json(new
+                {
+                    code = -2,
+                    msg = "该账号已在另一个地点登录,如不是本人操作，您的密码已经泄露,请及时修改密码！",
+                    data = false
+
+                });
+            }
+            if (tokenresult == 3)
+            {
+                return Json(new
+                {
+                    code = -3,
+                    msg = "该账号已被禁用！",
+                    data = false
+
+                });
+            }
+
             var result = _aiBookService.GetAiBookModelById(id);
             if (result!= null && !string.IsNullOrEmpty(result.UniqueID))
             {
@@ -256,11 +375,13 @@ namespace Nop.Web.Controllers.Api
                     complexLevel = result.ComplexLevel,
                     BookID = bookdir == null ? -1 : bookdir.BookID,
                     BookNodeName = result.Name,
-                    BookName=product==null? "未知":product.Name,
+                    mapperid = bookdir == null ? -1 : bookdir.Id,
+                    realid = result.Id,
+                    BookName =product==null? "未知":product.Name,
                     appointStrJson = new
                     {
                         keyname = result.UniqueID??"",
-                        head = _config.HostLuaResource ?? "",
+                        head = _config.HostLuaResource ?? ""+"/windows/",
                         lua = _config.HostLuaResource ?? "" + result.WebGltfUrl ?? "",
                         assetbundle = arr
                     },
@@ -268,8 +389,37 @@ namespace Nop.Web.Controllers.Api
                 }
             });
         } 
-        public IActionResult GetKnowledgeByImgName(string imgName)
+        public IActionResult GetKnowledgeByImgName(string imgName, string token, string qs_clientid)
         {
+
+            var tokenresult = ValidateToken(token, qs_clientid, _customerService);
+
+            if (tokenresult == 1)
+            {
+                return Json(new
+                {
+                    code = -2,
+                    msg = "该账号已在另一个地点登录,如不是本人操作，您的密码已经泄露,请及时修改密码！",
+                    data = false
+
+                });
+            }
+
+            if (tokenresult == 3)
+            {
+                return Json(new
+                {
+                    code = -3,
+                    msg = "该账号已被禁用！",
+                    data = false
+
+                });
+            }
+
+
+           
+
+
             if (string.IsNullOrEmpty(imgName))
             {
                 return Json(new
@@ -356,7 +506,9 @@ namespace Nop.Web.Controllers.Api
                     msg = "已成功",
                     data = new
                     {
-                        Id = result.Id,
+                     
+                        mapperid = bookdir == null ? -1 : bookdir.Id,
+                        realid = result.Id,
                         BookID = bookdir == null ? -1 : bookdir.BookID,
                         BookNodeName = result.Name,
                         BookName = product == null ?"":product.Name
@@ -372,9 +524,34 @@ namespace Nop.Web.Controllers.Api
                 });
             }
         }
-        public IActionResult GetAllBookNodesARInfo(string userName)
+        public IActionResult GetAllBookNodesARInfo(string userName, string token, string qs_clientid)
         {
-          var result =  _aiBookService.GetAllAiBookModels().Where(x=>!x.Deleted).OrderBy(x=>x.DisplayOrder).ToList();
+
+            var tokenresult = ValidateToken(token, qs_clientid, _customerService);
+
+            if (tokenresult == 1)
+            {
+                return Json(new
+                {
+                    code = -2,
+                    msg = "该账号已在另一个地点登录,如不是本人操作，您的密码已经泄露,请及时修改密码！",
+                    data = false
+
+                });
+            }
+            if (tokenresult == 3)
+            {
+                return Json(new
+                {
+                    code = -3,
+                    msg = "该账号已被禁用！",
+                    data = false
+
+                });
+            }
+
+
+            var result =  _aiBookService.GetAllAiBookModels().Where(x=>!x.Deleted).OrderBy(x=>x.DisplayOrder).ToList();
             return Json(new
             {
                code = 0,
@@ -382,15 +559,40 @@ namespace Nop.Web.Controllers.Api
                data = result.Where(x=>!string.IsNullOrEmpty(x.AbUrl)).Select(x=>new {
                    path = x.WebBinUrl??"",
                    kid = x.BookDirID,
+                   mapperid = x.BookDirID,
+                   realid =x.Id,
                    name = x.AbUrl??""
                  
                })
             });
         }
-        public IActionResult GetBookNodeKeyName(string keyname)
+        public IActionResult GetBookNodeKeyName(string keyname, string token, string qs_clientid)
         {
 
-          var result=  _bookNodeTagService.GetAllBookNodeTagsByBookNodeBySearchName(keyname);
+            var tokenresult = ValidateToken(token, qs_clientid, _customerService);
+
+            if (tokenresult == 1)
+            {
+                return Json(new
+                {
+                    code = -2,
+                    msg = "该账号已在另一个地点登录,如不是本人操作，您的密码已经泄露,请及时修改密码！",
+                    data = false
+
+                });
+            }
+            if (tokenresult == 3)
+            {
+                return Json(new
+                {
+                    code = -3,
+                    msg = "该账号已被禁用！",
+                    data = false
+
+                });
+            }
+
+            var result =  _bookNodeTagService.GetAllBookNodeTagsByBookNodeBySearchName(keyname);
 
 
             List<Core.Domain.AIBookModel.AiBookModel> aibookList = new List<Core.Domain.AIBookModel.AiBookModel>();
@@ -444,6 +646,9 @@ namespace Nop.Web.Controllers.Api
                     bookid = bookId,
                     bookname = bookName,
                     kid = x.BookDirID,
+                   
+                    mapperid = x.BookDirID,
+                    realid = x.Id,
                     name = x.Name,
                     imgurl =_pictureService.GetPictureUrl(int.Parse(x.ImgUrl??"0")),
                 };
@@ -459,6 +664,505 @@ namespace Nop.Web.Controllers.Api
             });
         }
 
+
+        public IActionResult AddBookNodeToMyFavor(string token, string qs_clientid,int pid)
+        {
+            var tokenresult = ValidateToken(token, qs_clientid, _customerService);
+
+            if (tokenresult == 1)
+            {
+                return Json(new
+                {
+                    code = -2,
+                    msg = "该账号已在另一个地点登录,如不是本人操作，您的密码已经泄露,请及时修改密码！",
+                    data = false
+
+                });
+            }
+            if (tokenresult == 3)
+            {
+                return Json(new
+                {
+                    code = -3,
+                    msg = "该账号已被禁用！",
+                    data = false
+
+                });
+            }
+
+
+            Customer customer = null;
+            var apitetoken = new AccountToken();
+            apitetoken = AccountToken.Deserialize(token);
+            var islogin = false;
+            if (apitetoken != null)
+            {
+                int cid = 0;
+                Int32.TryParse(apitetoken.ID, out cid);
+                customer = _customerService.GetCustomerById(cid);
+                if (customer != null)
+                {
+                    var roleList = customer.CustomerCustomerRoleMappings.Select(x => x.CustomerRole).ToList();
+                    if (roleList.Count > 0)
+                    {
+                        if (roleList.Exists(x => !x.Name.Equals("Registered") && x.IsSystemRole))
+                        {
+                            islogin = true;
+                        }
+                    }
+
+
+                   var booknode =  _aiBookService.GetAiBookModelById(pid);
+
+                    if (booknode == null)
+                    {
+                        return Json(new
+                        {
+                            code = -1,
+                            msg = "知识点不存在",
+                            data = false
+                        });
+                    }
+
+                    var resultnode = customer.CustomerBookNodes.Where(x => x.BookNodeId == pid).FirstOrDefault();
+                    if (resultnode != null)
+                    {
+                        resultnode.IsRead = true;
+                        resultnode.IsFocus = true;
+                    }
+                    else
+                    {
+                        customer.CustomerBookNodes.Add(new CustomerBookNode
+                        {
+                            CustomerId = customer.Id,
+                            BookNodeId = pid,
+                            IsRead = true,
+                            CreateTime = DateTime.Now,
+                            UpdateTime = DateTime.Now,
+                            IsFocus = true,
+                            ReadTime = 0,
+                        });
+
+                        _customerService.UpdateCustomer(customer);
+                    }
+                }
+
+                return Json(new
+                {
+                    code = 0,
+                    msg = "收藏成功",
+                    data = false
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "token 授权失败",
+                    data = false
+                });
+            }       
+        }
+
+
+        public IActionResult CancelBookNodeFavor(string token, string qs_clientid, int pid)
+        {
+            var tokenresult = ValidateToken(token, qs_clientid, _customerService);
+
+            if (tokenresult == 1)
+            {
+                return Json(new
+                {
+                    code = -2,
+                    msg = "该账号已在另一个地点登录,如不是本人操作，您的密码已经泄露,请及时修改密码！",
+                    data = false
+
+                });
+            }
+            if (tokenresult == 3)
+            {
+                return Json(new
+                {
+                    code = -3,
+                    msg = "该账号已被禁用！",
+                    data = false
+
+                });
+            }
+
+            Customer customer = null;
+            var apitetoken = new AccountToken();
+            apitetoken = AccountToken.Deserialize(token);
+           // var islogin = false;
+            if (apitetoken != null)
+            {
+                int cid = 0;
+                Int32.TryParse(apitetoken.ID, out cid);
+                customer = _customerService.GetCustomerById(cid);
+                if (customer != null)
+                {
+                    var booknode = _aiBookService.GetAiBookModelById(pid);
+                    if (booknode == null)
+                    {
+                        return Json(new
+                        {
+                            code = -1,
+                            msg = "知识点不存在",
+                            data = false
+                        });
+                    }
+                    var resultnode = customer.CustomerBookNodes.Where(x => x.BookNodeId == pid).FirstOrDefault();
+                    if (resultnode != null)
+                    {
+                        resultnode.IsRead = true;
+                        resultnode.IsFocus = false;
+                    }
+                    else
+                    {
+                        customer.CustomerBookNodes.Add(new CustomerBookNode
+                        {
+                            CustomerId = customer.Id,
+                            BookNodeId = pid,
+                            IsRead = true,
+                            CreateTime = DateTime.Now,
+                            UpdateTime = DateTime.Now,
+                            IsFocus = false,
+                            ReadTime = 0,
+                        });
+
+                        _customerService.UpdateCustomer(customer);
+                    }
+                }
+
+                return Json(new
+                {
+                    code = 0,
+                    msg = "取消收藏成功",
+                    data = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "token 授权失败",
+                    data = false
+                });
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="guid">阅读唯一标识</param>
+        /// <param name="token">使用凭证</param>
+        /// <param name="qs_clientid"> 设备ID</param>
+        /// <param name="pid">知识点ID</param>
+        /// <param name="mapperid">映射Id</param>
+        /// <returns></returns>
+        /// 
+        [HttpPost]
+        public IActionResult ReadNodeStart(string guid, string token, string qs_clientid,int pid,int mapperid)
+        {
+            if (string.IsNullOrEmpty(token)
+                || string.IsNullOrEmpty(qs_clientid)
+                || string.IsNullOrEmpty(guid))
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "参数格式错误",
+                    data = new {
+                    }
+                });
+            }
+
+            #region 用户凭证验证
+            var tokenresult = ValidateToken(token, qs_clientid, _customerService);
+            if (tokenresult == 1)
+            {
+                return Json(new
+                {
+                    code = -2,
+                    msg = "该账号已在另一个地点登录,如不是本人操作，您的密码已经泄露,请及时修改密码！",
+                    data = false
+                });
+            }
+            if (tokenresult == 3)
+            {
+                return Json(new
+                {
+                    code = -3,
+                    msg = "该账号已被禁用！",
+                    data = false
+
+                });
+            }
+            else if (tokenresult == 2)
+            {
+                return Json(new
+                {
+                    code = -2,
+                    msg = "授权失败",
+                    data = false
+                });
+            }
+            if (pid > 0)
+            {
+              var booknode  = _aiBookService.GetAiBookModelById(pid);
+                if (booknode == null)
+                {
+                    return Json(new
+                    {
+                        code = -1,
+                        msg = "知识点不存在",
+                        data = new { }
+                    });
+                }
+
+                Customer customer = null;
+                var apitetoken = new AccountToken();
+                apitetoken = AccountToken.Deserialize(token);
+                var islogin = false;
+                if (apitetoken != null)
+                {
+                    int cid = 0;
+                    Int32.TryParse(apitetoken.ID, out cid);
+                    customer = _customerService.GetCustomerById(cid);
+                    if (customer != null)
+                    {
+                        if (DateTime.Now.Subtract(customer.CreatedOnUtc).TotalDays <= 7)
+                        {
+                            islogin = true;
+                        }
+                        var roleList = customer.CustomerCustomerRoleMappings.Select(x => x.CustomerRole).ToList();
+                        if (roleList.Count > 0)
+                        {
+                            if (roleList.Exists(x => !x.Name.Equals("Registered") && x.IsSystemRole))
+                            {
+                                islogin = true;
+                            }
+                        }
+                    }
+                }
+                if (customer == null)
+                {
+                    return Json(new
+                    {
+                        code = -1,
+                        msg = "客户已被禁用或删除",
+                        data = new { }
+                    });
+                }
+
+                var logresult = _customerActivityService.GetAllActivities(null, null, customer.Id, 151, null, null, pid);
+                var logres = logresult.Where(x=>x.Comment.Contains(guid)).FirstOrDefault();
+                if (logres != null && !string.IsNullOrEmpty(logres.Comment))
+                {
+
+                    return Json(new
+                    {
+                        code = -1,
+                        msg = "已标志为开始阅读",
+                        data =new { }
+                    });
+
+                }
+
+                ReadBookNodeLog log = new ReadBookNodeLog {
+                     guid = guid,
+                     booknodeId = booknode.Id.ToString(),
+                     bookNodeName = booknode.Name,
+                     customerId = customer.Id.ToString(),
+                     customerName = customer.SystemName,
+                     starttime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                     endTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                     isvalid  = "true",
+                     readTime = "0",
+                     CreateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                     UpdateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                };
+                var result =   _customerActivityService.InsertActivity(customer,"ReadBookNode", JsonConvert.SerializeObject(log), booknode);
+                return Json(new
+                {
+                    code = 0,
+                    msg = "标志开始阅读",
+                    data = log
+                });
+            }
+            #endregion
+            return Json(new
+            {
+                code = -1,
+                msg = "知识点不存在",
+                data = new {
+                }
+
+            });
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <param name="token"></param>
+        /// <param name="qs_clientid"></param>
+        /// <param name="pid"></param>
+        /// <param name="mapperid"></param>
+        /// <returns></returns>
+        /// 
+       [HttpPost]
+        public IActionResult ReadNodeEnd(string guid, string token, string qs_clientid, int pid, int mapperid)
+        {
+            if (string.IsNullOrEmpty(token)
+                || string.IsNullOrEmpty(qs_clientid)
+                || string.IsNullOrEmpty(guid))
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "参数格式错误",
+                    data = new
+                    {
+                    }
+                });
+            }
+            #region 用户凭证验证
+            var tokenresult = ValidateToken(token, qs_clientid, _customerService);
+            if (tokenresult == 1)
+            {
+                return Json(new
+                {
+                    code = -2,
+                    msg = "该账号已在另一个地点登录,如不是本人操作，您的密码已经泄露,请及时修改密码！",
+                    data = false
+                });
+            }
+            else if (tokenresult == 2)
+            {
+                return Json(new
+                {
+                    code = -2,
+                    msg = "授权失败",
+                    data = false
+                });
+            }
+
+            if (pid > 0)
+            {
+                var booknode = _aiBookService.GetAiBookModelById(pid);
+                if (booknode == null)
+                {
+                    return Json(new
+                    {
+                        code = -1,
+                        msg = "知识点不存在",
+                        data = new { }
+                    });
+                }
+                Customer customer = null;
+                var apitetoken = new AccountToken();
+                apitetoken = AccountToken.Deserialize(token);
+                var islogin = false;
+                if (apitetoken != null)
+                {
+                    int cid = 0;
+                    Int32.TryParse(apitetoken.ID, out cid);
+                    customer = _customerService.GetCustomerById(cid);
+                    if (customer != null)
+                    {
+                        if (DateTime.Now.Subtract(customer.CreatedOnUtc).TotalDays <= 7)
+                        {
+                            islogin = true;
+                        }
+                        var roleList = customer.CustomerCustomerRoleMappings.Select(x => x.CustomerRole).ToList();
+                        if (roleList.Count > 0)
+                        {
+                            if (roleList.Exists(x => !x.Name.Equals("Registered") && x.IsSystemRole))
+                            {
+                                islogin = true;
+                            }
+                        }
+                    }
+                }
+                if (customer == null)
+                {
+                    return Json(new
+                    {
+                        code = -1,
+                        msg = "客户已被禁用或删除",
+                        data = new { }
+                    });
+                }
+                var logresult = _customerActivityService.GetAllActivities(null, null, customer.Id, 151, null, null, pid);
+                var logres = logresult.Where(x=>x.Comment.Contains(guid)).FirstOrDefault();
+                if (logres == null|| string.IsNullOrEmpty(logres.Comment))
+                {
+                    return Json(new
+                    {
+                        code = -1,
+                        msg = "未标志开始时间，无法标识结束",
+                        data = new { }
+                    });
+                }
+                ReadBookNodeLog log = null;
+                try
+                {
+                    log = JsonConvert.DeserializeObject<ReadBookNodeLog>(logres.Comment);
+
+                    if (log != null)
+                    {
+                       var sdate = DateTime.Parse(log.starttime);
+                        if(sdate < DateTime.Now)
+                        {
+                            log.endTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                            log.readTime = DateTime.Now.Subtract(sdate).TotalSeconds.ToString();
+                        }
+                    }
+
+                    logres.Comment = JsonConvert.SerializeObject(log);
+                   _customerActivityService.UpdateActivityLog(logres);
+                    return Json(new
+                    {
+                        code = 0,
+                        msg = "知识点已标志完成",
+                        data = new ActivityLog {
+
+                             Id = logres.Id,
+                             ActivityLogType = logres.ActivityLogType,
+                             ActivityLogTypeId = logres.ActivityLogTypeId,
+                             Comment = logres.Comment,
+                             CreatedOnUtc = logres.CreatedOnUtc,
+                             CustomerId = logres.CustomerId,
+                             EntityId = logres.EntityId,
+                             EntityName = logres.EntityName,
+                             IpAddress = logres.IpAddress,
+                             UsePlatform = logres.UsePlatform
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    return Json(new
+                    {
+                        code = -1,
+                        msg = "阅读知识点记录异常:【"+ ex.Message + "】",
+                        data =new {
+                        }
+                    });
+                }          
+            }
+            #endregion
+            return Json(new
+            {
+                code = -1,
+                msg = "知识点不存在",
+                data = new
+                {
+                }
+            });
+        }
         public BookNodeRoot Init()
         {
             var root = new BookNodeRoot();
@@ -489,7 +1193,6 @@ namespace Nop.Web.Controllers.Api
                          }, new OpenEventState{
                             enventid ="3",
                             objectids = new List<string>{
-
                                "2003"
                             }
                         },
@@ -1189,8 +1892,20 @@ namespace Nop.Web.Controllers.Api
 
         }
         [HttpPost]
-        public IActionResult SubmitComment(AddBookNodeCommentModel request)
+        public IActionResult SubmitComment(AddBookNodeCommentModel request, string token, string qs_clientid)
         {
+            var tokenresult = ValidateToken(token, qs_clientid, _customerService);
+
+            if (tokenresult == 1)
+            {
+                return Json(new
+                {
+                    code = -2,
+                    msg = "该账号已在另一个地点登录,如不是本人操作，您的密码已经泄露,请及时修改密码！",
+                    data = false
+
+                });
+            }
 
             var bookNode = _aiBookService.GetAiBookModelById(request.BookNodeID);          
             if (bookNode == null)
@@ -1224,7 +1939,6 @@ namespace Nop.Web.Controllers.Api
                     code = 0,
                     msg = "评论提交成功",
                     data = true
-
                 });
             }
             return Json(new {

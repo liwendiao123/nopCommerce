@@ -20,7 +20,6 @@ namespace Nop.Web.Areas.Admin.Models.Customers
             AvailableTimeZones = new List<SelectListItem>();
             SendEmail = new SendEmailModel() { SendImmediately = true };
             SendPm = new SendPmModel();
-
             SelectedCustomerRoleIds = new List<int>();
             AvailableCustomerRoles = new List<SelectListItem>();
             SelectedProductsIds = new List<int>();
@@ -34,15 +33,14 @@ namespace Nop.Web.Areas.Admin.Models.Customers
             AddRewardPoints = new AddRewardPointsToCustomerModel();
             CustomerRewardPointsSearchModel = new CustomerRewardPointsSearchModel();
             CustomerAddressSearchModel = new CustomerAddressSearchModel();
+            CustomerOrderCodeSearchModel = new CustomerOrderCodeSearchModel();
             CustomerOrderSearchModel = new CustomerOrderSearchModel();
             CustomerShoppingCartSearchModel = new CustomerShoppingCartSearchModel();
             CustomerActivityLogSearchModel = new CustomerActivityLogSearchModel();
             CustomerBackInStockSubscriptionSearchModel = new CustomerBackInStockSubscriptionSearchModel();
             CustomerAssociatedExternalAuthRecordsSearchModel = new CustomerAssociatedExternalAuthRecordsSearchModel();
         }
-
         #endregion
-
         #region Properties
 
         public bool UsernamesEnabled { get; set; }
@@ -242,6 +240,8 @@ namespace Nop.Web.Areas.Admin.Models.Customers
 
         public CustomerAddressSearchModel CustomerAddressSearchModel { get; set; }
 
+
+        public CustomerOrderCodeSearchModel CustomerOrderCodeSearchModel { get; set; }
         public CustomerOrderSearchModel CustomerOrderSearchModel { get; set; }
 
         public CustomerShoppingCartSearchModel CustomerShoppingCartSearchModel { get; set; }
@@ -253,20 +253,16 @@ namespace Nop.Web.Areas.Admin.Models.Customers
         public CustomerAssociatedExternalAuthRecordsSearchModel CustomerAssociatedExternalAuthRecordsSearchModel { get; set; }
 
         #endregion
-
         #region Nested classes
 
         public partial class SendEmailModel : BaseNopModel
         {
             [NopResourceDisplayName("Admin.Customers.Customers.SendEmail.Subject")]
             public string Subject { get; set; }
-
             [NopResourceDisplayName("Admin.Customers.Customers.SendEmail.Body")]
             public string Body { get; set; }
-
             [NopResourceDisplayName("Admin.Customers.Customers.SendEmail.SendImmediately")]
-            public bool SendImmediately { get; set; }
-
+            public bool SendImmediately { get; set; }       
             [NopResourceDisplayName("Admin.Customers.Customers.SendEmail.DontSendBeforeDate")]
             [UIHint("DateTimeNullable")]
             public DateTime? DontSendBeforeDate { get; set; }
@@ -276,7 +272,6 @@ namespace Nop.Web.Areas.Admin.Models.Customers
         {
             [NopResourceDisplayName("Admin.Customers.Customers.SendPM.Subject")]
             public string Subject { get; set; }
-
             [NopResourceDisplayName("Admin.Customers.Customers.SendPM.Message")]
             public string Message { get; set; }
         }
@@ -287,9 +282,7 @@ namespace Nop.Web.Areas.Admin.Models.Customers
             {
                 Values = new List<CustomerAttributeValueModel>();
             }
-
             public string Name { get; set; }
-
             public bool IsRequired { get; set; }
 
             /// <summary>

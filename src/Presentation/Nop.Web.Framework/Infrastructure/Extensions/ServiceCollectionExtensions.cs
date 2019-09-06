@@ -67,10 +67,8 @@ namespace Nop.Web.Framework.Infrastructure.Extensions
 
             //add hosting configuration parameters
             services.ConfigureStartupConfig<HostingConfig>(configuration.GetSection("Hosting"));
-
             //add accessor to HttpContext
             services.AddHttpContextAccessor();
-
             //create default file provider
             CommonHelper.DefaultFileProvider = new NopFileProvider(hostingEnvironment);
 

@@ -51,6 +51,7 @@
         public static string CustomerAddressDetailsBottom => "admin_customer_address_details_bottom";
         public static string CustomerAddressDetailsButtons => "admin_customer_address_details_buttons";
         public static string CustomerAddressDetailsTop => "admin_customer_address_details_top";
+        public static string CustomerOrderCodeDetailsTop => "admin_customer_ordercode_details_top";
         public static string CustomerAttributeDetailsButtons => "admin_customer_attribute_details_buttons";
         public static string CustomerAttributeDetailsBlock => "admin_customer_attribute_details_block";
         public static string CustomerAttributeValueDetailsBottom => "admin_customer_attribute_value_details_bottom";

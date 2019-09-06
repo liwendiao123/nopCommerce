@@ -66,11 +66,9 @@ namespace Nop.Web.Areas.Admin.Models.Common
         //address in HTML format (usually used in grids)
         [NopResourceDisplayName("Admin.Address")]
         public string AddressHtml { get; set; }
-
         //formatted custom address attributes
         public string FormattedCustomAddressAttributes { get; set; }
         public IList<AddressAttributeModel> CustomAddressAttributes { get; set; }
-
         public IList<SelectListItem> AvailableCountries { get; set; }
         public IList<SelectListItem> AvailableStates { get; set; }
 

@@ -151,6 +151,7 @@ namespace Nop.Web.Framework.Infrastructure
             builder.RegisterType<AddressAttributeParser>().As<IAddressAttributeParser>().InstancePerLifetimeScope();
             builder.RegisterType<AddressAttributeService>().As<IAddressAttributeService>().InstancePerLifetimeScope();
             builder.RegisterType<AddressService>().As<IAddressService>().InstancePerLifetimeScope();
+            builder.RegisterType<CustomerOrderCodeService>().As<ICustomerOrderCodeService>().InstancePerLifetimeScope();
             builder.RegisterType<AffiliateService>().As<IAffiliateService>().InstancePerLifetimeScope();
             builder.RegisterType<VendorService>().As<IVendorService>().InstancePerLifetimeScope();
             builder.RegisterType<VendorAttributeFormatter>().As<IVendorAttributeFormatter>().InstancePerLifetimeScope();

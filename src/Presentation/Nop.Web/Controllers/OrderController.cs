@@ -7,7 +7,12 @@ using Microsoft.AspNetCore.Mvc;
 using Nop.Core;
 using Nop.Core.Domain.Customers;
 using Nop.Core.Domain.Orders;
+using Nop.Core.LoginInfo;
 using Nop.Services.Common;
+using Nop.Services.Customers;
+using Nop.Services.Localization;
+using Nop.Services.Logging;
+using Nop.Services.Media;
 using Nop.Services.Orders;
 using Nop.Services.Payments;
 using Nop.Services.Shipping;
@@ -30,11 +35,14 @@ namespace Nop.Web.Controllers
         private readonly IShipmentService _shipmentService;
         private readonly IWebHelper _webHelper;
         private readonly IWorkContext _workContext;
+        private readonly ICustomerService _customerService;
         private readonly RewardPointsSettings _rewardPointsSettings;
-
+        private readonly IPictureService _pictureService;
+        private readonly ICustomerActivityService _customerActivityService;
+        private readonly ILocalizationService _localizationService;
         #endregion
 
-		#region Ctor
+        #region Ctor
 
         public OrderController(IOrderModelFactory orderModelFactory,
             IOrderProcessingService orderProcessingService, 
@@ -44,6 +52,10 @@ namespace Nop.Web.Controllers
             IShipmentService shipmentService, 
             IWebHelper webHelper,
             IWorkContext workContext,
+            ICustomerActivityService customerActivityService,
+            ICustomerService customerService,
+            IPictureService pictureService,
+            ILocalizationService localizationService,
             RewardPointsSettings rewardPointsSettings)
         {
             _orderModelFactory = orderModelFactory;
@@ -54,7 +66,11 @@ namespace Nop.Web.Controllers
             _shipmentService = shipmentService;
             _webHelper = webHelper;
             _workContext = workContext;
+            _pictureService = pictureService;
             _rewardPointsSettings = rewardPointsSettings;
+            _customerService = customerService;
+            _customerActivityService = customerActivityService;
+            _localizationService = localizationService;
         }
 
         #endregion
@@ -67,11 +83,9 @@ namespace Nop.Web.Controllers
         {
             if (!_workContext.CurrentCustomer.IsRegistered())
                 return Challenge();
-
             var model = _orderModelFactory.PrepareCustomerOrderListModel();
             return View(model);
         }
-
         //My account / Orders / Cancel recurring order
         [HttpPost, ActionName("CustomerOrders")]
         [PublicAntiForgery]
@@ -105,7 +119,6 @@ namespace Nop.Web.Controllers
 
             return RedirectToRoute("CustomerOrders");
         }
-
         //My account / Orders / Retry last recurring order
         [HttpPost, ActionName("CustomerOrders")]
         [PublicAntiForgery]
@@ -136,7 +149,6 @@ namespace Nop.Web.Controllers
 
             return View(model);
         }
-
         //My account / Reward points
         [HttpsRequirement(SslRequirement.Yes)]
         public virtual IActionResult CustomerRewardPoints(int? pageNumber)
@@ -150,7 +162,6 @@ namespace Nop.Web.Controllers
             var model = _orderModelFactory.PrepareCustomerRewardPoints(pageNumber);
             return View(model);
         }
-
         //My account / Order details page
         [HttpsRequirement(SslRequirement.Yes)]
         public virtual IActionResult Details(int orderId)
@@ -162,7 +173,6 @@ namespace Nop.Web.Controllers
             var model = _orderModelFactory.PrepareOrderDetailsModel(order);
             return View(model);
         }
-
         //My account / Order details page / Print
         [HttpsRequirement(SslRequirement.Yes)]
         public virtual IActionResult PrintOrderDetails(int orderId)
@@ -176,7 +186,6 @@ namespace Nop.Web.Controllers
 
             return View("Details", model);
         }
-
         //My account / Order details page / PDF invoice
         public virtual IActionResult GetPdfInvoice(int orderId)
         {
@@ -194,7 +203,6 @@ namespace Nop.Web.Controllers
             }
             return File(bytes, MimeTypes.ApplicationPdf, $"order_{order.Id}.pdf");
         }
-
         //My account / Order details page / re-order
         public virtual IActionResult ReOrder(int orderId)
         {
@@ -205,7 +213,6 @@ namespace Nop.Web.Controllers
             _orderProcessingService.ReOrder(order);
             return RedirectToRoute("ShoppingCart");
         }
-
         //My account / Order details page / Complete payment
         [HttpPost, ActionName("Details")]
         [PublicAntiForgery]
@@ -234,7 +241,6 @@ namespace Nop.Web.Controllers
             //theoretically it's not possible
             return RedirectToRoute("OrderDetails", new { orderId = orderId });
         }
-
         //My account / Order details page / Shipment details page
         [HttpsRequirement(SslRequirement.Yes)]
         public virtual IActionResult ShipmentDetails(int shipmentId)
@@ -248,7 +254,266 @@ namespace Nop.Web.Controllers
             var model = _orderModelFactory.PrepareShipmentDetailsModel(shipment);
             return View(model);
         }
-        
+        public virtual IActionResult TakeDetails(int orderId, string token, string qs_clientid)
+        {
+
+
+            var apitetoken = new AccountToken();
+            apitetoken = AccountToken.Deserialize(token);
+            if (apitetoken == null)
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "token 授权失败",
+                    data = false
+                });
+            }
+            if (!apitetoken.ClientId.Equals(qs_clientid))
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "设备地址发生变化，请重新发起支付",
+                    data = false
+                });
+            }
+            var order = _orderService.GetOrderById(orderId);
+            if (order == null || order.Deleted || apitetoken.ID != order.CustomerId.ToString())
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "订单获取失败：原因订单不存在或不是本人订单",
+                    data = new { }
+                });
+            }
+            var imgurl = string.Empty;
+            var model = _orderModelFactory.PrepareOrderDetailsModel(order);
+            var orderItem = order.OrderItems.FirstOrDefault();
+            if(orderItem != null)
+            {
+                
+                var defaultProductPicture = _pictureService.GetPicturesByProductId(orderItem.ProductId, 1).FirstOrDefault();
+
+                if (defaultProductPicture != null)
+                {
+                    imgurl = _pictureService.GetPictureUrl(defaultProductPicture);
+                }
+            }
+            var vendors = order.OrderItems.Select(x =>string.Join(",", x.Product.ProductManufacturers.Select(v => v.Manufacturer.Name).ToList())).FirstOrDefault();
+            return Json(new {
+                 code = 0,
+                 msg = "订单获取成功",
+                data = new {
+                    id  = model.Id,
+                    status=(int)order.PaymentStatus,
+                    total =order.OrderTotal,
+                    Imgurl = string.IsNullOrEmpty(imgurl) ? "http://arbookresouce.73data.cn/book/img/sy_img_02.png" : imgurl,
+                    goodsName =string.Join(",", order.OrderItems.Select(x=>x.Product.Name).ToList()),
+                    Vendor = vendors,
+                    paymentMethod = model.PaymentMethod,
+                }
+            });
+        }
+        public virtual IActionResult GetList(string token, string qs_clientid)
+        {
+            var apitetoken = new AccountToken();
+            apitetoken = AccountToken.Deserialize(token);
+            if (apitetoken == null)
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "token 授权失败",
+                    data = false
+                });
+            }
+            if (!apitetoken.ClientId.Equals(qs_clientid))
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "设备地址发生变化，请重新发起支付",
+                    data = false
+                });
+            }
+            var cid = 0;
+            Int32.TryParse(apitetoken.ID, out cid);
+            if (cid < 1)
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "token 授权失败；客户不存在",
+                    data = false
+                });
+            }
+            try
+            {
+                var customer = _customerService.GetCustomerById(cid);
+                if (customer == null)
+                {
+                    return Json(new
+                    {
+                        code = -1,
+                        msg = "用户授权失败；客户不存在",
+                        data = new
+                        {
+                        }
+                    });
+                }
+                var orders = _orderService.SearchOrders(0, 0, cid);
+                return Json(new {
+                    code = 0,
+                    msg = "成功获取数据",
+                    data = orders.ToList().Select(x =>
+                    {
+                        var orderitem = x.OrderItems.FirstOrDefault();
+
+                        var product = orderitem.Product;
+
+                        var imgUrl = string.Empty;
+
+
+                        var imgurl = string.Empty;
+                        var defaultProductPicture = _pictureService.GetPicturesByProductId(orderitem.Product.Id, 1).FirstOrDefault();
+
+                        if (defaultProductPicture != null)
+                        {
+                            imgurl = _pictureService.GetPictureUrl(defaultProductPicture);
+                        }
+                        string statusdesc = string.Empty;
+
+
+                        switch (x.OrderStatus)
+                        {
+                            case OrderStatus.Pending:
+                                statusdesc = "待支付";
+                                break;
+                            case OrderStatus.Processing:
+                                statusdesc = "处理中";
+                                break;
+                            case OrderStatus.Cancelled:
+                                statusdesc = "已取消";
+                                break;
+                            case OrderStatus.Complete:
+                                statusdesc = "已完成";
+                                break;
+                                
+                        }
+
+                        return new {
+                            orderID = x.Id,
+                            BookId = product.Id,
+                            BookName = product.Name,
+                            BookPicUrl = imgurl,
+                            Publisher = "",
+                            PayPrice = x.OrderTotal,
+                            OrderTime = x.CreatedOnUtc.ToLocalTime(),
+                            PayState = x.PaymentStatus == Core.Domain.Payments.PaymentStatus.Paid,
+                            PayStateDesc = statusdesc,      
+
+
+
+
+
+
+                            OrderNo = x.OrderGuid,
+                            PayWay = "微信支付",
+                            SerialNumber = x.OrderGuid
+                        };
+
+                    }).ToList()
+
+                });
+                    
+                    
+                    
+                
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+
+                    code = 0,
+                    msg = ex.Message,
+                    data = new List<string>()
+                });
+            }               
+        }
+        [HttpPost]
+        public virtual IActionResult CancelOrder(string token, string qs_clientid,int orderid)
+        {   
+            //try to get an order with the specified id
+            var order = _orderService.GetOrderById(orderid);
+            if (order == null)
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "订单不存在",
+                    data = false
+                });
+            }
+            var apitetoken = new AccountToken();
+            apitetoken = AccountToken.Deserialize(token);
+            if (apitetoken == null)
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "token 授权失败",
+                    data = false
+                });
+            }
+            if (!apitetoken.ClientId.Equals(qs_clientid))
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "设备地址发生变化，",
+                    data = false
+                });
+            }
+            try
+            {
+                _orderProcessingService.CancelOrder(order, true);
+                LogEditOrder(order.Id);
+                return Json(new
+                {
+                    code = 0,
+                    msg = "取消订单成功",
+                    data = true
+                });
+                //prepare model
+                //var model = _orderModelFactory.PrepareOrderModel(null, order);
+                //return View(model);
+            }
+            catch (Exception exc)
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "系统异常:" + exc.Message,
+                    data = false
+                });
+                //prepare model
+                //var model = _orderModelFactory.PrepareOrderModel(null, order);
+
+                //_notificationService.ErrorNotification(exc);
+                //return View(model);
+            }
+
+           
+        }
+        protected virtual void LogEditOrder(int orderId)
+        {
+            var order = _orderService.GetOrderById(orderId);
+            _customerActivityService.InsertActivity("EditOrder",
+                string.Format(_localizationService.GetResource("ActivityLog.EditOrder"), order.CustomOrderNumber), order);
+        }
         #endregion
     }
 }

@@ -57,6 +57,7 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
         /// <summary>
         /// 课本目录名称
         /// </summary>
+        [Required]
         [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.Name")]
         public string Name { get; set; }
 
@@ -131,8 +132,8 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
         #endregion
 
 
-
-         public string PriceRanges { get; set; }
+        [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.PriceRanges")]
+        public string PriceRanges { get; set; }
 
 
         /// <summary>
@@ -163,6 +164,8 @@ namespace Nop.Web.Areas.Admin.Models.TableOfContent
         /// <summary>
         /// Gets or sets the display order
         /// </summary>
+        /// 
+        [NopResourceDisplayName("Admin.AiBook.BookDir.Fields.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
         /// <summary>

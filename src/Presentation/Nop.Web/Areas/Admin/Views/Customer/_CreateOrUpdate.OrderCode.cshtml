@@ -1,0 +1,68 @@
+@model CustomerModel
+
+<div class="panel-body">
+    @await Html.PartialAsync("Table", new DataTablesModel
+{
+    Name = "customer-ordercode-grid",
+    UrlRead = new DataUrl("OrderCodeList", "Customer", new RouteValueDictionary { [nameof(Model.CustomerOrderCodeSearchModel.CustomerId)] = Model.CustomerAddressSearchModel.CustomerId }),
+    UrlDelete = new DataUrl("OrderCodeDelete", "Customer", new RouteValueDictionary { [nameof(Model.CustomerOrderCodeSearchModel.CustomerId)] = Model.CustomerAddressSearchModel.CustomerId }),
+    Length = Model.CustomerAddressSearchModel.PageSize,
+    LengthMenu = Model.CustomerAddressSearchModel.AvailablePageSizes,
+    ColumnCollection = new List<ColumnProperty>
+        {
+
+            new ColumnProperty(nameof(OrderCodeModel.Phone))
+            {
+                Title = T("Admin.OrderCodeModel.Fields.Phone").Text
+            },
+            new ColumnProperty(nameof(OrderCodeModel.CustomerName))
+            {
+                Title = T("Admin.OrderCodeModel.Fields.CustomerName").Text
+            },
+               new ColumnProperty(nameof(OrderCodeModel.CodeTypeDesc))
+            {
+               Title = T("Admin.OrderCodeModel.Fields.CodeTypeDesc").Text
+            },
+            new ColumnProperty(nameof(OrderCodeModel.ExpireTime))
+            {
+                Title = T("Admin.OrderCodeModel.Fields.ExpireTime").Text
+            },
+            new ColumnProperty(nameof(OrderCodeModel.ProductName))
+            {
+                Title = T("Admin.OrderCodeModel.Fields.ProductName").Text
+            },
+            new ColumnProperty(nameof(OrderCodeModel.OrderCode))
+            {
+                Title = T("Admin.OrderCodeModel.Fields.OrderCode").Text
+            },
+            new ColumnProperty(nameof(OrderCodeModel.ActivedDesc))
+            {
+                Title = T("Admin.OrderCodeModel.Fields.ActivedDesc").Text
+            },
+            //new ColumnProperty(nameof(AddressModel.AddressHtml))
+            //{
+            //    Title = T("Admin.Address").Text,
+            //    Encode = false
+            //},
+            new ColumnProperty(nameof(OrderCodeModel.Id))
+            {
+                Title = T("Admin.Common.Edit").Text,
+                Width = "100",
+                ClassName =  NopColumnClassDefaults.Button,
+                Render = new RenderButtonEdit(new DataUrl("~/Admin/Customer/OrderCodeEdit?customerId=" + Model.Id + "&orderCodeId=", true))
+            },
+            //new ColumnProperty(nameof(OrderCodeModel.Id))
+            //{
+            //    Title = T("Admin.Common.Delete").Text,
+            //    Width = "100",
+            //    Render = new RenderButtonRemove(T("Admin.Common.Delete").Text),
+            //    ClassName =  NopColumnClassDefaults.Button
+            //}
+        }
+})
+</div>
+<div class="panel-body">
+    <button type="button" class="btn btn-primary" onclick="location.href = '@Url.Action("OrderCodeCreate", new { customerId = Model.Id })'">
+        @T("Admin.Customers.Customers.OrderCode.AddButton")
+    </button>
+</div>

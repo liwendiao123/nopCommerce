@@ -18,7 +18,10 @@ namespace Nop.Core.Domain.Customers
         protected ICollection<CustomerAddressMapping> _customerAddressMappings;
         private IList<CustomerRole> _customerRoles;
         private ICollection<CustomerBook> _customerBooks;
-
+        private ICollection<CustomerBookNodeLog> _customerBookNodeLogs;
+        private ICollection<CustomerBookNode> _customerBookNodes;
+        private ICollection<CustomerOrderCode> _customerOrderCodes;
+        // private 
         public Customer()
         {
             CustomerGuid = Guid.NewGuid();
@@ -108,6 +111,9 @@ namespace Nop.Core.Domain.Customers
         /// Gets or sets the last IP address
         /// </summary>
         public string LastIpAddress { get; set; }
+
+
+        public string LastToken { get; set; }
 
         ///// <summary>
         ///// 注册平台
@@ -227,11 +233,23 @@ namespace Nop.Core.Domain.Customers
             get => _customerBooks ?? (_customerBooks = new List<CustomerBook>());
             protected set => _customerBooks = value;
         }
-
+        public virtual ICollection<CustomerBookNodeLog> CustomerBookNodeLogs
+        {
+            get => _customerBookNodeLogs ?? (_customerBookNodeLogs = new List<CustomerBookNodeLog>());
+            protected set => _customerBookNodeLogs = value;
+        }
+        public virtual ICollection<CustomerBookNode> CustomerBookNodes
+        {
+            get => _customerBookNodes ?? (_customerBookNodes = new List<CustomerBookNode>());
+            protected set => _customerBookNodes = value;
+        }
+        public virtual ICollection<CustomerOrderCode> CustomerOrderCodes
+        {
+            get => _customerOrderCodes ?? (_customerOrderCodes = new List<CustomerOrderCode>());
+            protected set => _customerOrderCodes = value;
+        }
         #endregion
-
         #region Methods
-
         /// <summary>
         /// Add customer role and reset customer roles cache
         /// </summary>
@@ -241,7 +259,6 @@ namespace Nop.Core.Domain.Customers
             CustomerCustomerRoleMappings.Add(role);
             _customerRoles = null;
         }
-
         /// <summary>
         /// Remove customer role and reset customer roles cache
         /// </summary>
@@ -251,7 +268,6 @@ namespace Nop.Core.Domain.Customers
             CustomerCustomerRoleMappings.Remove(role);
             _customerRoles = null;
         }
-
         #endregion
     }
 }

@@ -56,17 +56,14 @@ namespace Nop.Services.Payments
                 };
                 return result;
             }
-
             //We should strip out any white space or dash in the CC number entered.
             if (!string.IsNullOrWhiteSpace(processPaymentRequest.CreditCardNumber))
             {
                 processPaymentRequest.CreditCardNumber = processPaymentRequest.CreditCardNumber.Replace(" ", string.Empty);
                 processPaymentRequest.CreditCardNumber = processPaymentRequest.CreditCardNumber.Replace("-", string.Empty);
             }
-
             var paymentMethod = _paymentPluginManager.LoadPluginBySystemName(processPaymentRequest.PaymentMethodSystemName)
                 ?? throw new NopException("Payment method couldn't be loaded");
-
             return paymentMethod.ProcessPayment(processPaymentRequest);
         }
 

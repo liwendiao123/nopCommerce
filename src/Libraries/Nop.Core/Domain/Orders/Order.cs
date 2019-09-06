@@ -137,6 +137,9 @@ namespace Nop.Core.Domain.Orders
         /// </summary>
         public decimal PaymentMethodAdditionalFeeExclTax { get; set; }
 
+
+        public string InviteCode { get; set; }
+
         /// <summary>
         /// Gets or sets the tax rates
         /// </summary>

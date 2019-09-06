@@ -120,6 +120,7 @@ namespace Nop.Web.Areas.Admin.Factories
         /// <param name="searchModel">GDPR request search model</param>
         /// <returns>GDPR request list model</returns>
         GdprLogListModel PrepareGdprLogListModel(GdprLogSearchModel searchModel);
-
+        CustomerOrderCodeListModel PrepareCustomerOrderCodeListModel(CustomerOrderCodeSearchModel searchModel, Customer customer);
+        CustomerOrderCodeModel PrepareCustomerOrderCode(Customer customer, CustomerOrderCodeModel customerOrderCodeModel);
     }
 }

@@ -191,11 +191,21 @@ namespace Nop.Web.Areas.Admin.Factories
                     const string value = "0";
                     string defaultItemText = null;
                     //prepare item text
-                     defaultItemText = defaultItemText ?? _localizationService.GetResource("Admin.Common.All");
+                    defaultItemText = defaultItemText ?? _localizationService.GetResource("Admin.Common.All");
 
                     //insert this default item at first
                     model.ParentBookDir.Insert(0, new SelectListItem { Text = defaultItemText, Value = value });
                     model.ParentBookDir = model.ParentBookDir.OrderBy(x => x.Value).ToList();
+                }
+
+                else
+                {
+                    model.ParentBookDir.Add(new SelectListItem
+                    {
+                        Text = "无",
+                        Value = "0"
+
+                    });
                 }
                 //prepare nested search model
 

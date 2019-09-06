@@ -68,7 +68,7 @@ namespace Nop.Plugin.Payments.WeixinPay.Controllers
         private readonly WeixinPayPaymentSettings _weixinPayPaymentSettings;
         private readonly PaymentSettings _paymentSettings;
         private readonly IWebHelper _webHelper;
-
+        private readonly ICustomerActivityService _customerActivityService;
         private readonly ICurrencyService _currencyService;
         private readonly CurrencySettings _currencySettings;
 
@@ -103,7 +103,8 @@ namespace Nop.Plugin.Payments.WeixinPay.Controllers
             IConfiguration configuration,
             IPermissionService permissionService,
             IHostingEnvironment env,
-            IHttpContextAccessor contextAccessor,
+            ICustomerActivityService customerActivityService,
+        IHttpContextAccessor contextAccessor,
             INotificationService notificationService,
              IPaymentPluginManager paymentPluginManager
            )
@@ -121,7 +122,7 @@ namespace Nop.Plugin.Payments.WeixinPay.Controllers
             this._currencySettings = currencySettings;
             this._senparcWeixinSettings = senparcWeixinSetting;
             this._configuration = configuration;
-
+            _customerActivityService = customerActivityService;
             this._permissionService = permissionService;
             this._env = env;
             this._contextAccessor = contextAccessor;
@@ -251,13 +252,20 @@ namespace Nop.Plugin.Payments.WeixinPay.Controllers
 
         public IActionResult Notify()
         {
+
+           // _logger.Information("微信扫码支付结果通知---11111111");
+
+            //_customerActivityService.InsertActivity("UpdateOrder",
+            //   _localizationService.GetResource("ActivityLog.UpdateOrder"), new Order());
+            //_customerActivityService.InsertActivity("微信扫码支付 - 模式二", "支付回调", new Order());
+
             var processor = _paymentPluginManager.LoadPluginBySystemName("Payments.WeixinPay") as WeixinPayPaymentProcessor;
 
             if (processor == null
                  || !_paymentPluginManager.IsPluginActive(processor))
                 throw new NopException("WeixinPay module cannot be loaded");
 
-
+           
 
             Nop.Plugin.Payments.WeixinPay.Common.ResponseHandler  resHandler = new Nop.Plugin.Payments.WeixinPay.Common.ResponseHandler(_contextAccessor.HttpContext);
 
@@ -267,21 +275,28 @@ namespace Nop.Plugin.Payments.WeixinPay.Controllers
             string res = null;
 
             resHandler.SetKey(_weixinPayPaymentSettings.TenPayV3_Key);
+
+
+           // _logger.Information("微信扫码支付结果通知---222222");
             //验证请求是否从微信发过来（安全）
             if (resHandler.IsTenpaySign())
             {
                 res = "success";
 
+             //   _logger.Information("微信扫码支付结果通知---33333333");
                 string out_trade_no = resHandler.GetParameter("out_trade_no");
 
                 int orderId;
                 if (int.TryParse(out_trade_no, out orderId))
                 {
                     var order = _orderService.GetOrderById(orderId);
+
+                //    _customerActivityService.InsertActivity("微信扫码支付 - 模式二","支付成功", order);
                     if (order != null && _orderProcessingService.CanMarkOrderAsPaid(order))
                     {
                         try
                         {
+                            _logger.Information("微信扫码支付成功");
                             _orderProcessingService.MarkOrderAsPaid(order);
                         }
                         catch (Exception e)
@@ -296,8 +311,11 @@ namespace Nop.Plugin.Payments.WeixinPay.Controllers
             }
             else
             {
+                _logger.Information("微信扫码支付结果通知---4444444444");
                 res = "fail";
+                //_customerActivityService.InsertActivity("微信扫码支付 - 模式二", return_msg, new Order() {
 
+               // });
                 return Content(res);
                 //错误的订单处理
             }
@@ -472,7 +490,7 @@ namespace Nop.Plugin.Payments.WeixinPay.Controllers
         /// <param name="orderId"></param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult Native2(int orderId = 0)
+        public IActionResult Native2(int orderId = 0,string token = "", string qs_clientId = "")
         {
 
             try
@@ -527,11 +545,9 @@ namespace Nop.Plugin.Payments.WeixinPay.Controllers
                   packageReqHandler.SetParameter("sign", sign);                       //签名
                   string data = packageReqHandler.ParseXML();                         
                   var result = TenPayV3.Unifiedorder(data);
-
+                _customerActivityService.InsertActivity("微信扫码支付-模式二", data + "==========="+ result, order);
                 //get code_url
-
                 var  res  = XDocument.Parse(result);
-
                 if (res.Element("xml").Element("code_url") == null)
                 {
                     throw new Exception(res.ToString().HtmlEncode());
@@ -579,11 +595,37 @@ namespace Nop.Plugin.Payments.WeixinPay.Controllers
 
                 //return File(b, "image/jpeg");
 
+                if (!string.IsNullOrEmpty(token))
+                {
+                    return Json(new
+                    {
+                        code = 0,
+                        msg = "获取数据成功",
+                        data = new {
+                            barcodeUrl = Request.Scheme + "://" + Request.Host + @"images/" + orderId.ToString() + ".jpg"
+                        }
+
+                    });
+                }
                 return PhysicalFile(path, "image/jpeg");
 
             }
             catch (Exception ex)
             {
+
+                if (!string.IsNullOrEmpty(token))
+                {
+                    return Json(new {
+                        code = -1,
+                        msg = "获取数据失败",
+                        data = new
+                        {
+                            barcodeUrl = @"http://api.qisankeji.com/images/14.jpg"
+                        }
+
+                    });
+                }
+
                 var msg = ex.Message;
                 msg += "<br>" + ex.StackTrace;
                 msg += "<br>==Source==<br>" + ex.Source;
@@ -599,6 +641,190 @@ namespace Nop.Plugin.Payments.WeixinPay.Controllers
         }
 
 
+        /// <summary>
+        /// 扫码支付（模式二）
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <returns></returns>
+        /// 
+        [Route("/api/getbarcode")]
+        [HttpGet]
+        public IActionResult NativePay(int orderId = 0, string token = "", string qs_clientId = "")
+        {
+
+            try
+            {
+
+                _customerActivityService.InsertActivity("微信扫码支付-模式二", token + "===========" + orderId, new Order());
+                //var pathtest = System.IO.Path.Combine(_env.WebRootPath, "images") + "\\" + orderId.ToString() + ".jpg";
+                //获取产品信息
+                var order = new Order();
+                if (orderId > 0)
+                {
+                    order = _orderService.GetOrderById(orderId);
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(token))
+                    {
+                        return Json(new
+                        {
+                             code = -1,
+                             msg = "订单不存在",
+                             data = new {
+                             }
+                        });
+                    }
+                    return Content("查找订单失败");
+                }
+                string timeStamp = "";
+                string nonceStr = "";
+                string paySign = "";
+                string sp_billno = "";
+                //当前时间 yyyyMMdd
+                string date = DateTime.Now.ToString("yyyyMMdd");
+                sp_billno = orderId.ToString();
+                //创建支付应答对象
+                RequestHandler packageReqHandler = new RequestHandler(null);
+                //初始化
+                packageReqHandler.Init();
+                timeStamp = TenPayV3Util.GetTimestamp();
+                nonceStr = TenPayV3Util.GetNoncestr();
+                string body = "";
+                foreach (var item in order.OrderItems)
+                {
+                    body = item.Product.Name + item.Quantity.ToString() + " ";
+                }
+                //设置package订单参数
+                decimal totalFee = order.OrderTotal;
+                var currencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
+                if (currencyCode != "CNY")
+                {
+                    Currency currency = _currencyService.GetCurrencyByCode("CNY");
+                    totalFee = _currencyService.ConvertFromPrimaryStoreCurrency(totalFee, currency);
+                }
+                packageReqHandler.SetParameter("appid", _weixinPayPaymentSettings.TenPayV3_AppId);          //公众账号ID
+                packageReqHandler.SetParameter("mch_id", _weixinPayPaymentSettings.TenPayV3_MchId);         //商户号
+                packageReqHandler.SetParameter("nonce_str", nonceStr);                    //随机字符串
+                packageReqHandler.SetParameter("body", body);    //商品信息
+                packageReqHandler.SetParameter("out_trade_no", sp_billno);      //商家订单号
+                packageReqHandler.SetParameter("total_fee", (totalFee * 100).ToString().Split('.')[0]);                    //商品金额,以分为单位(money * 100).ToString()
+                packageReqHandler.SetParameter("spbill_create_ip", Request.HttpContext.Features.Get<IHttpConnectionFeature>().RemoteIpAddress.ToString());   //用户的公网ip，不是商户服务器IP
+                packageReqHandler.SetParameter("notify_url", _weixinPayPaymentSettings.TenPayV3_TenpayNotify);
+                packageReqHandler.SetParameter("trade_type", "NATIVE");
+                string sign = packageReqHandler.CreateMd5Sign("key", _weixinPayPaymentSettings.TenPayV3_Key);
+                packageReqHandler.SetParameter("sign", sign);                       //签名
+                string data = packageReqHandler.ParseXML();
+                var result = TenPayV3.Unifiedorder(data);
+                _customerActivityService.InsertActivity("微信扫码支付-模式二", data + "===========" + result, order);
+                //get code_url
+                var res = XDocument.Parse(result);
+                if (res.Element("xml").Element("code_url") == null)
+                {
+                    throw new Exception(res.ToString().HtmlEncode());
+                }
+                string codeUrl = res.Element("xml").Element("code_url").Value;
+
+
+                //creeate barcode
+
+                var bw = new BarcodeWriterPixelData
+                {
+                    Format = BarcodeFormat.QR_CODE,
+                    Options = new QrCodeEncodingOptions
+                    {
+                        Height = 600,
+                        Width = 600,
+                        Margin = 0
+                    }
+                };
+
+                var pixelData = bw.Write(codeUrl);
+
+                Bitmap bitmap = new System.Drawing.Bitmap(pixelData.Width, pixelData.Height, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
+
+                var bitmapData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, pixelData.Width, pixelData.Height),
+                System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
+                try
+                {
+                    // we assume that the row stride of the bitmap is aligned to 4 byte multiplied by the width of the image
+                    System.Runtime.InteropServices.Marshal.Copy(pixelData.Pixels, 0, bitmapData.Scan0,
+                    pixelData.Pixels.Length);
+                }
+                finally
+                {
+                    bitmap.UnlockBits(bitmapData);
+                }
+
+
+                var path = System.IO.Path.Combine(_env.WebRootPath, "images") + "\\" + orderId.ToString() + ".jpg";
+
+                bitmap.Save(path, ImageFormat.Jpeg);
+
+                Byte[] b = System.IO.File.ReadAllBytes(path);   // You can use your own method over here.         
+
+                //return File(b, "image/jpeg");
+                if (!string.IsNullOrEmpty(token))
+                {
+                    return Json(new
+                    {
+                        code = 0,
+                        msg = "获取数据成功",
+                        data = new
+                        {
+                            barcodeUrl = Request.Scheme + "://" + Request.Host + @"/images/" + orderId.ToString() + ".jpg"
+                        }
+                    });
+                }
+                return PhysicalFile(path, "image/jpeg");
+
+            }
+            catch (Exception ex)
+            {
+
+                if (!string.IsNullOrEmpty(token))
+                {
+                    return Json(new
+                    {
+                        code = -1,
+                        msg = "获取数据失败",
+                        data = new
+                        {
+                            barcodeUrl = @"http://api.qisankeji.com/images/14.jpg"
+                        }
+
+                    });
+                }
+
+                var msg = ex.Message;
+                msg += "<br>" + ex.StackTrace;
+                msg += "<br>==Source==<br>" + ex.Source;
+
+                if (ex.InnerException != null)
+                {
+                    msg += "<br>===InnerException===<br>" + ex.InnerException.Message;
+                }
+                return Content(msg);
+            }
+
+
+        }
+
+
+        public IActionResult Test2(int orderId = 0, string token = "",string qs_clientId = "")
+        {
+            return Json(new
+            {
+                code = 0,
+                msg = "测试",
+                data = new {
+                    token = token,
+                    orderId = orderId,
+                    qs_clientId = qs_clientId
+                }
+
+            });
+        }
 
         /// <summary>
         /// 调用JSSDK  支付
@@ -893,8 +1119,7 @@ namespace Nop.Plugin.Payments.WeixinPay.Controllers
         /// 处理Order
         /// </summary>
         /// <param name="orderId"></param>
-        /// <returns></returns>
-       
+        /// <returns></returns>     
         public IActionResult Order(int orderId)
         {
             var order = new Order();
@@ -916,8 +1141,6 @@ namespace Nop.Plugin.Payments.WeixinPay.Controllers
             }
             else
             {
-
-
                 if (mobileDetect.IsMobile(userAgent,headers))
                 {
                     //Wap端打开
@@ -926,15 +1149,11 @@ namespace Nop.Plugin.Payments.WeixinPay.Controllers
                 else {
                     //在PC端打开，提供二维码扫描进行支付(模式一)
                     //return View("~/Plugins/Payments.WeixinPay/Views/PaymentWeixinPay/Order.cshtml", order);
-
                     //在PC端打开，提供二维码扫描进行支付(模式二)
                     return View("~/Plugins/Payments.WeixinPay/Views/PaymentWeixinPay/OrderNative.cshtml", order);
-
-
                 }
             }
         }
-
         /// <summary>
         /// 订单查询
         /// </summary>

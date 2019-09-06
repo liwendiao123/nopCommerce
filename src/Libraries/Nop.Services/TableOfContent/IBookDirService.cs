@@ -76,7 +76,7 @@ namespace Nop.Services.TableOfContent
 
         IList<BookDir> SortBookDirsForTree(IList<BookDir> source, int parentId = 0,
             bool ignoreCategoriesWithoutExistingParent = false);
-
+        IList<BookDir> GetBookDirsItems(List<int> bookdirIds);
         IList<BookDir> GetChildBookDirItems(List<int> bookdirIds);
     }
 }

@@ -875,7 +875,7 @@ namespace Nop.Web.Areas.Admin.Controllers
             var product = _productService.GetProductById(id);
             if (product == null || product.Deleted)
                 return RedirectToAction("List");
-
+            
             //a vendor should have access only to his products
             if (_workContext.CurrentVendor != null && product.VendorId != _workContext.CurrentVendor.Id)
                 return RedirectToAction("List");

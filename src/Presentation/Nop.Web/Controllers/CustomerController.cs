@@ -90,7 +90,7 @@ namespace Nop.Web.Controllers
         private readonly MediaSettings _mediaSettings;
         private readonly StoreInformationSettings _storeInformationSettings;
         private readonly TaxSettings _taxSettings;
-
+        private readonly ICustomerOrderCodeService _customerOrderCodeService;
         #endregion
 
         #region Ctor
@@ -108,6 +108,7 @@ namespace Nop.Web.Controllers
             IAuthenticationService authenticationService,
             ICountryService countryService,
             ICurrencyService currencyService,
+            ICustomerOrderCodeService customerOrderCodeService,
             ICustomerActivityService customerActivityService,
             ICustomerAttributeParser customerAttributeParser,
             ICustomerAttributeService customerAttributeService,
@@ -158,6 +159,8 @@ namespace Nop.Web.Controllers
             _customerRegistrationService = customerRegistrationService;
             _customerService = customerService;
             _eventPublisher = eventPublisher;
+
+            _customerOrderCodeService = customerOrderCodeService;
             _exportManager = exportManager;
             _externalAuthenticationService = externalAuthenticationService;
             _gdprService = gdprService;
@@ -390,7 +393,6 @@ namespace Nop.Web.Controllers
             {
                 ModelState.AddModelError("", _localizationService.GetResource("Common.WrongCaptchaMessage"));
             }
-
             if (ModelState.IsValid)
             {
                 if (_customerSettings.UsernamesEnabled && model.Username != null)
@@ -445,7 +447,6 @@ namespace Nop.Web.Controllers
                         break;
                 }
             }
-
             //If we got this far, something failed, redisplay form
             model = _customerModelFactory.PrepareLoginModel(model.CheckoutAsGuest);
             return View(model);
@@ -504,6 +505,15 @@ namespace Nop.Web.Controllers
         }
 
         #endregion
+
+
+        #region OrderCode
+
+        public IActionResult OrderCodeCreate()
+        {
+            return View();
+        }
+        #endregion 
 
         #region Password recovery
 

@@ -194,7 +194,7 @@ namespace Nop.Web.Factories
                 IsReturnRequestAllowed = _orderProcessingService.IsReturnRequestAllowed(order),
                 PdfInvoiceDisabled = _pdfSettings.DisablePdfInvoicesForPendingOrders && order.OrderStatus == OrderStatus.Pending,
                 CustomOrderNumber = order.CustomOrderNumber,
-
+                 InviteCode = order.InviteCode,
                 //shipping info
                 ShippingStatus = _localizationService.GetLocalizedEnum(order.ShippingStatus)
             };

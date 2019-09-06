@@ -10,13 +10,11 @@ namespace Nop.Plugin.Api.Factories
         public Order Initialize()
         {
             var order = new Order();
-
             order.CreatedOnUtc = DateTime.UtcNow;
             order.OrderGuid = new Guid();
             order.PaymentStatus = PaymentStatus.Pending;
             order.ShippingStatus = ShippingStatus.NotYetShipped;
             order.OrderStatus = OrderStatus.Pending;
-
             return order;
         }
     }

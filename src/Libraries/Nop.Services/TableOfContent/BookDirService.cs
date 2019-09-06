@@ -502,6 +502,18 @@ namespace Nop.Services.TableOfContent
         }
 
 
+        public virtual IList<BookDir> GetBookDirsItems(List<int> bookdirIds)
+        {
+            var query = _bookdirRepository.Table;
+            if (bookdirIds.Count > 0)
+            {
+                query = query.Where(x => bookdirIds.Contains(x.Id));
+            }
+           
+            return query.ToList();       
+        }
+
+
         public virtual IList<BookDir> GetChildBookDirItems(List<int> bookdirIds)
         {
             var cacheKey = string.Format(NopBookDirDefault.GetChildBookDirItemsByParentIdCacheKey,

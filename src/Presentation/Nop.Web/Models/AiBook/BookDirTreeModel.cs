@@ -7,7 +7,7 @@ namespace Nop.Web.Models.AiBook
 {
     public class BookDirTreeModel
     {
-
+        public bool isFocus;
         private string _desc = string.Empty;
 
 
@@ -112,5 +112,7 @@ namespace Nop.Web.Models.AiBook
 
         }
         public List<BookDirTreeModel> Children { get; set; }
+        public double TrialDays { get;  set; }
+        public bool IsBuy { get; internal set; }
     }
 }

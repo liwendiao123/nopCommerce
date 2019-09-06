@@ -50,6 +50,7 @@ using Nop.Web.Models.AiBook;
 using Nop.Services.TableOfContent;
 using Nop.Core.Infrastructure.Ex;
 using Nop.Core.LoginInfo;
+using Newtonsoft.Json;
 
 namespace Nop.Web.Controllers.Api
 {
@@ -77,7 +78,8 @@ namespace Nop.Web.Controllers.Api
         private readonly ISmsService _smsService;
         private readonly IBookDirService _bookDirService;
         private readonly IDepartmentService _departmentService;
-       /// private readonly
+        private readonly ICustomerOrderCodeService _customerOrderCodeService;
+        /// private readonly
         private readonly ICustomerRegistrationService _customerRegistrationService;
         private readonly ICustomerService _customerService;
         private readonly IEventPublisher _eventPublisher;
@@ -133,6 +135,7 @@ namespace Nop.Web.Controllers.Api
                     IGiftCardService giftCardService,
                     ILocalizationService localizationService,
                     ILogger logger,
+                    ICustomerOrderCodeService customerOrderCodeService,
                     INewsLetterSubscriptionService newsLetterSubscriptionService,
                     IOrderService orderService,
                     IPictureService pictureService,
@@ -180,6 +183,7 @@ namespace Nop.Web.Controllers.Api
                     _giftCardService = giftCardService; 
                     _localizationService = localizationService;
                     _logger = logger;
+            _customerOrderCodeService = customerOrderCodeService;
                     _newsLetterSubscriptionService = newsLetterSubscriptionService;
                     _orderService = orderService;
                     _productService = productService;
@@ -200,33 +204,27 @@ namespace Nop.Web.Controllers.Api
                     _bookDirService = bookDirService;
                     _departmentService = departmentService;
         }
-
-
         public IActionResult Index()
         {
             return View();
         }
-
-
         public IActionResult Register()
         {
             return View();
         }
-
         [HttpPost]
         //[ValidateCaptcha]
         [ValidateHoneypot]
         [CheckAccessPublicStore(true)]
         public IActionResult Register(ApiRegisterModel model, string returnUrl, bool captchaValid, IFormCollection form)
         {
-
             string email = model.Email;
-
             if (string.IsNullOrEmpty(model.Email))
             {
                 model.Email = Guid.NewGuid().ToString("N") + "@163.com";
             }
             model.Email = model.Email.Trim();
+            CustomerOrderCode orderCode = null;
             SmsMsgRecord record = new SmsMsgRecord();
             if (model != null)
             {
@@ -243,10 +241,10 @@ namespace Nop.Web.Controllers.Api
             }
             else
             {
-                 record = new SmsMsgRecord {
+                record =new SmsMsgRecord {
                      Phone = model.Phone,
-                     Type = 0,
-                     AppId  = AliSmsManager.accessKeyId,
+                     Type  = 0,
+                     AppId = AliSmsManager.accessKeyId,
                      TemplateCode = model.SmsCode
                 };
                var result = _smsService.ApplySms(record);
@@ -255,7 +253,7 @@ namespace Nop.Web.Controllers.Api
                     return Json(new
                     {
                         code = -1,
-                        msg = "注册失败:手机验证码不能为空",
+                        msg = "注册失败:手机验证码验证失败",
                         data = false
                     });
                 }
@@ -395,10 +393,22 @@ namespace Nop.Web.Controllers.Api
                     if (!string.IsNullOrEmpty(model.InviteCode))
                     {
                         var custo = _customerService.GetCustomerByvipcode(model.InviteCode);
+                        var exitecode = _customerOrderCodeService.GetOrderCodeByCode(model.InviteCode);
 
-                        if (custo != null || "001".Equals(model.InviteCode))
+
+                       var  codeExpireDate = DateTime.Now;
+                        if (exitecode != null && exitecode.CodeType ==1)
                         {
+                            codeExpireDate = exitecode.CreateTime.AddDays(1).Date.AddDays(exitecode.ValidDays);
+                        }
+                        
 
+                        if (custo != null || codeExpireDate > DateTime.Now)
+                        {
+                            if (exitecode != null)
+                            {
+                                orderCode = exitecode;
+                            }
                         }
                         else
                         {
@@ -435,6 +445,25 @@ namespace Nop.Web.Controllers.Api
                     var registrationResult = _customerRegistrationService.RegisterCustomer(registrationRequest);
                     if (registrationResult.Success)
                     {
+
+                        if (orderCode != null)
+                        {
+                            customer.CustomerBooks.Add(new CustomerBook
+                            {
+                                 CustomerId = customer.Id,
+                                 ProductId = orderCode.ProductId,
+                                 Status = 1,
+                                 CreateTime = DateTime.Now,
+                                 Expirationtime = DateTime.Now.AddDays(orderCode.ValidDays),
+                                 BookNodeId = 0,
+                                 BookBookDirId = 0,
+                                 TypeLabel = 1,
+                                 UpdateTime = DateTime.Now
+                            });
+
+                            _customerService.UpdateCustomer(customer);
+                        }
+
                         //properties
                         if (_dateTimeSettings.AllowCustomersToSetTimeZone)
                         {
@@ -572,6 +601,10 @@ namespace Nop.Web.Controllers.Api
                 ID = resl.Id.ToString(),
                 UserName = resl.Username
             };
+
+            // _workContext.CurrentCustomer = customer;
+            resl.LastToken = token.Serialize();
+            _customerService.UpdateCustomer(resl);
             return Json(               
                 new {
                 code = 0,
@@ -592,6 +625,8 @@ namespace Nop.Web.Controllers.Api
                     Token = token.Serialize(),
                     InviteCode = model.InviteCode ?? "",
                     CardImgUrl = model.ImgUrl ?? "",
+                    IsfirstLogin = true,
+                    LeftDays =7,
                     SchoolName = model.SchoolName,
                     DepId = model.DepartmentId,
                     Occupation = dutyName,
@@ -603,7 +638,6 @@ namespace Nop.Web.Controllers.Api
             //return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.Disabled });
           //  return View();
         }
-
         #region
         protected virtual string ParseCustomCustomerAttributes(IFormCollection form)
         {
@@ -694,6 +728,7 @@ namespace Nop.Web.Controllers.Api
             string name = "";
             string inviteCode = string.Empty;
             string imgurl = string.Empty;
+            var isfirstLogin = true;
             LoginModel model = new LoginModel()
             {
                  Email = "li@163.com",
@@ -725,9 +760,9 @@ namespace Nop.Web.Controllers.Api
                             //raise event       
                             _eventPublisher.Publish(new CustomerLoggedinEvent(customer));
 
-                            //activity log
-                            _customerActivityService.InsertActivity(customer, "PublicStore.Login",
-                                _localizationService.GetResource("ActivityLog.PublicStore.Login"), customer);
+
+                            string logmsg = string.Format("用户名:{0};密码:{1};客户端ID:{2}", userName, password, qs_clientid);
+
 
                             imgurl = _genericAttributeService.GetAttribute<string>(_customer, NopCustomerDefaults.IdCardImgAttribute);
                             name = _genericAttributeService.GetAttribute<string>(_customer, NopCustomerDefaults.LastNameAttribute);
@@ -752,22 +787,61 @@ namespace Nop.Web.Controllers.Api
                                 ID = _customer.Id.ToString(),
                                 UserName = _customer.Username
                             };
-                            return Json(new {
+
+                            _customer.LastToken = token.Serialize();
+                            _customerService.UpdateCustomer(_customer);
+                            //activity log
+                            isfirstLogin = ValidateLoginTimes(_customer);
+                            var resultll = JsonConvert.SerializeObject(new
+                            {
                                 code = 0,
-                                msg="登录成功",
-                                data = new {
+                                msg = "登录成功",
+                                data = new
+                                {
                                     Id = _customer.Id,
-                                    UserName = _customer.Username??"",
-                                    Name = name??"",
-                                    Phone = _customer.Username??"",
+                                    UserName = _customer.Username ?? "",
+                                    Name = name ?? "",
+                                    Phone = _customer.Username ?? "",
                                     Email = email,
                                     Token = token.Serialize(),
-                                    InviteCode = inviteCode??"",
-                                    CardImgUrl = imgurl??"",
-                                    SchoolName =dep==null ?"七三科技":dep.Name,
+                                    InviteCode = inviteCode ?? "",
+                                    CardImgUrl = imgurl ?? "",
+                                    IsfirstLogin = isfirstLogin,
+                                    LeftDays = 7 - DateTime.Now.Subtract(_customer.CreatedOnUtc).TotalDays,
+                                    SchoolName = dep == null ? "七三科技" : dep.Name,
                                     DepartmentId = _customer.DepartmentId,
-                                    RoleId =string.Join( ",",_customer.CustomerCustomerRoleMappings.Where(x => "Registered" != x.CustomerRole.Name).Select(x=>x.CustomerRole.Id)),
-                                    Role =string.Join(",", _customer.CustomerCustomerRoleMappings.Where(x=> "Registered" != x.CustomerRole.Name).Select(x=>x.CustomerRole.SystemName).ToList()),
+                                    RoleId = string.Join(",", _customer.CustomerCustomerRoleMappings.Where(x => "Registered" != x.CustomerRole.Name).Select(x => x.CustomerRole.Id)),
+                                    Role = string.Join(",", _customer.CustomerCustomerRoleMappings.Where(x => "Registered" != x.CustomerRole.Name).Select(x => x.CustomerRole.SystemName).ToList()),
+                                    IsTeacher = string.Join(",", _customer.CustomerCustomerRoleMappings.Select(x => x.CustomerRole.Name).ToList()).Contains("Teacher")
+                                }
+
+
+                            });
+
+
+                            _customerActivityService.InsertActivity(customer, "PublicStore.Login", string.Format("接口模块:{0}---等录信息{1}-----返回结果：{2}", _localizationService.GetResource("ActivityLog.PublicStore.Login"), logmsg, resultll)
+                                , customer);
+
+                            return Json(new
+                            {
+                                code = 0,
+                                msg = "登录成功",
+                                data = new
+                                {
+                                    Id = _customer.Id,
+                                    UserName = _customer.Username ?? "",
+                                    Name = name ?? "",
+                                    Phone = _customer.Username ?? "",
+                                    Email = email,
+                                    Token = token.Serialize(),
+                                    InviteCode = inviteCode ?? "",
+                                    CardImgUrl = imgurl ?? "",
+                                    IsfirstLogin = isfirstLogin,
+                                    LeftDays = 7 - DateTime.Now.Subtract(_customer.CreatedOnUtc).TotalDays,
+                                    SchoolName = dep == null ? "" : dep.Name,
+                                    DepartmentId = _customer.DepartmentId,
+                                    RoleId = string.Join(",", _customer.CustomerCustomerRoleMappings.Where(x => "Registered" != x.CustomerRole.Name).Select(x => x.CustomerRole.Id)),
+                                    Role = string.Join(",", _customer.CustomerCustomerRoleMappings.Where(x => "Registered" != x.CustomerRole.Name).Select(x => x.CustomerRole.SystemName).ToList()),
                                     IsTeacher = string.Join(",", _customer.CustomerCustomerRoleMappings.Select(x => x.CustomerRole.Name).ToList()).Contains("Teacher")
                                 }
 
@@ -778,7 +852,7 @@ namespace Nop.Web.Controllers.Api
 
                             //return Redirect(returnUrl);
                         }
-                        //break;
+                    //break;
                     case CustomerLoginResults.CustomerNotExist:
                         ModelState.AddModelError("", _localizationService.GetResource("Account.Login.WrongCredentials.CustomerNotExist"));
                         break;
@@ -809,6 +883,25 @@ namespace Nop.Web.Controllers.Api
             });
           //  return View(model);
         }
+
+        private bool ValidateLoginTimes(Customer _customer)
+        {
+            bool isfirstLogin = true;
+            var resultty = _customerActivityService.GetActivityTypesByName("PublicStore.Login");
+
+            if (resultty != null && resultty.Count > 0)
+            {
+                var loginretimes = _customerActivityService.GetAllActivities(DateTime.Now.Date, DateTime.Now.Date.AddDays(1), _customer.Id, resultty.FirstOrDefault().Id);
+
+                if (loginretimes.Count > 0)
+                {
+                    isfirstLogin = false;
+                }
+            }
+
+            return isfirstLogin;
+        }
+
         [HttpPost]
         public IActionResult CheckOldPwd(string userName, string password)
         {
@@ -981,6 +1074,11 @@ namespace Nop.Web.Controllers.Api
                         ID = _customer.Id.ToString(),
                         UserName = _customer.Username
                     };
+
+                   var isfirstLogin = ValidateLoginTimes(_customer);
+                    _customer.LastToken = token.Serialize();
+                    _customerService.UpdateCustomer(_customer);
+
                     return Json(new
                     {
                         code = 0,
@@ -995,10 +1093,12 @@ namespace Nop.Web.Controllers.Api
                             Token = token.Serialize(),
                             InviteCode = inviteCode ?? "",
                             CardImgUrl = imgurl ?? "",
+                            IsfirstLogin = isfirstLogin,
+                            LeftDays =7-DateTime.Now.Subtract(_customer.CreatedOnUtc).TotalDays,
                             SchoolName = dep == null ? "七三科技" : dep.Name,
                             DepartmentId = _customer.DepartmentId,
                             RoleId = string.Join(",", _customer.CustomerCustomerRoleMappings.Where(x => "Registered" != x.CustomerRole.Name).Select(x => x.CustomerRole.Id)),
-                            Role = string.Join(",", _customer.CustomerCustomerRoleMappings.Select(x => x.CustomerRole.SystemName).ToList()),
+                            Role = string.Join(",", _customer.CustomerCustomerRoleMappings.Where(x => "Registered" != x.CustomerRole.Name).Select(x => x.CustomerRole.SystemName).ToList()),
                             IsTeacher = string.Join(",", _customer.CustomerCustomerRoleMappings.Select(x => x.CustomerRole.Name).ToList()).Contains("Teacher")
                         }
                     });
@@ -1045,6 +1145,32 @@ namespace Nop.Web.Controllers.Api
         [HttpPost]
         public IActionResult CheckToken(string token, string qs_clientid)
         {
+
+            var tokenresult = ValidateToken(token, qs_clientid, _customerService);
+
+            if (tokenresult == 1)
+            {
+                return Json(new
+                {
+                    code = -2,
+                    msg = "该账号已在另一个地点登录,如不是本人操作，您的密码已经泄露,请及时修改密码！",
+                    data = false
+
+                });
+            }
+            if (tokenresult == 3)
+            {
+                return Json(new
+                {
+                    code = -3,
+                    msg = "该账号已被禁用！",
+                    data = false
+
+                });
+            }
+
+
+
             AccountToken apitoken = AccountToken.Deserialize(token);
             Customer _customer = null;
 
@@ -1085,6 +1211,9 @@ namespace Nop.Web.Controllers.Api
                         ID = _customer.Id.ToString(),
                         UserName = _customer.Username
                     };
+
+                    var isfirstLogin = ValidateLoginTimes(_customer);
+
                     return Json(new
                     {
                         code = 0,
@@ -1099,7 +1228,9 @@ namespace Nop.Web.Controllers.Api
                            Token = apitetoken.Serialize(),
                       InviteCode = inviteCode ?? "",
                       CardImgUrl = imgurl ?? "",
-                      SchoolName = dep == null ? "七三科技" : dep.Name,
+                       LeftDays = 7 - DateTime.Now.Subtract(_customer.CreatedOnUtc).TotalDays,
+                            IsfirstLogin = isfirstLogin,
+                            SchoolName = dep == null ? "七三科技" : dep.Name,
                     DepartmentId = _customer.DepartmentId,
                           RoleId = string.Join(",", _customer.CustomerCustomerRoleMappings.Where(x => "Registered" != x.CustomerRole.Name).Select(x => x.CustomerRole.Id)),
                             Role = string.Join(",", _customer.CustomerCustomerRoleMappings.Where(x => "Registered" != x.CustomerRole.Name).Select(x => x.CustomerRole.SystemName).ToList()),
@@ -1133,7 +1264,6 @@ namespace Nop.Web.Controllers.Api
 
             
         }
-
         //[HttpPost]
         //public IActionResult ResetPwd(string userName, string password, string code)
         //{
@@ -1232,10 +1362,10 @@ namespace Nop.Web.Controllers.Api
         //}
         public IActionResult CheckPhone(string phone)
         {
-
-
             try
             {
+
+
                 if (string.IsNullOrEmpty(phone))
                 {
                     return Json(new
@@ -1254,7 +1384,6 @@ namespace Nop.Web.Controllers.Api
                         data = false
                     });
                 }
-
                 var result = _customerService.GetCustomerByUsername(phone);
 
                 if (result != null && !result.Deleted)
@@ -1289,16 +1418,76 @@ namespace Nop.Web.Controllers.Api
 
           
         }
-        public IActionResult CheckSmsCode(string phone, int type)
+        [HttpPost]
+        public IActionResult CheckUserName(string username)
+        {
+
+
+            try
+            {
+                if (string.IsNullOrEmpty(username))
+                {
+                    return Json(new
+                    {
+                        code = -1,
+                        msg = "账号不能为空",
+                        data = false
+                    });
+                }
+                //if (!phone.CheckMobile())
+                //{
+                //    return Json(new
+                //    {
+                //        code = -1,
+                //        msg = "手机号码格式错误",
+                //        data = false
+                //    });
+                //}
+
+                var result = _customerService.GetCustomerByUsername(username);
+
+                if (result != null && !result.Deleted)
+                {
+                    return Json(new
+                    {
+                        code = -1,
+                        msg = "该账号已被注册",
+                        data = false
+                    });
+                }
+
+                return Json(new
+                {
+                    code = 0,
+                    msg = "恭喜您！账号可用",
+                    data = true
+                });
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = ex.Message,
+                    data = false
+                });
+            }
+
+
+
+
+        }
+        public IActionResult CheckSmsCode(string phone, string  code,int type)
         {
            var  record = new SmsMsgRecord
             {
                 Phone = phone,
                 Type = type,
                 AppId = AliSmsManager.accessKeyId,
-                //TemplateCode = model.SmsCode
+                TemplateCode =code
             };
-            var result = _smsService.CheckMsgValid(record);
+            var result = _smsService.CheckMsgValidWithCode(record);
 
             if (result.Result)
             {
@@ -1314,7 +1503,7 @@ namespace Nop.Web.Controllers.Api
                 return Json(new
                 {
                     code = -1,
-                    msg = "验证码不可可用",
+                    msg = "验证码不可用",
                     data = false
 
                 });
@@ -1421,7 +1610,8 @@ namespace Nop.Web.Controllers.Api
                 data = randomcode
             });
         }
-       /// <summary>
+    
+        /// <summary>
     /// 获取用户基本信息
     /// </summary>
     /// <param name="userName"></param>
@@ -1456,30 +1646,181 @@ namespace Nop.Web.Controllers.Api
         /// <param name="userName"></param>
         /// <returns></returns>
         /// 
-        public IActionResult LearnProgress(string userName)
+        public IActionResult LearnProgress(string token, string qs_clientId)
         {
-          var result =   _productService.SearchProducts();
 
+            #region 1.0 判断凭证 是否正确
+            var tokenresult = ValidateToken(token, qs_clientId, _customerService);
+            if (tokenresult == 1)
+            {
+                return Json(new
+                {
+                    code = -2,
+                    msg = "该账号已在另一个地点登录,如不是本人操作，您的密码已经泄露,请及时修改密码！",
+                    data = false
+                });
+            }
+            if (tokenresult == 3)
+            {
+                return Json(new
+                {
+                    code = -3,
+                    msg = "该账号已被禁用！",
+                    data = false
+                });
+            }
+            var apitetoken = new AccountToken();
+            apitetoken = AccountToken.Deserialize(token);
+            Customer customer = null;
+            var islogin = false;
+            if (apitetoken != null)
+            {
+                var cid = 0;
+
+                Int32.TryParse(apitetoken.ID, out cid);
+
+                customer = _customerService.GetCustomerById(cid);
+
+                if (customer != null)
+                {
+                    if (DateTime.Now.Subtract(customer.CreatedOnUtc).TotalDays <= 7)
+                    {
+                        islogin = true;
+                    }
+
+                    var customerRole = customer.CustomerCustomerRoleMappings.Select(x => x.CustomerRole).ToList();
+
+                    var isSystemAccount = customerRole.Where(x => !x.Name.Equals("Registered") && x.IsSystemRole).ToList();
+
+                    if (isSystemAccount.Count > 0)
+                    {
+                        islogin = true;
+                    }
+                    //if (customer.CustomerBooks.Where(x => x.ProductId.Equals(bookid)).Count() > 0)
+                    //{
+                    //    islogin = true;
+                    //}
+                }
+                else
+                {
+                    islogin = false;
+                }
+                // islogin = true;
+            }
+            if (customer == null)
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "当前用户不存在"
+                });
+            }
+
+            #endregion
+            //Guid.NewGuid();
+          #region 准备资料：获取所有课本目录
+            var bookDirs = _bookDirService.GetAllBookDirs();           
+            ///获取用户已阅读的知识点关系列表
+            var bookNode = customer.CustomerBookNodes.ToList();
+            
+            ///获取所有关联知识点信息
+            var booksnodes = bookNode.Select(x => x.Product).ToList();
+            
+            ///获取关联目录信息ID
+            var products = booksnodes.Select(x => x.BookDirID).ToList();
+           
+            ///获取书籍目录项
+            var nodes = _bookDirService.GetBookDirsItems(products);
+           
+            #endregion
+            ///获取相关书籍ID
+            //var productsId = nodes.Select(x => x.BookID).Distinct().ToList();
+            var result =   _productService.SearchProducts();      
+            var cproducts = customer.CustomerBooks.Where(x => x.Expirationtime > DateTime.Now).Select(x => x.ProductId).ToList();
             return Json(new
             {
                 code = 0,
                 msg = "获取成功",
-                data = result.ToList().Select(x=>new {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Percent = 0.2,
-                    DisplayOrder =   x.DisplayOrder,
-                    LastNode = new {
-                        Id = 1,  //章节ID
-                        PId = "", //上级ID
-                        IsLock = true,///是否已经购买 解锁      
-                        Name = "地壳的圈层结构", //章节名称
-                        IsRead = false,
-                        ComplexLevel = "", //收费费复杂知识点
-                        ImgUrl = "http://arbookresouce.73data.cn/book/img/sy_img_02.png",//封面展示
-                        BookNodeUrl = "" //获取对应知识点 Url 
+                data = result.ToList().Select(x => {
+                    var bookdirs = bookDirs.Where(bd => bd.BookID == x.Id && bd.IsLastNode);
+                    var bookdirscount = bookdirs.Count();
+                    var isreadCount = bookDirs.Where(bir => bir.BookID == x.Id && products.Contains(bir.Id)).Count();
+                    var bookdirids = bookDirs.Where(bir => bir.BookID == x.Id && products.Contains(bir.Id)).Select(bir => bir.Id).ToList();
+                    //  var nodesid = nodes.Where(n => bookdirids.Contains(n.ParentBookDirId)).Select(n => n.Id).ToList();
+                    var lastNode = bookNode.Where(bn => bookdirids.Contains(bn.Product.BookDirID)).OrderByDescending(bn => bn.CreateTime).FirstOrDefault();
+                    var percent = 0d;
+                    if (bookdirscount > 0)
+                    {
+                        percent = Math.Round((double)isreadCount / bookdirscount, 2);
                     }
-                })
+                    else
+                    {
+                        percent = 1;
+                    }
+
+                    if (lastNode == null || percent == 0 || percent == 1)
+                    {
+                        return null;
+                    }
+                    var identify = -1;
+                    var pid = -1;
+                    var isvip = false;
+                    var lastNodename = string.Empty;
+                    var imgurl = string.Empty;
+                    var complexLevel = "0";
+                    if (x.Price <= 0 || cproducts.Contains(x.Id))
+                    {
+                        isvip = true;
+                    }
+
+                    if (islogin)
+                    {
+                        isvip = islogin;
+                    }
+
+                    if (lastNode != null)
+                    {
+                        identify = lastNode.Product.BookDirID;
+                        pid = lastNode.Product.BookDirID;
+                        lastNodename = lastNode.Product.Name;
+                        complexLevel = lastNode.Product.ComplexLevel.ToString();
+                    }
+
+                    var defaultProductPicture = _pictureService.GetPicturesByProductId(x.Id, 1).FirstOrDefault();
+
+                    if (defaultProductPicture != null)
+                    {
+                        imgurl = _pictureService.GetPictureUrl(defaultProductPicture);
+                    }
+                    if (string.IsNullOrEmpty(imgurl))
+                    {
+                        imgurl = "http://arbookresouce.73data.cn/book/img/sy_img_02.png";
+                    }
+
+
+
+                    return new
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                        Percent = percent,
+                        DisplayOrder = x.DisplayOrder,
+                        LastNode = new
+                        {
+                            Id = identify,  //章节ID
+                            PId = pid, //上级ID
+                            IsLock = !isvip,///是否已经购买 解锁      
+                            Name = lastNodename, //章节名称
+                            IsRead = true,
+                            ComplexLevel = complexLevel, //收费费复杂知识点
+                            ImgUrl = imgurl,//封面展示
+                            BookNodeUrl = "http://www.73data.cn/EduProject/Sports.php?id=" + identify//获取对应知识点 Url 
+                        }
+                    };
+
+
+
+                }).Where(x => x != null).ToList()
             });
 
         }
@@ -1499,8 +1840,32 @@ namespace Nop.Web.Controllers.Api
             });
         }
         [HttpPost]
-        public IActionResult UpdateInfo(UpdateCustomerInfoModel ucim)
+        public IActionResult UpdateInfo(UpdateCustomerInfoModel ucim,string token, string qs_clientid,int RoleNameId)
         {
+
+            var tokenresult = ValidateToken(token, qs_clientid, _customerService);
+
+            if (tokenresult == 1)
+            {
+                return Json(new
+                {
+                    code = -2,
+                    msg = "该账号已在另一个地点登录,如不是本人操作，您的密码已经泄露,请及时修改密码！",
+                    data = false
+
+                });
+            }
+            if (tokenresult == 3)
+            {
+                return Json(new
+                {
+                    code = -3,
+                    msg = "该账号已被禁用！",
+                    data = false
+
+                });
+            }
+
 
             ///1.0获取用户基本信息
             var customer = _customerService.GetCustomerById(ucim.Id);
@@ -1516,16 +1881,19 @@ namespace Nop.Web.Controllers.Api
             }
             if (string.IsNullOrEmpty(ucim.Email))
             {
-                ucim.Email = customer.Email;
+
+
+                ucim.Email = Guid.NewGuid().ToString("N") + "@163.com";
+                
             }
            /// 2.0获取用户所有角色
             var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
         
-            var curroleId = allCustomerRoles.FirstOrDefault(x => x.Id == ucim.RoleId);
+            var curroleId = allCustomerRoles.FirstOrDefault(x => x.Id == ucim.RoleNameId);
             var newCustomerRoles = new List<CustomerRole>();
             foreach (var customerRole in allCustomerRoles)
             {
-                if (ucim.RoleId == (customerRole.Id))
+                if (ucim.RoleNameId == (customerRole.Id))
                     newCustomerRoles.Add(customerRole);
             }
             var results =   customer.CustomerCustomerRoleMappings.Select(x => x.CustomerRole).ToList();
@@ -1538,7 +1906,6 @@ namespace Nop.Web.Controllers.Api
             if (!string.IsNullOrEmpty(customerRolesError))
             {
                 ModelState.AddModelError(string.Empty, customerRolesError);
-
                 return Json(new
                 {
                     code = -1,
@@ -1552,7 +1919,6 @@ namespace Nop.Web.Controllers.Api
                 !CommonHelper.IsValidEmail(ucim.Email))
             {
                 ModelState.AddModelError(string.Empty, _localizationService.GetResource("Admin.Customers.Customers.ValidEmailRequiredRegisteredRole"));
-
                 return Json(new
                 {
                     code = -1,
@@ -1610,14 +1976,18 @@ namespace Nop.Web.Controllers.Api
 
                          var ccustomer =   _customerService.GetCustomerByvipcode(ucim.InviteCode);
 
-                            if (ccustomer == null && !"001".Equals(ucim.InviteCode) && string.IsNullOrEmpty(ucim.Imgurl))
+                            if (ccustomer == null && (!"001".Equals(ucim.InviteCode)) && string.IsNullOrEmpty(ucim.Imgurl))
                             {
                                 return Json(new
                                 {
                                     code = -1,
-                                    msg = "变更角色信息失败:请指定邀请码",
+                                    msg = "变更角色信息失败:请指定邀请码或上传证件照",
                                     data = false
                                 });
+                            }
+                            else if (ccustomer == null && (!"001".Equals(ucim.InviteCode)) && string.IsNullOrEmpty(ucim.Imgurl))
+                            {
+
                             }
                         }
 
@@ -1643,9 +2013,80 @@ namespace Nop.Web.Controllers.Api
                 }
             }
 
+      
+
             _customerService.UpdateCustomer(customer);
+
+            ///保存 邀请码
+            if (_customerSettings.InviteCodeEnabled)
+            {
+                if (!string.IsNullOrEmpty(ucim.InviteCode))
+                {
+                    _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.InviteCodeAttribute, ucim.InviteCode);
+                }
+
+
+            }
+
+
+          
+                if (_customerSettings.IdcardImgEnabled )
+                {
+                   if( !string.IsNullOrEmpty(ucim.Imgurl))
+                    {
+                        _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.IdCardImgAttribute, ucim.Imgurl);
+                    }
+                    
+                }
+            
             _customerActivityService.InsertActivity("EditCustomerSelf",
                        string.Format(_localizationService.GetResource("ActivityLog.EditCustomer"), customer.Id), customer);
+             customer = _customerService.GetCustomerById(ucim.Id);
+
+            if (customer != null)
+            {
+                var imgurl = _genericAttributeService.GetAttribute<string>(customer, NopCustomerDefaults.IdCardImgAttribute);
+                var name   = _genericAttributeService.GetAttribute<string>(customer, NopCustomerDefaults.LastNameAttribute);
+                var dep    = _departmentService.GetDepById(customer.DepartmentId);
+            var inviteCode = _genericAttributeService.GetAttribute<string>(customer, NopCustomerDefaults.InviteCodeAttribute);
+              string email = customer.Email;
+                if (string.IsNullOrEmpty(customer.Email) || customer.Email.Length == 40)
+                {
+                    email = string.Empty;
+                }
+                else
+                {
+                }
+                AccountToken accounttoken = new AccountToken
+                {
+                    ClientId = qs_clientid,
+                    ExpireTime = DateTime.Now.AddDays(30).Ticks,
+                    ID = customer.Id.ToString(),
+                    UserName = customer.Username
+                };
+                return Json(new
+                {
+                    code = 0,
+                    msg = "修改成功",
+                    data = new
+                    {
+                        Id = customer.Id,
+                        UserName = customer.Username ?? "",
+                        Name = name ?? "",
+                        Phone = customer.Username ?? "",
+                        Email = email,
+                        Token = accounttoken.Serialize(),
+                        LeftDays = DateTime.Now.Subtract(customer.CreatedOnUtc).TotalDays,
+                        InviteCode = inviteCode ?? "",
+                        CardImgUrl = (imgurl??""),
+                        SchoolName = dep == null ? "七三科技" : dep.Name,
+                        DepartmentId = customer.DepartmentId,
+                        RoleId = string.Join(",", customer.CustomerCustomerRoleMappings.Where(x => "Registered" != x.CustomerRole.Name).Select(x => x.CustomerRole.Id)),
+                        Role = string.Join(",",customer.CustomerCustomerRoleMappings.Where(x => "Registered" != x.CustomerRole.Name).Select(x => x.CustomerRole.SystemName).ToList()),
+                        IsTeacher = string.Join(",",customer.CustomerCustomerRoleMappings.Select(x => x.CustomerRole.Name).ToList()).Contains("Teacher")
+                    }
+                });
+            }
             return Json(new
             {
                 code = 0,
@@ -1695,15 +2136,33 @@ namespace Nop.Web.Controllers.Api
             return customers.Any(c => c.Active && c.Id != customer.Id);
         }
         [HttpPost]
-        public IActionResult ChangePassword(ChangePasswordModel model,string userName)
+        public IActionResult ChangePassword(ChangePasswordModel model,string userName, string token, string qs_clientid)
         {
-            //if (!_workContext.CurrentCustomer.IsRegistered())
-            //    return Challenge();
 
-            var customer = _customerService.GetCustomerByUsername(userName);
+            var tokenresult = ValidateToken(token, qs_clientid, _customerService);
+            if (tokenresult == 1)
+            {
+                return Json(new
+                {
+                    code = -2,
+                    msg = "该账号已在另一个地点登录,如不是本人操作，您的密码已经泄露,请及时修改密码！",
+                    data = false
+                });
+            }
 
+            var customer = _customerService.GetCustomerByUsername(userName);         
             if (ModelState.IsValid)
             {
+                if (customer == null)
+                {
+                    return Json(new
+                    {
+                        code = -1,
+                        msg = "用户不存在", //model.Result,
+                        data = false
+                    });
+                }
+
                 var changePasswordRequest = new ChangePasswordRequest(customer.Email,userName,
                     true, _customerSettings.DefaultPasswordFormat, model.NewPassword, model.OldPassword);
                 var changePasswordResult = _customerRegistrationService.ResetPassword(changePasswordRequest);
@@ -1778,6 +2237,17 @@ namespace Nop.Web.Controllers.Api
             var customer = _customerService.GetCustomerByUsername(userName);
             if (ModelState.IsValid)
             {
+
+                if (customer == null)
+                {
+                    return Json(new
+                    {
+                        code = -1,
+                        msg = "密码重置失败：用户不存在",
+                        data = false
+                    });
+                }
+
                 //CustomerPassword
                 var changePasswordRequest = new ChangePasswordRequest(customer.Email,customer.Username,
                     true, _customerSettings.DefaultPasswordFormat,password,"");
@@ -1813,13 +2283,11 @@ namespace Nop.Web.Controllers.Api
             {
                 BookID = 0,
                 BookDirId = 0
-            };
-
-            
+            };          
             var result = _bookDirService.GetAllBookDirsData("", 0, 0, 0).ToList();
             result.ForEach(x =>
             {
-                x.BookNodeUrl = Request.Scheme + "://" + Request.Host + "BookNode/GetData?id=" + x.Id;
+                x.BookNodeUrl=Request.Scheme+"://"+Request.Host+"BookNode/GetData?id="+x.Id;
             });
             //  var model = _bookDirFactory.PrepareBookDirSearchModel(searchModel, new BookDirModel());
             var treeresult = result.ToList();
@@ -1838,11 +2306,9 @@ namespace Nop.Web.Controllers.Api
                     PriceRanges = x.PriceRanges ?? "0",//价格描述  如果为零 则免费 否则展示需要付费的价格
                     DisplayOrder = x.DisplayOrder,//展示顺序
                     IsLastNode = x.IsLastNode,  //是否为知识点
-                    ComplexLevel = x.ComplexLevel, //收费费复杂知识点
-                    ImgUrl = "http://arbookresouce.73data.cn/book/img/sy_img_02.png",//封面展示
-                    //获取对应知识点 Url"
-                    BookNodeUrl = "http://www.73data.cn/EduProject/Sports.php?id=" + x.Id
-
+                    ComplexLevel = x.ComplexLevel,//收费费复杂知识点
+                    ImgUrl = "http://arbookresouce.73data.cn/book/img/sy_img_02.png",//封面展示                  
+                    BookNodeUrl = "http://www.73data.cn/EduProject/Sports.php?id=" + x.Id//获取对应知识点 Url"
                 });
 
             });
@@ -1850,11 +2316,8 @@ namespace Nop.Web.Controllers.Api
             var resl1 = SortBookDirsForTree(list, resl, new List<int>(), 0);
             resl = resl1.ToList();
             var bookid =  treeresult.Select(x => x.BookID).Distinct().ToList();
-
-
             var books = _productService.SearchProducts();
-
-           var   booklist = books.Where(x => x.Id == 47 || x.Id == 48 || x.Id == 46).ToList();
+            var booklist = books.Where(x => x.Id == 47 || x.Id == 48 || x.Id == 46).ToList();
             return Json(new
             {
                 code = 0,
@@ -1879,52 +2342,41 @@ namespace Nop.Web.Controllers.Api
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
-
             //var result = new List<BookDirTreeModel>();
             if (list == null)
             {
                 list = new List<BookDirTreeModel>();
             }
-
             if (ids == null)
             {
                 ids = new List<int>();
             }
             var result = source.FirstOrDefault(x => x.Id == parentId);
             var children = source.Where(c => c.PId == parentId).ToList();
-
             if (parentId == 0)
             {
                 children = source.Where(c => c.PId < 1).ToList();
             }
             if (result != null)
             {
-
                 if (!ids.Contains(result.Id))
                 {
                     list.Add(result);
                     ids.Add(result.Id);
                 }
-
                 if (children != null && children.Count > 0)
                 {
-
-
                     // result.Children.AddRange(children);
                     children.Select(x => x).ToList().ForEach(x =>
                     {
-
                         if (!ids.Contains(x.Id))
                         {
-
                             ids.Add(x.Id);
                         }
-
                         if (!result.Children.Exists(c => c.Id == x.Id))
                         {
                             result.Children.Add(x);
                         }
-
                     });
 
 
@@ -1958,7 +2410,16 @@ namespace Nop.Web.Controllers.Api
 
            var result = _customerService.GetCustomerByvipcode(code);
 
-            if (result != null || code.Equals("001"))
+            var exitecode = _customerOrderCodeService.GetOrderCodeByCode(code);
+
+
+            var codeExpireDate = DateTime.Now;
+            if (exitecode != null && exitecode.CodeType == 1)
+            {
+                codeExpireDate = exitecode.CreateTime.AddDays(1).Date.AddDays(exitecode.ValidDays);
+            }
+
+            if (result != null || codeExpireDate > DateTime.Now.AddMinutes(30) )
             {
                 return Json(new
                 {
@@ -1987,11 +2448,27 @@ namespace Nop.Web.Controllers.Api
                
             }               
         }
-
-
-        public virtual IActionResult CheckSMSCode(string phone, string code, int type)
+        public virtual IActionResult Test2(string id)
         {
-            return View();
+            return Json(new
+            {
+                code = 0,
+                msg = "测试专用:" + id,
+            });
         }
+        [Route("/api/user/ordertess")]
+        public virtual IActionResult Test1()
+        {
+            return Json(new
+            {
+                code = 0,
+                msg = "ordertess",
+                data =false
+            });
+        }
+        //public virtual IActionResult CheckSMSCode(string phone, string code, int type)
+        //{
+        //    return View();
+        //}
     }
 }

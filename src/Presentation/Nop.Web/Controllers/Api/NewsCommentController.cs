@@ -87,7 +87,7 @@ namespace Nop.Web.Controllers.Api
             {
                 return Json(new
                 {
-                    code = 0,
+                    code = -1,
                     msg = "后台评论功能未开通",
                     data = false
                 });

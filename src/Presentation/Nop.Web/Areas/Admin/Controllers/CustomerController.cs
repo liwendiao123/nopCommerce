@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Primitives;
 using Nop.Core;
 using Nop.Core.Domain.Catalog;
@@ -30,6 +31,7 @@ using Nop.Services.Stores;
 using Nop.Services.Tax;
 using Nop.Web.Areas.Admin.Factories;
 using Nop.Web.Areas.Admin.Infrastructure.Mapper.Extensions;
+using Nop.Web.Areas.Admin.Models.Common;
 using Nop.Web.Areas.Admin.Models.Customers;
 using Nop.Web.Framework.Controllers;
 using Nop.Web.Framework.Mvc;
@@ -73,6 +75,7 @@ namespace Nop.Web.Areas.Admin.Controllers
         private readonly IWorkflowMessageService _workflowMessageService;
         private readonly IProductService _productService;
         private readonly TaxSettings _taxSettings;
+        private readonly ICustomerOrderCodeService _customerOrderCodeService;
 
         #endregion
 
@@ -84,6 +87,7 @@ namespace Nop.Web.Areas.Admin.Controllers
             ForumSettings forumSettings,
             GdprSettings gdprSettings,
             IAddressAttributeParser addressAttributeParser,
+            ICustomerOrderCodeService customerOrderCodeService,
             IAddressService addressService,
             ICustomerActivityService customerActivityService,
             ICustomerAttributeParser customerAttributeParser,
@@ -125,6 +129,7 @@ namespace Nop.Web.Areas.Admin.Controllers
             _customerRegistrationService = customerRegistrationService;
             _customerService = customerService;
             _dateTimeHelper = dateTimeHelper;
+            _customerOrderCodeService = customerOrderCodeService;
             _emailAccountService = emailAccountService;
             _exportManager = exportManager;
             _forumService = forumService;
@@ -183,14 +188,12 @@ namespace Nop.Web.Areas.Admin.Controllers
         {
             if (form == null)
                 throw new ArgumentNullException(nameof(form));
-
             var attributesXml = string.Empty;
             var customerAttributes = _customerAttributeService.GetAllCustomerAttributes();
             foreach (var attribute in customerAttributes)
             {
                 var controlId = $"{NopAttributePrefixDefaults.Customer}{attribute.Id}";
                 StringValues ctrlAttributes;
-
                 switch (attribute.AttributeControlType)
                 {
                     case AttributeControlType.DropdownList:
@@ -203,7 +206,6 @@ namespace Nop.Web.Areas.Admin.Controllers
                                 attributesXml = _customerAttributeParser.AddCustomerAttribute(attributesXml,
                                     attribute, selectedAttributeId.ToString());
                         }
-
                         break;
                     case AttributeControlType.Checkboxes:
                         var cblAttributes = form[controlId];
@@ -253,17 +255,14 @@ namespace Nop.Web.Areas.Admin.Controllers
                         break;
                 }
             }
-
             return attributesXml;
         }
-
         private bool SecondAdminAccountExists(Customer customer)
         {
             var customers = _customerService.GetAllCustomers(customerRoleIds: new[] { _customerService.GetCustomerRoleBySystemName(NopCustomerDefaults.AdministratorsRoleName).Id });
 
             return customers.Any(c => c.Active && c.Id != customer.Id);
         }
-
         #endregion
 
         #region Customers
@@ -739,10 +738,7 @@ namespace Nop.Web.Areas.Admin.Controllers
                                     BookNodeId = 0,
                                     CreateTime = DateTime.Now,
                                     TypeLabel = 1,
-                                    Expirationtime = DateTime.Now.AddYears(10),
-
-
-
+                                    Expirationtime = DateTime.Now.AddYears(1),
                                 });
                             }
                         }
@@ -1291,6 +1287,9 @@ namespace Nop.Web.Areas.Admin.Controllers
             return View(model);
         }
 
+
+
+
         public virtual IActionResult AddressEdit(int addressId, int customerId)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
@@ -1374,10 +1373,192 @@ namespace Nop.Web.Areas.Admin.Controllers
             return Json(model);
         }
 
+
+
+        public virtual IActionResult OrderCodeList(CustomerOrderCodeSearchModel searchModel)
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
+                return AccessDeniedDataTablesJson();
+
+            //try to get a customer with the specified id
+            var customer = _customerService.GetCustomerById(searchModel.CustomerId)
+                ?? throw new ArgumentException("No customer found with the specified id");
+
+            //prepare model
+            var model = _customerModelFactory.PrepareCustomerOrderCodeListModel(searchModel, customer);
+
+            return Json(model);
+        }      
+        public virtual IActionResult OrderCodeCreate(int customerId)
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
+                return AccessDeniedView();          
+            //try to get a customer with the specified id
+            var customer = _customerService.GetCustomerById(customerId);
+            if (customer == null)
+                return RedirectToAction("List");
+           
+            //prepare model
+            var model = _customerModelFactory.PrepareCustomerOrderCode(customer,null);
+            return View(model);
+        }
+
+        [HttpPost]
+        public virtual IActionResult OrderCodeCreate(OrderCodeModel cmodel)
+        {
+
+
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
+                return AccessDeniedView();
+
+
+            CustomerOrderCodeModel customerOrderCodeModel = new CustomerOrderCodeModel
+            {
+                 CustomerId = cmodel.CustomerId,
+                  OrderCodeModel = cmodel
+
+            };
+
+            //try to get a customer with the specified id
+            var customer = _customerService.GetCustomerById(customerOrderCodeModel.CustomerId);
+            if (customer == null)
+                return RedirectToAction("List");
+
+          
+
+            if (ModelState.IsValid)
+            {
+                var orderCode = customerOrderCodeModel.OrderCodeModel.ToEntity<CustomerOrderCode>();
+
+                orderCode.CreateTime = DateTime.Now;
+
+                //some validation
+                var ordercode = customer.CustomerOrderCodes.FirstOrDefault(x => x.OrderCode == customerOrderCodeModel.OrderCodeModel.OrderCode);
+
+
+                if (orderCode != null)
+                {
+                    customer.CustomerOrderCodes.Add(orderCode);
+                    _customerService.UpdateCustomer(customer);
+                }
+             
+
+                _notificationService.SuccessNotification(_localizationService.GetResource("Admin.Customers.Customers.OrderCode.Added"));
+
+                return RedirectToAction("OrderCodeEdit", new { orderCodeId = orderCode.Id, customerId = customer.Id });
+            }
+
+            //prepare model
+           var  model = _customerModelFactory.PrepareCustomerOrderCode( customer,customerOrderCodeModel);
+
+            //if we got this far, something failed, redisplay form
+            return View(model);
+
+
+           // return View(customerOrderCodeModel);
+        }
+
+
+
+        public virtual IActionResult OrderCodeEdit(int customerId,int orderCodeId)
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
+                return AccessDeniedView();
+
+            //try to get a customer with the specified id
+            var customer = _customerService.GetCustomerById(customerId);
+            if (customer == null)
+                return RedirectToAction("List");
+
+            //try to get an address with the specified id
+            var address = customer.CustomerOrderCodes.FirstOrDefault(x=>x.Id == orderCodeId);
+            if (address == null)
+                return RedirectToAction("Edit", new { id = customer.Id });
+
+            var model = new CustomerOrderCodeModel() {
+
+                 CustomerId = customerId,
+                  OrderCodeModel = new Models.Common.OrderCodeModel {
+                     Id = address.Id,
+                     OrderCode = address.OrderCode
+                  }
+            };
+
+            var modelview = _customerModelFactory.PrepareCustomerOrderCode(customer, model);
+            return View(modelview);
+        }
+
+        [HttpPost]
+        public virtual IActionResult OrderCodeEdit(OrderCodeModel cmodel)
+        {
+            //var model = new CustomerOrderCodeModel();
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
+                return AccessDeniedView();
+            CustomerOrderCodeModel model = new CustomerOrderCodeModel
+            {
+                CustomerId = cmodel.CustomerId,
+                OrderCodeModel = cmodel
+
+            };
+            //try to get a customer with the specified id
+            var customer = _customerService.GetCustomerById(model.CustomerId);
+            if (customer == null)
+                return RedirectToAction("List");
+
+            //try to get an address with the specified id
+            var address = customer.CustomerOrderCodes.FirstOrDefault(x => x.Id == model.OrderCodeModel.Id);
+            if (address == null)
+                return RedirectToAction("Edit", new { id = customer.Id });
+
+            //custom address attributes
+           
+            if (ModelState.IsValid)
+            {
+                address.IsActived = model.OrderCodeModel.IsActived;
+                address.IsValid = model.OrderCodeModel.IsValid;
+                //address.OrderCode = model.OrderCodeModel.OrderCode;
+                address.ValidDays = model.OrderCodeModel.ValidDays;
+                address.ProductId = model.OrderCodeModel.ProductId;
+                _customerOrderCodeService.UpdateCustomerOrderCode(address);
+                _customerService.UpdateCustomer(customer);
+                _notificationService.SuccessNotification(_localizationService.GetResource("Admin.Customers.Customers.Addresses.Updated"));
+
+                return RedirectToAction("OrderCodeEdit", new { orderCodeId = address.Id, customerId = customer.Id });
+            }
+
+            //prepare model
+            model = _customerModelFactory.PrepareCustomerOrderCode( customer, model);
+
+            //if we got this far, something failed, redisplay form
+            return View(model);
+        }
+
+        public virtual IActionResult OrderCodeDelete(int id, int customerId)
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
+                return AccessDeniedView();
+
+            //try to get a customer with the specified id
+            var customer = _customerService.GetCustomerById(customerId)
+                ?? throw new ArgumentException("No customer found with the specified id", nameof(customerId));
+
+            //try to get an address with the specified id
+            var address = customer.CustomerOrderCodes.FirstOrDefault(a => a.Id == id);
+            if (address == null)
+                return Content("No address found with the specified id");
+
+            customer.CustomerOrderCodes.Remove(address);
+          
+            _customerService.UpdateCustomer(customer);
+
+            //now delete the address record
+            //_addressService.DeleteAddress(address);
+            return new NullJsonResult();
+           // return View();
+        }
         #endregion
 
         #region Customer
-
         public virtual IActionResult LoadCustomerStatistics(string period)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
@@ -1461,9 +1642,7 @@ namespace Nop.Web.Areas.Admin.Controllers
 
             return Json(result);
         }
-
-        #endregion
-
+        #endregion   
         #region Current shopping cart/ wishlist
 
         [HttpPost]
@@ -1483,9 +1662,7 @@ namespace Nop.Web.Areas.Admin.Controllers
         }
 
         #endregion
-
         #region Activity log
-
         [HttpPost]
         public virtual IActionResult ListActivityLog(CustomerActivityLogSearchModel searchModel)
         {

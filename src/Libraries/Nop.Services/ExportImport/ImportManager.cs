@@ -3204,6 +3204,11 @@ namespace Nop.Services.ExportImport
                 Value = "K/Camera/Camera",
                 Text = "可操控镜头（动态缩放、旋转、位移）"
             });
+            CameraPrefebPath.Add(new SelectListItem
+            {
+                Value = "K/Camera/DefaultOrthographicCamera",
+                Text = "正交镜头（静态）"
+            });
             #endregion
 
             #region

@@ -22,7 +22,12 @@ namespace Nop.Services.Logging
         /// </summary>
         /// <param name="activityLogType">Activity log type item</param>
         void UpdateActivityType(ActivityLogType activityLogType);
-                
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="activityLog"></param>
+        void UpdateActivityLog(ActivityLog activityLog);
         /// <summary>
         /// Deletes an activity log type item
         /// </summary>
@@ -59,9 +64,9 @@ namespace Nop.Services.Logging
         /// <param name="comment">Comment</param>
         /// <param name="entity">Entity</param>
         /// <returns>Activity log item</returns>
-        ActivityLog InsertActivity(Customer customer, string systemKeyword, string comment, BaseEntity entity = null);
+        ActivityLog InsertActivity(Customer customer, string systemKeyword, string comment, BaseEntity entity = null,string useplatform = "windows");
 
-
+        IList<ActivityLogType> GetActivityTypesByName(string sysName);
         /// <summary>
         /// Deletes an activity log item
         /// </summary>

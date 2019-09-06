@@ -24,17 +24,13 @@ namespace Nop.Web.Models.Order
 
         public bool PrintMode { get; set; }
         public bool PdfInvoiceDisabled { get; set; }
-
+        public string InviteCode { get; set; }
         public string CustomOrderNumber { get; set; }
-
         public DateTime CreatedOn { get; set; }
-
         public string OrderStatus { get; set; }
-
-        public bool IsReOrderAllowed { get; set; }
-
+        public bool IsReOrderAllowed { get; set; }   
         public bool IsReturnRequestAllowed { get; set; }
-        
+       
         public bool IsShippable { get; set; }
         public bool PickupInStore { get; set; }
         public AddressModel PickupAddress { get; set; }

@@ -1,4 +1,4 @@
-namespace Nop.Core.Domain.Payments
+﻿namespace Nop.Core.Domain.Payments
 {
     /// <summary>
     /// Represents a payment status enumeration
@@ -6,7 +6,7 @@ namespace Nop.Core.Domain.Payments
     public enum PaymentStatus
     {
         /// <summary>
-        /// Pending
+        /// Pending //未付款
         /// </summary>
         Pending = 10,
 
@@ -16,22 +16,22 @@ namespace Nop.Core.Domain.Payments
         Authorized = 20,
 
         /// <summary>
-        /// Paid
+        /// Paid  已支付
         /// </summary>
         Paid = 30,
 
         /// <summary>
-        /// Partially Refunded
+        /// Partially Refunded //部分退款
         /// </summary>
         PartiallyRefunded = 35,
 
         /// <summary>
-        /// Refunded
+        /// Refunded ///已退款
         /// </summary>
         Refunded = 40,
 
         /// <summary>
-        /// Voided
+        /// Voided //  废弃
         /// </summary>
         Voided = 50
     }

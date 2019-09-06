@@ -25,10 +25,7 @@ namespace Nop.Web.Models.Api
         [NopResourceDisplayName("Account.Fields.Gender")]
          public string Gender { get; set; }
         public int DepId { get; set; }
-
-        public int RoleId { get; set; }
-
-
+        public int RoleNameId { get; set; }
         public string Imgurl { get; set; }
         public string InviteCode{get;set;}
         public int PictureId { get; set; }

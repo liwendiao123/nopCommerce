@@ -110,6 +110,7 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
             CreateAiBookMaps();
             CreateAiBookModelMaps();
             CreateDepartment();
+            CreateCustomerOrderCode();
             //add some generic mapping rules
             ForAllMaps((mapConfiguration, map) =>
             {
@@ -1722,6 +1723,25 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
                 .ForMember(x => x.Form, options => options.Ignore())
                 .ForMember(x => x.CustomProperties, options => options.Ignore());
                // .ForMember(x=>x.)
+        }
+
+        protected virtual void CreateCustomerOrderCode()
+        {
+            CreateMap<CustomerOrderCode, OrderCodeModel>()
+                .ForMember(x => x.ActivedDesc, option => option.Ignore())
+                .ForMember(x => x.CustomerName, option => option.Ignore())
+                .ForMember(x => x.ProductName, option => option.Ignore())
+                .ForMember(x => x.CodeTypeDesc, option => option.Ignore())
+                .ForMember(x => x.ExpireTime, option => option.Ignore())
+                .ForMember(x=>x.CodTypeList,option=>option.Ignore())
+                .ForMember(x => x.OwnerName, optiont => optiont.Ignore());
+
+                
+            CreateMap<OrderCodeModel, CustomerOrderCode>()
+               .ForMember(x => x.Customer, option => option.Ignore())
+               .ForMember(x => x.Product, options => options.Ignore());
+              // .ForMember(x=>x.)
+            
         }
 
         #endregion

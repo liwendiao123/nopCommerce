@@ -11,7 +11,6 @@ namespace Nop.Web
                 .UseKestrel(options => options.AddServerHeader = false)
                 .UseStartup<Startup>()
                 .Build();
-
             host.Run();
         }
     }

@@ -136,6 +136,18 @@ namespace Nop.Services.Logging
             _cacheManager.RemoveByPrefix(NopLoggingDefaults.ActivityTypePrefixCacheKey);
         }
 
+
+        public virtual void UpdateActivityLog(ActivityLog activityLog)
+        {
+            if (activityLog == null)
+                throw new ArgumentNullException(nameof(activityLog));
+
+            _activityLogRepository.Update(activityLog);
+
+           // _activityLogTypeRepository.Update(activityLogType);
+           // _cacheManager.RemoveByPrefix(NopLoggingDefaults.ActivityTypePrefixCacheKey);
+        }
+
         /// <summary>
         /// Deletes an activity log type item
         /// </summary>
@@ -156,6 +168,16 @@ namespace Nop.Services.Logging
         public virtual IList<ActivityLogType> GetAllActivityTypes()
         {
             var query = from alt in _activityLogTypeRepository.Table
+                        orderby alt.Name
+                        select alt;
+            var activityLogTypes = query.ToList();
+            return activityLogTypes;
+        }
+
+        public virtual IList<ActivityLogType> GetActivityTypesByName(string sysName)
+        {
+            var query = from alt in _activityLogTypeRepository.Table
+                        where alt.SystemKeyword == sysName
                         orderby alt.Name
                         select alt;
             var activityLogTypes = query.ToList();
@@ -195,7 +217,7 @@ namespace Nop.Services.Logging
         /// <param name="comment">Comment</param>
         /// <param name="entity">Entity</param>
         /// <returns>Activity log item</returns>
-        public virtual ActivityLog InsertActivity(Customer customer, string systemKeyword, string comment, BaseEntity entity = null)
+        public virtual ActivityLog InsertActivity(Customer customer, string systemKeyword, string comment, BaseEntity entity = null,string plaformType = "windows")
         {
             if (customer == null)
                 return null;
@@ -213,8 +235,9 @@ namespace Nop.Services.Logging
                 EntityName = entity?.GetUnproxiedEntityType().Name,
                 CustomerId = customer.Id,
                 Comment = CommonHelper.EnsureMaximumLength(comment ?? string.Empty, 4000),
-                CreatedOnUtc = DateTime.UtcNow,
-                IpAddress = _webHelper.GetCurrentIpAddress()
+                CreatedOnUtc = DateTime.Now,
+                IpAddress = _webHelper.GetCurrentIpAddress(),
+                UsePlatform = plaformType
             };
             _activityLogRepository.Insert(logItem);
 

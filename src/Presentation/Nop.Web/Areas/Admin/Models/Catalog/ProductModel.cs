@@ -301,6 +301,8 @@ ProductsTypesSupportedByProductTemplates = new Dictionary<int, IList<SelectListI
         [NopResourceDisplayName("Admin.Catalog.Products.Fields.CallForPrice")]
         public bool CallForPrice { get; set; }
 
+
+       
         [NopResourceDisplayName("Admin.Catalog.Products.Fields.Price")]
         public decimal Price { get; set; }
 
