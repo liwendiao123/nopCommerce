@@ -1,5 +1,4 @@
-﻿using FluentValidation.AspNetCore;
-using FluentValidation;
+﻿//using FluentValidation.Attributes;
 using Newtonsoft.Json;
 using Nop.Plugin.Api.DTOs.Base;
 using Nop.Plugin.Api.Validators;

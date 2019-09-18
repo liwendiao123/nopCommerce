@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Nop.Core;
 using Nop.Core.Domain.Localization;
 using Nop.Core.Domain.News;
@@ -17,6 +18,7 @@ using Nop.Services.Seo;
 using Nop.Services.Stores;
 using Nop.Web.Areas.Admin.Factories;
 using Nop.Web.Models.Api.BookNode;
+using Nop.Web.Models.Api.WebApiModel.AibookCommentModel;
 
 namespace Nop.Web.Controllers.Api
 {
@@ -79,8 +81,34 @@ namespace Nop.Web.Controllers.Api
         }
 
         #endregion
-        public virtual IActionResult NewsCommentAdd(AddBookNodeCommentModel model)
-        {          
+        public virtual IActionResult NewsCommentAdd(AddBookNodeCommentModel model,string data)
+        {
+
+            if (!string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    var jsonrequest = JsonConvert.DeserializeObject<JsonRequestAddBookCommentRequest>(data);
+                    if (jsonrequest != null)
+                    {
+                        model = new AddBookNodeCommentModel
+                        {
+                             BookNodeID = jsonrequest.BookNodeID,
+                              CommentText = jsonrequest.CommentText,
+                               CommentTitle = jsonrequest.CommentTitle,
+                                CustomerId = jsonrequest.CustomerId,
+                                 DisplayCaptcha = jsonrequest.DisplayCaptcha
+
+                        };
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+            }
+
             //validate CAPTCHA
             var newsItem = _newsService.GetAllNews().FirstOrDefault();
             if (newsItem == null)

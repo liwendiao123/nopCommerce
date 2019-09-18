@@ -18,7 +18,6 @@ namespace Nop.Web.Controllers.Api
         {
             _departmentService = departmentService;
         }
-
         public IActionResult Index()
         {
             return View();

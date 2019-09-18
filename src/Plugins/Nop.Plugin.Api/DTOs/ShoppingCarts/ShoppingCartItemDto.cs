@@ -10,7 +10,7 @@ using Nop.Plugin.Api.DTOs.Base;
 
 namespace Nop.Plugin.Api.DTOs.ShoppingCarts
 {
-    //[Validator(typeof(ShoppingCartItemDtoValidator))]
+   // [Validator(typeof(ShoppingCartItemDtoValidator))]
     [JsonObject(Title = "shopping_cart_item")]
     public class ShoppingCartItemDto : BaseDto
     {

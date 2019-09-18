@@ -662,7 +662,7 @@ namespace Nop.Web.Areas.Admin.Factories
 
                 if (result != null)
                 {
-                    result.CustomerBooks.ToList().ForEach(x =>
+                    result.CustomerBooks.Where(x=>x.Expirationtime >DateTime.Now).ToList().ForEach(x =>
                     {
 
 

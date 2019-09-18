@@ -1783,7 +1783,7 @@ namespace Nop.Services.ExportImport
                 _customerActivityService.InsertActivity("ImportProducts", string.Format(_localizationService.GetResource("ActivityLog.ImportProducts"), metadata.CountProductsInFile));
             }
         }
-        public virtual string ImportBookNodeMobanFromXlsx(Stream stream)
+        public virtual string ImportBookNodeMobanFromXlsx(Stream stream,AiBookModel model)
         {
             BookNodeDomainNewRoot bnr = new BookNodeDomainNewRoot();
 
@@ -2004,7 +2004,7 @@ namespace Nop.Services.ExportImport
                             {
                                 for (var ci = 2; ci < 1000; ci++)
                                 {
-                                    ModelInfo modelinfo = new ModelInfo();
+                                    ModelNewInfo modelinfo = new ModelNewInfo();
                                     modelinfo.id = curworksheet.Cells[ci, 1].Value?.ToString()??"";
                                     var eventids = curworksheet.Cells[ci, 2].Value?.ToString()??"";
                                     var clipName = curworksheet.Cells[ci, 4].Value?.ToString()??"";
@@ -2013,11 +2013,11 @@ namespace Nop.Services.ExportImport
                                     var modelrot = curworksheet.Cells[ci, 6].Value?.ToString()??"";
                                     var modelscale = curworksheet.Cells[ci, 7].Value?.ToString()??"";
 
-
+                                    modelinfo.url = curworksheet.Cells[ci, 8].Value?.ToString() ?? "";
+                                    modelinfo.name = curworksheet.Cells[ci, 9].Value?.ToString() ?? "";
                                     var teventpos = curworksheet.Cells[ci, 10].Value?.ToString() ?? "";
                                     var tmodelrot = curworksheet.Cells[ci, 11].Value?.ToString() ?? "";
                                     var tmodelscale = curworksheet.Cells[ci, 12].Value?.ToString() ?? "";
-
                                     eventpos = eventpos.Replace("，", ",");
                                     modelrot = modelrot.Replace("，", ",");
                                     modelscale = modelscale.Replace("，", ",");
@@ -2027,22 +2027,161 @@ namespace Nop.Services.ExportImport
                                     tmodelscale = tmodelscale.Replace("，", ",");
 
 
+                                    #region 2019-09-09 09:23 根据山东体育泛化新增字段 ---lwd
 
-                                    modelinfo.url = curworksheet.Cells[ci, 8].Value?.ToString()??"";
-                                    modelinfo.name = curworksheet.Cells[ci, 9].Value?.ToString()??"";
+                                    var  globalclip = (curworksheet.Cells[ci, 13].Value?.ToString()) ?? "";
+
+
+                                    if (!string.IsNullOrEmpty(globalclip))
+                                    {
+                                        var globalarr = globalclip.Split(',');
+
+                                        if (globalarr.Length == 4)
+                                        {
+                                            modelinfo.allanimname = globalarr[0];
+                                            modelinfo.allcameraid = globalarr[1];
+                                            modelinfo.alltextid = globalarr[2];
+                                            modelinfo.allaudioid = globalarr[3];
+                                            if (model != null)
+                                            {
+                                                model.ComplexLevel = 2;
+                                            }
+                                        }
+                                        else if (globalarr.Length == 3)
+                                        {
+                                            modelinfo.allanimname = globalarr[0];
+                                            modelinfo.allcameraid = globalarr[1];
+                                            modelinfo.alltextid = globalarr[2];
+                                            modelinfo.allaudioid = string.Empty;
+                                            if (model != null)
+                                            {
+                                                model.ComplexLevel = 2;
+                                            }
+
+                                        }
+                                        else if (globalarr.Length == 2)
+                                        {
+                                            modelinfo.allanimname = globalarr[0];
+                                            modelinfo.allcameraid = globalarr[1];
+                                            modelinfo.alltextid = string.Empty;
+                                            modelinfo.allaudioid = string.Empty;
+                                            if (model != null)
+                                            {
+                                                model.ComplexLevel = 2;
+                                            }
+                                        }
+                                        else if (globalarr.Length == 1)
+                                        {
+                                            modelinfo.allanimname = globalarr[0];
+                                            modelinfo.allcameraid = string.Empty;
+                                            modelinfo.alltextid = string.Empty;
+                                            modelinfo.allaudioid = string.Empty;
+                                            if (model != null)
+                                            {
+                                                model.ComplexLevel = 2;
+                                            }
+                                        }
+
+                                    }
+
+
+                                    var blockclip = ((curworksheet.Cells[ci, 14].Value?.ToString()) ?? "").Replace("；",";").Replace("，",",");
+
+
+                                    if (!string.IsNullOrEmpty(blockclip))
+                                    {
+                                        var blockarrobjs = blockclip.Split(';').ToList();
+
+                                        if (blockarrobjs.Count > 0)
+                                        {
+                                            foreach (var item in blockarrobjs)
+                                            {
+                                                var objarr = item.Replace("（", "(")
+                                                                .Replace("(", "")
+                                                                .Replace("）", ")")
+                                                                .Replace(")", "")
+                                                                .Replace("，", ",")
+                                                                .Split(",").ToList();
+                                                int ik = 0;
+
+                                                var objitem = new Animclips
+                                                {
+
+
+                                                };
+                                                foreach (var itemonj in objarr)
+                                                {
+                                                    if (ik == 0)
+                                                    {
+                                                        objitem.name = objarr[ik];
+                                                        ik++;
+                                                        continue;
+                                                    }
+                                                    if (ik == 1)
+                                                    {
+                                                        objitem.loopnum = objarr[ik];
+                                                        ik++;
+                                                        continue;
+                                                    }
+                                                    if (ik == 2)
+                                                    {
+                                                        objitem.iscrossfade = objarr[ik];
+                                                        ik++;
+                                                        continue;
+                                                    }
+                                                    if (ik == 3)
+                                                    {
+                                                        objitem.cameraeventid = objarr[ik].Replace("（", "(")
+                                                                                          .Replace("(", "")
+                                                                                          .Replace("）", ")")
+                                                                                          .Replace(")", "")
+                                                                                          .Replace("，", ",")
+                                                                                          .Replace("-", "-")
+                                                                                          .Split("-").ToList();
+                                                        ik++;
+                                                        continue;
+                                                    }
+                                                    if (ik == 4)
+                                                    {
+                                                        objitem.textid = objarr[ik];
+                                                        ik++;
+                                                        continue;
+                                                    }
+
+                                                    if (ik == 5)
+                                                    {
+                                                        objitem.audioid = objarr[ik];
+                                                        ik++;
+                                                        continue;
+                                                    }
+
+                                                }
+
+                                                if (objarr.Count > 0)
+                                                {
+
+                                                    if (model != null)
+                                                    {
+                                                        model.ComplexLevel = 2;
+                                                    }
+
+                                                    modelinfo.animclips.Add(objitem);
+                                                }
+
+
+                                            }
+                                        }
+                                    }
+
+                                
+
+                                    #endregion
+
                                     Dic dic = new Dic
                                     {
                                         key = eventids,
                                         val = clipName                                       
                                     };
-
-
-
-
-                               
-
-
-                                    
                                     if (!string.IsNullOrEmpty(eventpos) && eventpos.IndexOf(",") > 0)
                                     {
                                         var posarray = eventpos.Split(",");
@@ -2050,7 +2189,6 @@ namespace Nop.Services.ExportImport
                                         modelinfo.pos.y = posarray[1];
                                         modelinfo.pos.z = posarray[2];
                                     }
-
                                     if (!string.IsNullOrEmpty(modelrot) && modelrot.IndexOf(",") > 0)
                                     {
                                         var eventrotarray = modelrot.Split(",");
@@ -2259,6 +2397,9 @@ namespace Nop.Services.ExportImport
                                     if (!string.IsNullOrEmpty(camerarect) && camerarect.IndexOf(",") > 0)
                                     {
                                         var eventrectarray = camerarect.Split(",");
+
+
+
                                         camerainfo.rect.x = eventrectarray[0];
                                         camerainfo.rect.y = eventrectarray[1];
                                         camerainfo.rect.w = eventrectarray[2];

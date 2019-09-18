@@ -312,6 +312,7 @@ namespace Nop.Web.Controllers
                     Imgurl = string.IsNullOrEmpty(imgurl) ? "http://arbookresouce.73data.cn/book/img/sy_img_02.png" : imgurl,
                     goodsName =string.Join(",", order.OrderItems.Select(x=>x.Product.Name).ToList()),
                     Vendor = vendors,
+                    InviteCode = order.InviteCode,
                     paymentMethod = model.PaymentMethod,
                 }
             });

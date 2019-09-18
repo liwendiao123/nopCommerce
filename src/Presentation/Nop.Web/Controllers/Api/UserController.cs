@@ -51,6 +51,7 @@ using Nop.Services.TableOfContent;
 using Nop.Core.Infrastructure.Ex;
 using Nop.Core.LoginInfo;
 using Newtonsoft.Json;
+using Nop.Web.Models.Api.WebApiModel;
 
 namespace Nop.Web.Controllers.Api
 {
@@ -183,7 +184,7 @@ namespace Nop.Web.Controllers.Api
                     _giftCardService = giftCardService; 
                     _localizationService = localizationService;
                     _logger = logger;
-            _customerOrderCodeService = customerOrderCodeService;
+                    _customerOrderCodeService = customerOrderCodeService;
                     _newsLetterSubscriptionService = newsLetterSubscriptionService;
                     _orderService = orderService;
                     _productService = productService;
@@ -216,8 +217,43 @@ namespace Nop.Web.Controllers.Api
         //[ValidateCaptcha]
         [ValidateHoneypot]
         [CheckAccessPublicStore(true)]
-        public IActionResult Register(ApiRegisterModel model, string returnUrl, bool captchaValid, IFormCollection form)
+        public IActionResult Register(ApiRegisterModel model, string returnUrl, bool captchaValid, IFormCollection form,string data)
         {
+
+            if (!string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    model = JsonConvert.DeserializeObject<ApiRegisterModel>(data);
+
+                 
+
+                }
+                catch (Exception ex)
+                {
+                    return Json(new
+                    {
+                        code = -1,
+                        msg = ex.Message,
+
+                    });
+                }
+
+            }
+
+            //else
+            //{
+            //    return Json(new
+            //    {
+            //        code = -1,
+            //        msg = "测试注册",
+            //        data = new {
+
+            //        }
+
+            //    });
+            //}
+
             string email = model.Email;
             if (string.IsNullOrEmpty(model.Email))
             {
@@ -236,7 +272,9 @@ namespace Nop.Web.Controllers.Api
                 {
                     code = -1,
                     msg = "注册失败:手机验证码不能为空",
-                    data = false
+                    data = model,
+                    obj = data
+
                 });
             }
             else
@@ -254,7 +292,8 @@ namespace Nop.Web.Controllers.Api
                     {
                         code = -1,
                         msg = "注册失败:手机验证码验证失败",
-                        data = false
+                        data = model,
+                        obj = data
                     });
                 }
             }
@@ -346,7 +385,7 @@ namespace Nop.Web.Controllers.Api
             {
                 ModelState.AddModelError("", _localizationService.GetResource("Common.WrongCaptchaMessage"));
             }
-            if (ModelState.IsValid)
+            if (ModelState.IsValid || !string.IsNullOrEmpty(data))
             {
                 if (_customerSettings.UsernamesEnabled && model.UserName != null)
                 {
@@ -380,7 +419,7 @@ namespace Nop.Web.Controllers.Api
                 else if (model.Occupation == 6)
                 {
                     registrationRequest.RoleName = "Teacher";
-                    if (string.IsNullOrEmpty(model.InviteCode) && string.IsNullOrEmpty(model.ImgUrl))
+                    if (string.IsNullOrEmpty(model.InviteCode) && string.IsNullOrEmpty(model.Imgurl))
                     {
                         return Json(new
                         {
@@ -421,7 +460,7 @@ namespace Nop.Web.Controllers.Api
                         }
                     }
 
-                    else if (!string.IsNullOrEmpty(model.ImgUrl))
+                    else if (!string.IsNullOrEmpty(model.Imgurl))
                     {
                         registrationRequest.IsApproved = false;
                     }
@@ -486,7 +525,7 @@ namespace Nop.Web.Controllers.Api
                         }
                         if (_customerSettings.IdcardImgEnabled)
                         {
-                            _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.IdCardImgAttribute, model.ImgUrl);
+                            _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.IdCardImgAttribute, model.Imgurl);
                         }
                         ///签订保密协议
                         if (_customerSettings.AcceptPrivacyPolicyEnabled)
@@ -624,7 +663,7 @@ namespace Nop.Web.Controllers.Api
                     Email = email??"",
                     Token = token.Serialize(),
                     InviteCode = model.InviteCode ?? "",
-                    CardImgUrl = model.ImgUrl ?? "",
+                    CardImgUrl = model.Imgurl ?? "",
                     IsfirstLogin = true,
                     LeftDays =7,
                     SchoolName = model.SchoolName,
@@ -723,8 +762,31 @@ namespace Nop.Web.Controllers.Api
            return View();
         }
         [HttpPost]
-        public IActionResult Login(string userName,string password,string qs_clientid)
+        public IActionResult Login(string userName,string password,string qs_clientid,string data)
         {
+
+            if (!string.IsNullOrEmpty(data))
+            {
+
+                try
+                {
+                    var jsonrequest = JsonConvert.DeserializeObject<LoginRequest>(data);
+
+                    if (jsonrequest != null)
+                    {
+                        userName = jsonrequest.userName;
+                        password = jsonrequest.password;
+                        qs_clientid = jsonrequest.qs_clientId;
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+           
+            }
+
             string name = "";
             string inviteCode = string.Empty;
             string imgurl = string.Empty;
@@ -860,8 +922,15 @@ namespace Nop.Web.Controllers.Api
                         ModelState.AddModelError("", _localizationService.GetResource("Account.Login.WrongCredentials.Deleted"));
                         break;
                     case CustomerLoginResults.NotActive:
-                        ModelState.AddModelError("", _localizationService.GetResource("Account.Login.WrongCredentials.NotActive"));
-                        break;
+                        return Json(new
+                        {
+                            code = -1,
+                            msg = "该账号正在审核中... 暂时无法登陆",
+                            data = new
+                            {
+                            }
+                        });
+                       // break;
                     case CustomerLoginResults.NotRegistered:
                         ModelState.AddModelError("", _localizationService.GetResource("Account.Login.WrongCredentials.NotRegistered"));
                         break;
@@ -883,7 +952,6 @@ namespace Nop.Web.Controllers.Api
             });
           //  return View(model);
         }
-
         private bool ValidateLoginTimes(Customer _customer)
         {
             bool isfirstLogin = true;
@@ -901,10 +969,32 @@ namespace Nop.Web.Controllers.Api
 
             return isfirstLogin;
         }
-
         [HttpPost]
-        public IActionResult CheckOldPwd(string userName, string password)
+        public IActionResult CheckOldPwd(string userName, string password,string data)
         {
+
+            if (!string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    var jsonrequest = JsonConvert.DeserializeObject<CheckOldPwdRequest>(data);
+
+                    if (jsonrequest != null)
+                    {
+                        userName = jsonrequest.userName;
+                        password = jsonrequest.password;
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+            
+
+
+            }
+
             string name = "";
             string inviteCode = string.Empty;
             string imgurl = string.Empty;
@@ -994,8 +1084,17 @@ namespace Nop.Web.Controllers.Api
                         ModelState.AddModelError("", _localizationService.GetResource("Account.Login.WrongCredentials.Deleted"));
                         break;
                     case CustomerLoginResults.NotActive:
-                        ModelState.AddModelError("", _localizationService.GetResource("Account.Login.WrongCredentials.NotActive"));
-                        break;
+
+                        return Json(new
+                        {
+                            code = -1,
+                            msg = "该账号正在审核中... 暂时无法登陆",
+                            data = new
+                            {
+                            }
+                        });
+                    ////  ModelState.AddModelError("", _localizationService.GetResource("Account.Login.WrongCredentials.NotActive"));
+                    //  break;
                     case CustomerLoginResults.NotRegistered:
                         ModelState.AddModelError("", _localizationService.GetResource("Account.Login.WrongCredentials.NotRegistered"));
                         break;
@@ -1017,8 +1116,21 @@ namespace Nop.Web.Controllers.Api
             });           
         }
         [HttpPost]
-        public IActionResult LoginCode(string userName, string code,string qs_clientid)
+        public IActionResult LoginCode(string userName, string code,string qs_clientid,string data)
         {
+
+            if (!string.IsNullOrEmpty(data))
+            {
+                var jsonrequest = JsonConvert.DeserializeObject<LoginCodeRequest>(data);
+
+                if (jsonrequest != null)
+                {
+                    userName = jsonrequest.username;
+                    code = jsonrequest.code;
+                    qs_clientid = jsonrequest.qs_clientid;
+                }              
+            }
+
             Customer _customer = null;
             if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(code))
             {
@@ -1046,6 +1158,17 @@ namespace Nop.Web.Controllers.Api
                 if (loginresut != null)
                 {
                     _customer = loginresut;
+                }
+
+                if (!_customer.Active)
+                {
+                    return Json(new
+                    {
+                        code = -1,
+                        msg ="该账号正在审核中... 暂时无法登陆",
+                        data  = new {
+                        }
+                    });
                 }
 
                 if (loginresut != null)
@@ -1078,7 +1201,6 @@ namespace Nop.Web.Controllers.Api
                    var isfirstLogin = ValidateLoginTimes(_customer);
                     _customer.LastToken = token.Serialize();
                     _customerService.UpdateCustomer(_customer);
-
                     return Json(new
                     {
                         code = 0,
@@ -1121,30 +1243,30 @@ namespace Nop.Web.Controllers.Api
                     msg = "验证码错误",
                     data = false                  
                 });
-            }
-
-
-            
-
-
-
-
-            if (result.Result)
-            {
-                _smsService.ApplySms(smr);
-            }
-
-          
-
-            return Json(new {
-
-
-            });
+            }         
         }
-
         [HttpPost]
-        public IActionResult CheckToken(string token, string qs_clientid)
+        public IActionResult CheckToken(string token, string qs_clientid,string data)
         {
+
+            if (!string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    var jsonrequest = JsonConvert.DeserializeObject<CheckTokenRequest>(data);
+
+                    if (jsonrequest != null)
+                    {
+                        token = jsonrequest.token;
+                        qs_clientid = jsonrequest.qs_clientid;
+                    }
+                }
+                catch(Exception ex)
+                {
+
+                }
+            }
+
 
             var tokenresult = ValidateToken(token, qs_clientid, _customerService);
 
@@ -1183,6 +1305,19 @@ namespace Nop.Web.Controllers.Api
                 if (loginresut != null)
                 {
                     _customer = loginresut;
+
+
+                    if (!loginresut.Active)
+                    {
+                        return Json(new
+                        {
+                            code = -1,
+                            msg = "该账号正在审核中... 暂时无法登陆",
+                            data = new
+                            {
+                            }
+                        });
+                    }
                 }
 
                 if (loginresut != null)
@@ -1249,11 +1384,7 @@ namespace Nop.Web.Controllers.Api
                 }
 
 
-                return Json(new {
-                    code = 0,
-                    msg  = "校验成功",
-                    data = true
-                });
+             
             }
             return Json(new
             {
@@ -1264,117 +1395,55 @@ namespace Nop.Web.Controllers.Api
 
             
         }
-        //[HttpPost]
-        //public IActionResult ResetPwd(string userName, string password, string code)
-        //{
-        //    Customer _customer = null;
-        //    if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(code))
-        //    {
-        //        return Json(new
-        //        {
-        //            code = -1,
-        //            msg = "信息不完整",
-        //            data = false
-        //        });
-        //    }
-        //    SmsMsgRecord smr = new SmsMsgRecord
-        //    {
-        //        AppId = AliSmsManager.accessKeyId,
-        //        Phone = userName,
-        //        TemplateCode = code,
-        //        Type = 0,
-        //    };
-        //    var result = _smsService.ApplySms(smr);
-
-
-        //    if (result.Result)
-        //    {
-        //        var customer = _customerService.GetCustomerByUsername(userName);
-
-
-        //        if (customer == null)
-        //        {
-        //            return Json(new
-        //            {
-        //                code = -1,
-        //                 msg = "账号不存在"
-
-        //            });
-        //        }
-        //        if (ModelState.IsValid)
-        //        {
-
-        //            //CustomerPassword npassword = new CustomerPassword {
-        //            //    PasswordFormat = PasswordFormat.Hashed,
-        //            //    CustomerId = customer.Id,
-        //            //    Password = password
-
-        //            //};
-        //            //_customerService.UpdateCustomerPassword(npassword);
-        //            var changePasswordRequest = new ChangePasswordRequest()
-
-
-        //            //var changePasswordRequest = new ChangePasswordRequest(customer.Email, customer.Username,
-        //            //    true, _customerSettings.DefaultPasswordFormat, model.NewPassword, model.OldPassword);
-        //            //var changePasswordResult = _customerRegistrationService.ChangePassword(changePasswordRequest);
-        //            //if (changePasswordResult.Success)
-        //            //{
-        //            //    model.Result = _localizationService.GetResource("Account.ChangePassword.Success");
-        //            //    return Json(new
-        //            //    {
-        //            //        code = 0,
-        //            //        msg = "密码修改成功", //model.Result,
-        //            //        data = true
-        //            //    });
-        //            //}
-
-        //            ////errors
-        //            //foreach (var error in changePasswordResult.Errors)
-        //            //    ModelState.AddModelError("", error);
-        //        }
-
-        //        //If we got this far, something failed, redisplay form
-        //        return Json(new
-        //        {
-        //            code = -1,
-        //            msg ="重置失败",
-        //            data = false
-
-        //        });
-        //    }
-        //    else
-        //    {
-        //        return Json(new
-        //        {
-        //            code = -1,
-        //            msg = "验证码错误",
-        //            data = false
-        //        });
-        //    }
-
-
-
-
-
-
-
-
-        //}
-        public IActionResult CheckPhone(string phone)
+        public IActionResult CheckPhone(string phone,string data)
         {
             try
             {
 
-
-                if (string.IsNullOrEmpty(phone))
+                if (string.IsNullOrEmpty(phone) && string.IsNullOrEmpty(data))
                 {
                     return Json(new
                     {
                         code = -1,
-                        msg = "手机号码格式错误",
+                        msg = "手机号码格式错误:" +data,
                         data = false
                     });
                 }
+
+                if (string.IsNullOrEmpty(phone) && !string.IsNullOrEmpty(data))
+                {
+                    try
+                    {
+                        var request = JsonConvert.DeserializeObject<CheckPhoneModelRequest>(data);
+
+                        if (request != null)
+                        {
+                            phone = request.phone;
+                        }
+                        else
+                        {
+                            return Json(new
+                            {
+                                code = -1,
+                                msg = "手机号码格式错误",
+                                data = false
+                            });
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        return Json(new
+                        {
+                            code = -1,
+                            msg = "数据格式错误:"+ ex.Message,
+                            data = new {
+                            }
+                        });
+                    }
+                   
+                }
+
+
                 if (!phone.CheckMobile())
                 {
                     return Json(new
@@ -1419,12 +1488,32 @@ namespace Nop.Web.Controllers.Api
           
         }
         [HttpPost]
-        public IActionResult CheckUserName(string username)
+        public IActionResult CheckUserName(string username,string data)
         {
 
 
             try
             {
+                if (!string.IsNullOrEmpty(data))
+                {
+                    try
+                    {
+                        var jsonrequest = JsonConvert.DeserializeObject<CheckUserNameRequest>(data);
+
+                        if (jsonrequest != null)
+                        {
+                            username = jsonrequest.username;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                    
+
+                }
+
+
                 if (string.IsNullOrEmpty(username))
                 {
                     return Json(new
@@ -1478,8 +1567,26 @@ namespace Nop.Web.Controllers.Api
 
 
         }
-        public IActionResult CheckSmsCode(string phone, string  code,int type)
+        public IActionResult CheckSmsCode(string phone, string  code,int type,string data)
         {
+            if (string.IsNullOrEmpty(phone) && !string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    var jsonrecord = JsonConvert.DeserializeObject<SmsMsgRecordRequest>(data);
+
+                    phone = jsonrecord.phone;
+                    code = jsonrecord.code;
+                    type = jsonrecord.type;
+                }
+                catch (Exception ex)
+                {
+
+                }
+              
+            }
+
+
            var  record = new SmsMsgRecord
             {
                 Phone = phone,
@@ -1515,8 +1622,21 @@ namespace Nop.Web.Controllers.Api
         /// </summary>
         /// <param name="phone"></param>
         /// <returns></returns>
-        public async Task<IActionResult> ValidatePhoneAsync(RequestValidCode request)
+        public async Task<IActionResult> ValidatePhoneAsync(string data, RequestValidCode request)
         {
+
+            if (!string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    request = JsonConvert.DeserializeObject<RequestValidCode>(data);
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
+
             if (request == null || string.IsNullOrEmpty( request.Phone))
             {
                 return Json(new
@@ -1547,9 +1667,9 @@ namespace Nop.Web.Controllers.Api
                 OutId = "qskjtoken"
             };
 
-            IDictionary<string, string> data = new Dictionary<string, string>();
+            IDictionary<string, string> dicdata = new Dictionary<string, string>();
             var randomcode = DateTime.Now.ToString("ffffff");
-            data.Add("code", randomcode);
+            dicdata.Add("code", randomcode);
 
             AliSmsTemp resultem = new AliSmsTemp();
 
@@ -1586,7 +1706,7 @@ namespace Nop.Web.Controllers.Api
                     data = ""
                 });
             }
-            sms.Data = data;
+            sms.Data = dicdata;
             var res =await new AliyunSmsSender().Send(sms);
             if (res.success)
             {
@@ -1609,8 +1729,7 @@ namespace Nop.Web.Controllers.Api
                 msg = "验证码已发送",
                 data = randomcode
             });
-        }
-    
+        }    
         /// <summary>
     /// 获取用户基本信息
     /// </summary>
@@ -1646,8 +1765,25 @@ namespace Nop.Web.Controllers.Api
         /// <param name="userName"></param>
         /// <returns></returns>
         /// 
-        public IActionResult LearnProgress(string token, string qs_clientId)
+        public IActionResult LearnProgress(string token, string qs_clientId,string data)
         {
+            if (!string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    var jsonrequest = JsonConvert.DeserializeObject<ApiBaseRequest>(data);
+
+                    if (jsonrequest != null)
+                    {
+                        token = jsonrequest.token;
+                        qs_clientId = jsonrequest.qs_clientId;
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
 
             #region 1.0 判断凭证 是否正确
             var tokenresult = ValidateToken(token, qs_clientId, _customerService);
@@ -1758,6 +1894,12 @@ namespace Nop.Web.Controllers.Api
                         percent = 1;
                     }
 
+                    //###BUG### 临时处理方案
+                    if (percent > 1)
+                    {
+                        percent = 1;
+                    }
+
                     if (lastNode == null || percent == 0 || percent == 1)
                     {
                         return null;
@@ -1783,7 +1925,7 @@ namespace Nop.Web.Controllers.Api
                         identify = lastNode.Product.BookDirID;
                         pid = lastNode.Product.BookDirID;
                         lastNodename = lastNode.Product.Name;
-                        complexLevel = lastNode.Product.ComplexLevel.ToString();
+                        complexLevel = (!string.IsNullOrEmpty(lastNode.Product.UniqueID) ? 1 : lastNode.Product.ComplexLevel).ToString();
                     }
 
                     var defaultProductPicture = _pictureService.GetPicturesByProductId(x.Id, 1).FirstOrDefault();
@@ -1840,8 +1982,43 @@ namespace Nop.Web.Controllers.Api
             });
         }
         [HttpPost]
-        public IActionResult UpdateInfo(UpdateCustomerInfoModel ucim,string token, string qs_clientid,int RoleNameId)
+        public IActionResult UpdateInfo(UpdateCustomerInfoModel ucim,string token, string qs_clientid,int roleNameId,string data)
         {
+
+            if(!string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    var jsonrequest = JsonConvert.DeserializeObject<UpdateCustomerInfoRequestModel>(data);
+
+                    if (jsonrequest != null)
+                    {
+                        ucim = new UpdateCustomerInfoModel
+                        {
+                             Id = jsonrequest.Id,
+                             Code = jsonrequest.Code,
+                             DepId = jsonrequest.DepId,
+                             Email = jsonrequest.Email,
+                             Gender = jsonrequest.Gender,
+                             Imgurl = jsonrequest.Imgurl,
+                             InviteCode = jsonrequest.InviteCode,
+                             Phone = jsonrequest.Phone,
+                             PictureId = jsonrequest.PictureId,
+                             RoleNameId = jsonrequest.RoleId,
+                             Username = jsonrequest.Username
+
+                        };
+                        token = jsonrequest.token;
+                        qs_clientid = jsonrequest.qs_clientId;
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+                
+            }
+
 
             var tokenresult = ValidateToken(token, qs_clientid, _customerService);
 
@@ -1852,7 +2029,6 @@ namespace Nop.Web.Controllers.Api
                     code = -2,
                     msg = "该账号已在另一个地点登录,如不是本人操作，您的密码已经泄露,请及时修改密码！",
                     data = false
-
                 });
             }
             if (tokenresult == 3)
@@ -1862,7 +2038,6 @@ namespace Nop.Web.Controllers.Api
                     code = -3,
                     msg = "该账号已被禁用！",
                     data = false
-
                 });
             }
 
@@ -2027,9 +2202,6 @@ namespace Nop.Web.Controllers.Api
 
 
             }
-
-
-          
                 if (_customerSettings.IdcardImgEnabled )
                 {
                    if( !string.IsNullOrEmpty(ucim.Imgurl))
@@ -2136,8 +2308,36 @@ namespace Nop.Web.Controllers.Api
             return customers.Any(c => c.Active && c.Id != customer.Id);
         }
         [HttpPost]
-        public IActionResult ChangePassword(ChangePasswordModel model,string userName, string token, string qs_clientid)
+        public IActionResult ChangePassword(ChangePasswordModel model,string userName, string token, string qs_clientid,string data)
         {
+               
+            if (!string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    var jsonrequest = JsonConvert.DeserializeObject<ChangePasswordJsonRequest>(data);
+                    if (jsonrequest != null)
+                    {
+                        model = new ChangePasswordModel
+                        {
+                            ConfirmNewPassword = jsonrequest.ConfirmNewPassword,
+                            NewPassword = jsonrequest.NewPassword,
+                            OldPassword = jsonrequest.OldPassword,
+                            Result = jsonrequest.Result
+                        };
+
+                        userName = jsonrequest.userName;
+                        token = jsonrequest.token;
+                        qs_clientid = jsonrequest.qs_clientId;
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+              
+            }
+
 
             var tokenresult = ValidateToken(token, qs_clientid, _customerService);
             if (tokenresult == 1)
@@ -2190,8 +2390,27 @@ namespace Nop.Web.Controllers.Api
             });
         }
         [HttpPost]
-        public IActionResult ResetPassword(string password, string userName,string code)
+        public IActionResult ResetPassword(string password, string userName,string code,string data)
         {
+
+            if (!string.IsNullOrEmpty(data))
+            {   try
+                {
+                    var jsonrequst = JsonConvert.DeserializeObject<ResetPwdJsonRequest>(data);
+                    if (jsonrequst != null)
+                    {
+                        password = jsonrequst.password;
+                        userName = jsonrequst.userName;
+                        code = jsonrequst.code;
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+             
+            }
+
             //if (!_workContext.CurrentCustomer.IsRegistered())
             //    return Challenge();
 
@@ -2404,21 +2623,34 @@ namespace Nop.Web.Controllers.Api
             }
             return list;
         }
-        public virtual IActionResult ValidInviteCode(string code)
+        public virtual IActionResult ValidInviteCode(string code,string data)
         {
+            if (!string.IsNullOrEmpty(data))
+            {
 
+                try
+                {
+                    var jsonrequest = JsonConvert.DeserializeObject<ValidInviteCodeRequstModel>(data);
+                    if (jsonrequest != null)
+                    {
+                        code = jsonrequest.code;
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+              
+            }
 
            var result = _customerService.GetCustomerByvipcode(code);
-
-            var exitecode = _customerOrderCodeService.GetOrderCodeByCode(code);
-
-
-            var codeExpireDate = DateTime.Now;
-            if (exitecode != null && exitecode.CodeType == 1)
+           var exitecode = _customerOrderCodeService.GetOrderCodeByCode(code);
+           var codeExpireDate = DateTime.Now;
+           if (exitecode != null && exitecode.CodeType == 1)
             {
                 codeExpireDate = exitecode.CreateTime.AddDays(1).Date.AddDays(exitecode.ValidDays);
             }
-
             if (result != null || codeExpireDate > DateTime.Now.AddMinutes(30) )
             {
                 return Json(new
@@ -2436,17 +2668,7 @@ namespace Nop.Web.Controllers.Api
                     msg = "邀请码不存在",
                     data = false
                 });
-            }
-
-           ///
-            if (code.Equals("001"))
-            {
-               
-            }
-            else
-            {
-               
-            }               
+            }             
         }
         public virtual IActionResult Test2(string id)
         {
@@ -2456,19 +2678,37 @@ namespace Nop.Web.Controllers.Api
                 msg = "测试专用:" + id,
             });
         }
-        [Route("/api/user/ordertess")]
-        public virtual IActionResult Test1()
+        [Route("/api/user/ordertest")]
+        public virtual IActionResult Test1(string data)
         {
-            return Json(new
+            if (string.IsNullOrEmpty(data))
             {
-                code = 0,
-                msg = "ordertess",
-                data =false
-            });
+                return Json(new
+                {
+                    code = -1,
+                    msg = "参数格式错误",
+                    data = data
+                });
+            }
+            try
+            {
+                var obj = JsonConvert.DeserializeObject<TestModel>(data);
+                return Json(new
+                {
+                    code = 0,
+                    msg = "ordertess",
+                    data = data,
+                    obj = obj
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    code = 0,
+                    msg = "解析异常:" + ex.Message                  
+                });
+            }
         }
-        //public virtual IActionResult CheckSMSCode(string phone, string code, int type)
-        //{
-        //    return View();
-        //}
     }
 }

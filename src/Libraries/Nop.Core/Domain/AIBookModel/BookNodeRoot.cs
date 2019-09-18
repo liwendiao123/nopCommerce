@@ -79,7 +79,7 @@ namespace Nop.Core.Domain.AIBookModel
             buttoninfo = new List<ButtonInfo>();
             imageinfo = new List<ImageNewInfo>();
             textinfo = new List<TextNewInfo>();
-            modelinfo = new List<ModelInfo>();
+            modelinfo = new List<ModelNewInfo>();
             camerainfo = new List<CameraInfo>();
             audioinfo = new List<AudioInfo>();
             videoinfo = new List<VideoNewInfo>();
@@ -105,7 +105,7 @@ namespace Nop.Core.Domain.AIBookModel
         /// 
         /// </summary>
         public List<TextNewInfo> textinfo { get; set; }
-        public List<ModelInfo> modelinfo { get; set; }
+        public List<ModelNewInfo> modelinfo { get; set; }
         public List<CameraInfo> camerainfo { get; set; }
         public List<AudioInfo> audioinfo { get; set; }
         public List<VideoNewInfo> videoinfo { get; set; }
@@ -325,6 +325,54 @@ namespace Nop.Core.Domain.AIBookModel
         public List<Dic> clips { get; set; }
 
         public List<TypeEvents> type { get; set; }
+    }
+
+    public class ModelNewInfo : BaseModel
+    {
+        public ModelNewInfo()
+        {
+            pos = new OffsetXYZ();
+            rot = new OffsetXYZ();
+            scale = new OffsetXYZ();
+            clips = new List<Dic>();
+            type = new List<TypeEvents>();
+            animclips = new List<Animclips>();
+            allanimname = string.Empty;
+            alltextid = string.Empty;
+            allaudioid = string.Empty;
+            allcameraid = string.Empty;
+        }
+        public OffsetXYZ pos { get; set; }
+        public OffsetXYZ rot { get; set; }
+        public OffsetXYZ scale { get; set; }
+        public List<Dic> clips { get; set; }
+        public List<TypeEvents> type { get; set; }
+        public string allanimname { get; set; }
+        public string alltextid { get; set; }
+        public string allaudioid { get; set; }
+        public string allcameraid { get; set; }
+
+        public List<Animclips> animclips { get; set; }
+    }
+
+
+    public class Animclips
+    {
+        public Animclips()
+        {
+            name = string.Empty;
+			iscrossfade = string.Empty;
+            loopnum = string.Empty;
+            cameraeventid = new  List<string>();
+            textid = string.Empty;
+            audioid = string.Empty;
+        }
+        public string name{get;set;}
+		public string iscrossfade { get; set; }
+        public string loopnum { get; set; }
+        public List<string> cameraeventid { get; set; }
+        public string textid { get; set; }
+        public string audioid { get; set; }
     }
 
     public class TypeEvents

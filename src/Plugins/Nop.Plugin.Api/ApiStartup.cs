@@ -48,6 +48,11 @@ namespace Nop.Plugin.Api
                 optionsBuilder.UseSqlServerWithLazyLoading(services);
             });
 
+            // services.add
+            services.AddSwaggerDocument
+                 (s => s.Title = "智慧课本API"
+
+                 );
             AddRequiredConfiguration();
 
             AddBindingRedirectsFallbacks();
@@ -68,8 +73,24 @@ namespace Nop.Plugin.Api
                 return;
 
             // The default route templates for the Swagger docs and swagger - ui are "swagger/docs/{apiVersion}" and "swagger/ui/index#/{assetPath}" respectively.
-            //app.UseSwagger();
-            //app.UseSwaggerUI(options =>
+            app.UseOpenApi(config => config.PostProcess = (document, request) =>
+            {
+                if (request.Headers.ContainsKey("X-External-Host"))
+                {
+                    // Change document server settings to public
+                    document.Host = request.Headers["X-External-Host"].First();
+
+                    document.BasePath = request.Headers["X-External-Path"].First();
+                }
+            });
+
+            app.UseSwaggerUi3(config => config.TransformToExternalPath = (internalUiRoute, request) =>
+            {
+                // The header X-External-Path is set in the nginx.conf file
+                var externalPath = request.Headers.ContainsKey("X-External-Path") ? request.Headers["X-External-Path"].First() : "";
+                return externalPath + internalUiRoute;
+            });
+            //app.ad(options =>
             //    {
             //        //var currentAssembly = Assembly.GetAssembly(this.GetType());
             //        //var currentAssemblyName = currentAssembly.GetName().Name;

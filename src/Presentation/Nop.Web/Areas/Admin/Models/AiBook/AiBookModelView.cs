@@ -397,6 +397,8 @@ namespace Nop.Web.Areas.Admin.Models.AiBook
         /// <summary>
         /// 是否为特例
         /// </summary>
+        /// 
+        [NopResourceDisplayName("Admin.AiBook.BookNode.Fields.ComplexLevel")]
         public int ComplexLevel { get; set; }
         public DateTime CreatedOnUtc { get; set; }
 

@@ -142,7 +142,6 @@ namespace Nop.Core.Caching
                 var items = GetItems();
                 if (items == null)
                     return;
-
                 //get cache keys that matches pattern
                 var regex = new Regex(prefix,
                     RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);

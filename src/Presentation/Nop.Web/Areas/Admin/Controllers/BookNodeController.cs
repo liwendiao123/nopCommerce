@@ -220,7 +220,7 @@ namespace Nop.Web.Areas.Admin.Controllers
             //var model = _categoryModelFactory.PrepareCategoryModel(null, category);
             // var model = _bookDirFactory.PrepareBookDirModel(null,bookdir);
             var aimodel = booknode.ToModel<AiBookModelView>();
-            var model = _bookNodeFactory.PrepareBookNodeModel(aimodel, 0);
+            var model = _bookNodeFactory.PrepareBookNodeModel(aimodel, aimodel.BookDirId);
             return View(model);
         }
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
@@ -260,7 +260,7 @@ namespace Nop.Web.Areas.Admin.Controllers
                 var msg = ex.Message;
                 return RedirectToAction("Index");
             }
-           var model1 = _bookNodeFactory.PrepareBookNodeModel(model, 0);
+           var model1 = _bookNodeFactory.PrepareBookNodeModel(model, model.BookDirId);
            return View(model1);
 
         }       
@@ -333,8 +333,9 @@ namespace Nop.Web.Areas.Admin.Controllers
           var eresult =  _bookNodeService.GetAiBookModelById(id);
             if (eresult != null)
             {
-                var result = _importManager.ImportBookNodeMobanFromXlsx(importexcelfile.OpenReadStream());
+                var result = _importManager.ImportBookNodeMobanFromXlsx(importexcelfile.OpenReadStream(),eresult);
                 eresult.UnityStrJson = result;
+               
                 _bookNodeService.UpdateAiBookModel(eresult);
             }                           
             return RedirectToAction("edit",new { id = id});

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Nop.Core.Domain.Customers;
 using Nop.Core.LoginInfo;
 using Nop.Services.AIBookModel;
@@ -13,6 +14,7 @@ using Nop.Services.TableOfContent;
 using Nop.Web.Areas.Admin.Factories;
 using Nop.Web.Areas.Admin.Models.TableOfContent;
 using Nop.Web.Models.AiBook;
+using Nop.Web.Models.Api.WebApiModel.ApiBookDir;
 
 namespace Nop.Web.Controllers.Api
 {
@@ -49,8 +51,32 @@ namespace Nop.Web.Controllers.Api
         {
             return View();
         }
-        public IActionResult GetBookDir(int bookid,int bookdirId, string token, string qs_clientid)
+        public IActionResult GetBookDir(int bookid,int bookdirId, string token, string qs_clientid,string data)
         {
+
+
+            if (!string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    var jsonrequest = JsonConvert.DeserializeObject<BookDirQueryJsonRequest>(data);
+
+                    if (jsonrequest != null)
+                    {
+                        bookid = jsonrequest.bookid;
+                        bookdirId = jsonrequest.bookdirId;
+                        token = jsonrequest.token;
+                        qs_clientid = jsonrequest.qs_clientid;
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+               
+            }
+
             //token = string.Empty;
             Customer customer = null;
             var islogin = false;
@@ -102,7 +128,7 @@ namespace Nop.Web.Controllers.Api
                         {
                             islogin = true;
                         }
-                        if (customer.CustomerBooks.Where(x => x.ProductId.Equals(bookid)).Count() > 0)
+                        if (customer.CustomerBooks.Where(x => x.ProductId.Equals(bookid) && x.Expirationtime >DateTime.Now).Count() > 0)
                         {
                             islogin = true;
                             isbuybook = true;
@@ -222,8 +248,31 @@ namespace Nop.Web.Controllers.Api
                 data = resl            
             });
         }
-        public IActionResult GetBookdirClient(int bookid,int bookdirId)
+        public IActionResult GetBookdirClient(int bookid,int bookdirId, string token, string qs_clientid, string data)
         {
+
+            if (!string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    var jsonrequest = JsonConvert.DeserializeObject<BookDirQueryJsonRequest>(data);
+
+                    if (jsonrequest != null)
+                    {
+                        bookid = jsonrequest.bookid;
+                        bookdirId = jsonrequest.bookdirId;
+                        token = jsonrequest.token;
+                        qs_clientid = jsonrequest.qs_clientid;
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+
+            }
+
             BookDirSearchModel searchModel = new BookDirSearchModel
             {
                 BookID = bookid,

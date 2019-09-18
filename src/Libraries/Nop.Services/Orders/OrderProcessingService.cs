@@ -1612,21 +1612,16 @@ namespace Nop.Services.Orders
 
                 if (processPaymentResult == null)
                     throw new NopException("processPaymentResult is not available");
-
                 if (processPaymentResult.Success)
                 {
                     var order = SaveOrderDetails(processPaymentRequest, processPaymentResult, details);
                     result.PlacedOrder = order;
-
                     //move shopping cart items to order items
                     MoveShoppingCartItemsToOrderItems(details, order);
-
                     //discount usage history
                     SaveDiscountUsageHistory(details, order);
-
                     //gift card usage history
                     SaveGiftCardUsageHistory(details, order);
-
                     //recurring orders
                     if (details.IsRecurringShoppingCart)
                     {

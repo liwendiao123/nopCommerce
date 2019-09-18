@@ -13,7 +13,6 @@
     using Web.Framework;
     using Nop.Web.Framework.Controllers;
     using Web.Framework.Mvc.Filters;
-    using Nop.Services.Messages;
 
     [AuthorizeAdmin]
     [Area(AreaNames.Admin)]
@@ -25,14 +24,13 @@
         private readonly ISettingService _settingService;
         private readonly ICustomerActivityService _customerActivityService;
         private readonly ILocalizationService _localizationService;
-        private readonly INotificationService _notificationService;
+
         public ApiAdminController(
             IStoreService storeService,
             IStoreContext storeContext,
             IWorkContext workContext,
             ISettingService settingService,
             ICustomerActivityService customerActivityService,
-            INotificationService notificationService,
             ILocalizationService localizationService)
         {
             _storeService = storeService;
@@ -41,7 +39,6 @@
             _settingService = settingService;
             _customerActivityService = customerActivityService;
             _localizationService = localizationService;
-            _notificationService = notificationService;
         }
         
         [HttpGet]
@@ -90,8 +87,7 @@
 
             _customerActivityService.InsertActivity("EditApiSettings", "Edit Api Settings");
 
-            
-           _notificationService.SuccessNotification(_localizationService.GetResource("Admin.Plugins.Saved"));
+          //  SuccessNotification(_localizationService.GetResource("Admin.Plugins.Saved"));
 
             return View(ViewNames.AdminApiSettings, configurationModel);
         }

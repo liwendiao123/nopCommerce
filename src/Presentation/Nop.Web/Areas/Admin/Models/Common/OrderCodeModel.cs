@@ -107,7 +107,7 @@ namespace Nop.Web.Areas.Admin.Models.Common
         public string ExpireTime {
             get
             {
-                return this.CreateTime.AddDays(ValidDays).ToString("yyyy-MM-DD HH:mm");
+                return this.CreateTime.AddDays(ValidDays).ToString("yyyy-MM-dd HH:mm");
             }
 
         }

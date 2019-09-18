@@ -21,7 +21,6 @@ namespace Nop.Services.Plugins
         /// <returns>Plugin descriptors</returns>
         IEnumerable<PluginDescriptor> GetPluginDescriptors<TPlugin>(LoadPluginsMode loadMode = LoadPluginsMode.InstalledOnly,
             Customer customer = null, int storeId = 0, string group = null, string dependsOnSystemName = "") where TPlugin : class, IPlugin;
-
         /// <summary>
         /// Get a plugin descriptor by the system name
         /// </summary>
@@ -35,7 +34,6 @@ namespace Nop.Services.Plugins
         PluginDescriptor GetPluginDescriptorBySystemName<TPlugin>(string systemName,
             LoadPluginsMode loadMode = LoadPluginsMode.InstalledOnly,
             Customer customer = null, int storeId = 0, string group = null) where TPlugin : class, IPlugin;
-
         /// <summary>
         /// Get plugins
         /// </summary>
@@ -47,21 +45,18 @@ namespace Nop.Services.Plugins
         /// <returns>Plugins</returns>
         IEnumerable<TPlugin> GetPlugins<TPlugin>(LoadPluginsMode loadMode = LoadPluginsMode.InstalledOnly,
             Customer customer = null, int storeId = 0, string group = null) where TPlugin : class, IPlugin;
-
         /// <summary>
         /// Find a plugin by the type which is located into the same assembly as a plugin
         /// </summary>
         /// <param name="typeInAssembly">Type</param>
         /// <returns>Plugin</returns>
         IPlugin FindPluginByTypeInAssembly(Type typeInAssembly);
-
         /// <summary>
         /// Get plugin logo URL
         /// </summary>
         /// <param name="pluginDescriptor">Plugin descriptor</param>
         /// <returns>Logo URL</returns>
         string GetPluginLogoUrl(PluginDescriptor pluginDescriptor);
-
         /// <summary>
         /// Prepare plugin to the installation
         /// </summary>
@@ -69,56 +64,46 @@ namespace Nop.Services.Plugins
         /// <param name="customer">Customer</param>
         /// <param name="checkDependencies">Specifies whether to check plugin dependencies</param>
         void PreparePluginToInstall(string systemName, Customer customer = null, bool checkDependencies = true);
-
         /// <summary>
         /// Prepare plugin to the uninstallation
         /// </summary>
         /// <param name="systemName">Plugin system name</param>
         void PreparePluginToUninstall(string systemName);
-
         /// <summary>
         /// Prepare plugin to the removing
         /// </summary>
         /// <param name="systemName">Plugin system name</param>
         void PreparePluginToDelete(string systemName);
-
         /// <summary>
         /// Reset changes
         /// </summary>
         void ResetChanges();
-
         /// <summary>
         /// Clear installed plugins list
         /// </summary>
         void ClearInstalledPluginsList();
-
         /// <summary>
         /// Install plugins
         /// </summary>
         void InstallPlugins();
-
         /// <summary>
         /// Uninstall plugins
         /// </summary>
-        void UninstallPlugins();
-
+        void UninstallPlugins();  
         /// <summary>
         /// Delete plugins
         /// </summary>
         void DeletePlugins();
-
         /// <summary>
         /// Check whether application restart is required to apply changes to plugins
         /// </summary>
         /// <returns>Result of check</returns>
         bool IsRestartRequired();
-
         /// <summary>
         /// Get names of incompatible plugins
         /// </summary>
         /// <returns>List of plugin names</returns>
         IList<string> GetIncompatiblePlugins();
-
         /// <summary>
         /// Get all assembly loaded collisions
         /// </summary>

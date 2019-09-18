@@ -16,9 +16,7 @@ namespace Nop.Services.Themes
         #region Fields
 
         private readonly INopFileProvider _fileProvider;
-
         private IList<ThemeDescriptor> _themeDescriptors;
-
         #endregion
 
         public ThemeProvider(INopFileProvider fileProvider)
@@ -36,11 +34,9 @@ namespace Nop.Services.Themes
         {
             //get theme description from the JSON file
             var themeDescriptor = JsonConvert.DeserializeObject<ThemeDescriptor>(text);
-
             //some validation
             if (_themeDescriptors?.Any(descriptor => descriptor.SystemName.Equals(themeDescriptor?.SystemName, StringComparison.InvariantCultureIgnoreCase)) ?? false)
                 throw new Exception($"A theme with '{themeDescriptor.SystemName}' system name is already defined");
-
             return themeDescriptor;
         }
 

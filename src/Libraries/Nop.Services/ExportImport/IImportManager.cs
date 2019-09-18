@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Nop.Core.Domain.AIBookModel;
 
 namespace Nop.Services.ExportImport
 {
@@ -14,7 +15,7 @@ namespace Nop.Services.ExportImport
         void ImportProductsFromXlsx(Stream stream);
 
 
-        string ImportBookNodeMobanFromXlsx(Stream stream);
+        string ImportBookNodeMobanFromXlsx(Stream stream,AiBookModel aiBookModel);
 
         /// <summary>
         /// Import newsletter subscribers from TXT file

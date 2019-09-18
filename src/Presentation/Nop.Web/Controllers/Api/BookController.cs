@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Customers;
 using Nop.Core.LoginInfo;
@@ -12,6 +13,7 @@ using Nop.Services.Customers;
 using Nop.Services.Media;
 using Nop.Web.Framework.Mvc.Filters;
 using Nop.Web.Models.Api.Book;
+using Nop.Web.Models.Api.WebApiModel.ApiBook;
 
 namespace Nop.Web.Controllers.Api
 {
@@ -38,8 +40,37 @@ namespace Nop.Web.Controllers.Api
         {
             return View();
         }      
-        public IActionResult GetBook(SearchBookRequest requst, string token, string qs_clientid)
+        public IActionResult GetBook(SearchBookRequest requst, string token, string qs_clientid,string data)
         {
+
+            if (!string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    var searchBookJsonRequest = JsonConvert.DeserializeObject<SearchBookJsonRequest>(data);
+
+                    if (searchBookJsonRequest != null)
+                    {
+                        token = searchBookJsonRequest.Token;
+                        qs_clientid = searchBookJsonRequest.qs_clientid;
+                        requst = new SearchBookRequest
+                        {
+                             bookId = searchBookJsonRequest.BookId,
+                             CateId = searchBookJsonRequest.CateId,
+                             Name = searchBookJsonRequest.Name,
+                             Pageindex = searchBookJsonRequest.Pageindex,
+                             PageSize = searchBookJsonRequest.PageSize,
+                             Tag = searchBookJsonRequest.Tag,
+                             UseName = searchBookJsonRequest.UseName
+                        };
+                    }
+                }
+                catch(Exception ex)
+                { 
+                }
+
+            }
+
             var tokenresult =  ValidateToken(token, qs_clientid, _customerService);
 
             if (tokenresult == 1)
@@ -97,7 +128,7 @@ namespace Nop.Web.Controllers.Api
             }
 
             if (customer != null)
-                isbuyList = customer.CustomerBooks.Select(x => x.ProductId).ToList();
+                isbuyList = customer.CustomerBooks.Where(x=>x.Expirationtime >DateTime.Now).Select(x => x.ProductId).ToList();
 
             if (requst.CateId < 0)
             {
@@ -143,7 +174,7 @@ namespace Nop.Web.Controllers.Api
                             }
                             if (!islogin && customer != null)
                             {
-                                if (customer.CustomerBooks.Where(c => c.ProductId == x.Id).Count() > 0)
+                                if (customer.CustomerBooks.Where(c => c.ProductId == x.Id && c.Expirationtime >DateTime.Now).Count() > 0)
                                 {
                                     islogin = true;
                                 }
@@ -289,7 +320,6 @@ namespace Nop.Web.Controllers.Api
         
             //return View();
         }
-
         /// <summary>
         /// 
         /// </summary>
@@ -300,8 +330,31 @@ namespace Nop.Web.Controllers.Api
         /// <returns></returns>
         /// 
         [HttpPost]
-        public IActionResult Activate(string token, string qs_clientid, int pid,string activecode)
+        public IActionResult Activate(string token, string qs_clientid, int pid,string activecode,string data)
         {
+
+            if (!string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    var jsonrequest = JsonConvert.DeserializeObject<ActivateBookJsonRequest>(data);
+
+                    if (jsonrequest != null)
+                    {
+                        token = jsonrequest.token;
+                        qs_clientid = jsonrequest.qs_clientId;
+                        pid = jsonrequest.pid;
+                        activecode = jsonrequest.activecode;
+
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+            }
+
             var tokenresult = ValidateToken(token, qs_clientid, _customerService);
             if (tokenresult == 1)
             {
@@ -384,7 +437,7 @@ namespace Nop.Web.Controllers.Api
                         return Json(new
                         {
                             code = 0,
-                            msg = "兑换码成功",
+                            msg = "激活成功",
                             data = new
                             {
                             }
@@ -443,7 +496,6 @@ namespace Nop.Web.Controllers.Api
 
            // return View();
         }
-
         private void ActivatedBook(Customer customer, CustomerOrderCode exitecode, CustomerBook cb)
         {
             if (cb != null)

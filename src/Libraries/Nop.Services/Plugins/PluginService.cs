@@ -303,7 +303,6 @@ namespace Nop.Services.Plugins
             _pluginsInfo.PluginNamesToInstall.Add((systemName, customer?.CustomerGuid));
             _pluginsInfo.Save();
         }
-
         /// <summary>
         /// Prepare plugin to the uninstallation
         /// </summary>

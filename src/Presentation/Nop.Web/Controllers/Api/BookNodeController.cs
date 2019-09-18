@@ -17,6 +17,7 @@ using Nop.Services.Media;
 using Nop.Services.TableOfContent;
 using Nop.Web.Areas.Admin.Factories;
 using Nop.Web.Framework.Controllers;
+using Nop.Web.Models.Api.ApiBookNode;
 using Nop.Web.Models.Api.BookNode;
 
 namespace Nop.Web.Controllers.Api
@@ -60,8 +61,29 @@ namespace Nop.Web.Controllers.Api
             var model = _bookNodeFactory.PrepareBookNodeListModel(searchmodel);
             return View(model);
         }
-        public IActionResult GetData(int id)
+        public IActionResult GetData(int id,string data)
         {
+
+
+            if (!string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    var jsonrequest = JsonConvert.DeserializeObject<QueryBookNodeJsonRequest>(data);
+
+                    if (jsonrequest != null)
+                    {
+                        id = jsonrequest.Id;
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+
+            }
+
             var result = _aiBookService.GetAiBookModelById(id);
             if (result == null)
             {
@@ -90,8 +112,26 @@ namespace Nop.Web.Controllers.Api
                 });
             }      
         }
-        public IActionResult GetJsonData(int id,string platformtype, string token, string qs_clientid)
+        public IActionResult GetJsonData(int id,string platformtype, string token, string qs_clientid,string data)
         {
+
+            if (!string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    var jsonrequest = JsonConvert.DeserializeObject<GetJsonDataJsonRequest>(data);
+                    if (jsonrequest != null)
+                    {
+                        id = jsonrequest.id;
+                        platformtype = jsonrequest.platformtype;
+                        token = jsonrequest.token;
+                        qs_clientid = jsonrequest.qs_clientId;
+                    }
+                }
+                catch (Exception ex)
+                {
+                }
+            }
             var tokenresult = ValidateToken(token, qs_clientid, _customerService);
             if (tokenresult == 1)
             {
@@ -123,19 +163,14 @@ namespace Nop.Web.Controllers.Api
             {
 
                 int cid = 0;
-                Int32.TryParse(apitetoken.ID, out cid);
-
-
-                
+                Int32.TryParse(apitetoken.ID, out cid);             
                  customer = _customerService.GetCustomerById(cid);
                 if (customer != null)
                 {
-
                     if (DateTime.Now.Subtract(customer.CreatedOnUtc).TotalDays <= 7)
                     {
                         islogin = true;
                     }
-
                     var roleList = customer.CustomerCustomerRoleMappings.Select(x => x.CustomerRole).ToList();
                     if (roleList.Count > 0)
                     {
@@ -144,10 +179,7 @@ namespace Nop.Web.Controllers.Api
                             islogin = true;
                         }
                     }
-                }
-
-               
-               
+                }                         
             }
             string platformtypepath = "windows";
             switch (platformtype)
@@ -176,7 +208,7 @@ namespace Nop.Web.Controllers.Api
             {
                 result.ComplexLevel = 1;
             }
-            if (result == null || (result.ComplexLevel == 0&& string.IsNullOrEmpty(result.UnityStrJson)))
+            if (result == null || (result.ComplexLevel != 1&& string.IsNullOrEmpty(result.UnityStrJson)))
             {
                 return Json(new
                 {
@@ -221,11 +253,14 @@ namespace Nop.Web.Controllers.Api
             var product = _productService.GetProductById(bookid);
 
 
-            if (product.Price <= 0)
+            if (product != null && product.Price <= 0)
             {
                 islogin = true;
             }
-            if (customer !=null&& customer.CustomerBooks.Where(x => x.ProductId == bookid).Count() > 0)
+
+            var resutbook = customer.CustomerBooks.Where(x => x.ProductId == bookid).FirstOrDefault();
+
+            if (customer !=null&& resutbook!=null&& resutbook.Expirationtime >DateTime.Now)
             {
                 islogin = true;
             }
@@ -271,7 +306,7 @@ namespace Nop.Web.Controllers.Api
                 msg = "已成功",
                 data = new
                 {
-                    complexLevel = string.IsNullOrEmpty(result.UniqueID) ? 0 : 1,
+                    complexLevel = !string.IsNullOrEmpty(result.UniqueID) ? 1:result.ComplexLevel,
                     BookID = bookdir == null ? -1 : bookdir.BookID,
                     BookNodeName = result.Name,
                     BookName = product == null?"":product.Name,
@@ -288,8 +323,32 @@ namespace Nop.Web.Controllers.Api
                 }
             });
         }
-        public IActionResult GetKnowledgeById(int id, string token, string qs_clientid)
+        public IActionResult GetKnowledgeById(int id, string token, string qs_clientid,string data)
         {
+
+
+            if (!string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    var jsonrequest = JsonConvert.DeserializeObject<QueryBookNodeJsonRequest>(data);
+
+                    if (jsonrequest != null)
+                    {
+                        id = jsonrequest.Id;
+                        token = jsonrequest.token;
+                        qs_clientid = jsonrequest.qs_clientId;
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+            }
+
+
+
             var tokenresult = ValidateToken(token, qs_clientid, _customerService);
 
             if (tokenresult == 1)
@@ -318,7 +377,7 @@ namespace Nop.Web.Controllers.Api
             {
                 result.ComplexLevel = 1;
             }
-            if (result == null || (result.ComplexLevel == 0 && string.IsNullOrEmpty(result.UnityStrJson)))
+            if (result == null || (result.ComplexLevel != 1 && string.IsNullOrEmpty(result.UnityStrJson)))
             {
                 return Json(new
                 {
@@ -372,7 +431,7 @@ namespace Nop.Web.Controllers.Api
                 msg = "已成功",
                 data = new
                 {
-                    complexLevel = result.ComplexLevel,
+                    complexLevel = !string.IsNullOrEmpty(result.UniqueID) ? 1 : result.ComplexLevel,
                     BookID = bookdir == null ? -1 : bookdir.BookID,
                     BookNodeName = result.Name,
                     mapperid = bookdir == null ? -1 : bookdir.Id,
@@ -389,9 +448,29 @@ namespace Nop.Web.Controllers.Api
                 }
             });
         } 
-        public IActionResult GetKnowledgeByImgName(string imgName, string token, string qs_clientid)
+        public IActionResult GetKnowledgeByImgName(string imgName, string token, string qs_clientid,string data)
         {
+            //
 
+            if (!string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    var jsonrequest = JsonConvert.DeserializeObject<JsonRequestKnowledgeByImgName>(data);
+
+                    if (jsonrequest != null)
+                    {
+                       imgName = jsonrequest.imgName;
+                        token = jsonrequest.token;
+                        qs_clientid = jsonrequest.qs_clientId;
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+            }
             var tokenresult = ValidateToken(token, qs_clientid, _customerService);
 
             if (tokenresult == 1)
@@ -446,7 +525,7 @@ namespace Nop.Web.Controllers.Api
                 {
                     result.ComplexLevel = 1;
                 }
-                if (result == null || (result.ComplexLevel == 0 && string.IsNullOrEmpty(result.UnityStrJson)))
+                if (result == null || (result.ComplexLevel != 1 && string.IsNullOrEmpty(result.UnityStrJson)))
                 {
                     return Json(new
                     {
@@ -509,6 +588,7 @@ namespace Nop.Web.Controllers.Api
                      
                         mapperid = bookdir == null ? -1 : bookdir.Id,
                         realid = result.Id,
+                        Id = bookdir == null ? -1 : bookdir.Id,
                         BookID = bookdir == null ? -1 : bookdir.BookID,
                         BookNodeName = result.Name,
                         BookName = product == null ?"":product.Name
@@ -524,9 +604,28 @@ namespace Nop.Web.Controllers.Api
                 });
             }
         }
-        public IActionResult GetAllBookNodesARInfo(string userName, string token, string qs_clientid)
+        public IActionResult GetAllBookNodesARInfo(string userName, string token, string qs_clientid,string data)
         {
+            
+            if (!string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    var jsonrequest = JsonConvert.DeserializeObject<JsonRequestAllBookNodesARInfo>(data);
 
+                    if (jsonrequest != null)
+                    {
+                        userName = jsonrequest.userName;
+                        token = jsonrequest.token;
+                        qs_clientid = jsonrequest.qs_clientId;
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+            }
             var tokenresult = ValidateToken(token, qs_clientid, _customerService);
 
             if (tokenresult == 1)
@@ -566,8 +665,27 @@ namespace Nop.Web.Controllers.Api
                })
             });
         }
-        public IActionResult GetBookNodeKeyName(string keyname, string token, string qs_clientid)
+        public IActionResult GetBookNodeKeyName(string keyname, string token, string qs_clientid,string data)
         {
+
+            if (!string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    var jsonrequest = JsonConvert.DeserializeObject<JsonRequestBookNodeKeyName>(data);
+                    if (jsonrequest != null)
+                    {
+                        keyname = jsonrequest.keyname;
+                        token = jsonrequest.token;
+                        qs_clientid = jsonrequest.qs_clientId;
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+            }
 
             var tokenresult = ValidateToken(token, qs_clientid, _customerService);
 
@@ -665,8 +783,29 @@ namespace Nop.Web.Controllers.Api
         }
 
 
-        public IActionResult AddBookNodeToMyFavor(string token, string qs_clientid,int pid)
+        public IActionResult AddBookNodeToMyFavor(string token, string qs_clientid,int pid,string data)
         {
+
+            if (!string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    var jsonrequest = JsonConvert.DeserializeObject<AddOrCancelBookNodeFavorJsonRequest>(data);
+                    if (jsonrequest != null)
+                    {
+                        pid = jsonrequest.pid;
+                        token = jsonrequest.token;
+                        qs_clientid = jsonrequest.qs_clientId;
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+            }
+
+
             var tokenresult = ValidateToken(token, qs_clientid, _customerService);
 
             if (tokenresult == 1)
@@ -710,10 +849,7 @@ namespace Nop.Web.Controllers.Api
                             islogin = true;
                         }
                     }
-
-
                    var booknode =  _aiBookService.GetAiBookModelById(pid);
-
                     if (booknode == null)
                     {
                         return Json(new
@@ -723,7 +859,6 @@ namespace Nop.Web.Controllers.Api
                             data = false
                         });
                     }
-
                     var resultnode = customer.CustomerBookNodes.Where(x => x.BookNodeId == pid).FirstOrDefault();
                     if (resultnode != null)
                     {
@@ -746,7 +881,6 @@ namespace Nop.Web.Controllers.Api
                         _customerService.UpdateCustomer(customer);
                     }
                 }
-
                 return Json(new
                 {
                     code = 0,
@@ -764,10 +898,28 @@ namespace Nop.Web.Controllers.Api
                 });
             }       
         }
-
-
-        public IActionResult CancelBookNodeFavor(string token, string qs_clientid, int pid)
+        public IActionResult CancelBookNodeFavor(string token, string qs_clientid, int pid,string data)
         {
+
+            if (!string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    var jsonrequest = JsonConvert.DeserializeObject<AddOrCancelBookNodeFavorJsonRequest>(data);
+                    if (jsonrequest != null)
+                    {
+                        pid = jsonrequest.pid;
+                        token = jsonrequest.token;
+                        qs_clientid = jsonrequest.qs_clientId;
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+            }
+
             var tokenresult = ValidateToken(token, qs_clientid, _customerService);
 
             if (tokenresult == 1)
@@ -852,7 +1004,6 @@ namespace Nop.Web.Controllers.Api
                 });
             }
         }
-
         /// <summary>
         /// 
         /// </summary>
@@ -864,8 +1015,34 @@ namespace Nop.Web.Controllers.Api
         /// <returns></returns>
         /// 
         [HttpPost]
-        public IActionResult ReadNodeStart(string guid, string token, string qs_clientid,int pid,int mapperid)
+        public IActionResult ReadNodeStart(string guid, string token, string qs_clientid,int pid,int mapperid,string data)
         {
+            if (!string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    var jsonrequest = JsonConvert.DeserializeObject<ReadNodeJsonRequest>(data);
+                    if (jsonrequest != null)
+                    {
+                        pid = jsonrequest.pid;
+                        guid = jsonrequest.guid;
+                        mapperid = jsonrequest.mapperid;
+                        token = jsonrequest.token;
+                        qs_clientid = jsonrequest.qs_clientId;
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+            }
+
+
+            
+
+
+
             if (string.IsNullOrEmpty(token)
                 || string.IsNullOrEmpty(qs_clientid)
                 || string.IsNullOrEmpty(guid))
@@ -1013,8 +1190,30 @@ namespace Nop.Web.Controllers.Api
         /// <returns></returns>
         /// 
        [HttpPost]
-        public IActionResult ReadNodeEnd(string guid, string token, string qs_clientid, int pid, int mapperid)
+        public IActionResult ReadNodeEnd(string guid, string token, string qs_clientid, int pid, int mapperid,string data)
         {
+
+            if (!string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    var jsonrequest = JsonConvert.DeserializeObject<ReadNodeJsonRequest>(data);
+                    if (jsonrequest != null)
+                    {
+                        pid = jsonrequest.pid;
+                        guid = jsonrequest.guid;
+                        mapperid = jsonrequest.mapperid;
+                        token = jsonrequest.token;
+                        qs_clientid = jsonrequest.qs_clientId;
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+            }
+
             if (string.IsNullOrEmpty(token)
                 || string.IsNullOrEmpty(qs_clientid)
                 || string.IsNullOrEmpty(guid))
@@ -1948,5 +2147,271 @@ namespace Nop.Web.Controllers.Api
 
             });
         }
+
+        public IActionResult GetAllJsonData(int bookID,int id, string platformtype, string token, string qs_clientid, string data)
+        {
+
+            if (!string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    var jsonrequest = JsonConvert.DeserializeObject<GetJsonDataJsonRequest>(data);
+                    if (jsonrequest != null)
+                    {
+                        id = jsonrequest.id;
+                        platformtype = jsonrequest.platformtype;
+                        token = jsonrequest.token;
+                        qs_clientid = jsonrequest.qs_clientId;
+                    }
+                }
+                catch (Exception ex)
+                {
+                }
+            }
+            var tokenresult = ValidateToken(token, qs_clientid, _customerService);
+            if (tokenresult == 1)
+            {
+                return Json(new
+                {
+                    code = -2,
+                    msg = "该账号已在另一个地点登录,如不是本人操作，您的密码已经泄露,请及时修改密码！",
+                    data = false
+
+                });
+            }
+
+            if (tokenresult == 3)
+            {
+                return Json(new
+                {
+                    code = -3,
+                    msg = "该账号已被禁用！",
+                    data = false
+
+                });
+            }
+
+            Customer customer = null;
+            var apitetoken = new AccountToken();
+            apitetoken = AccountToken.Deserialize(token);
+            var islogin = false;
+            if (apitetoken != null)
+            {
+
+                int cid = 0;
+                Int32.TryParse(apitetoken.ID, out cid);
+                customer = _customerService.GetCustomerById(cid);
+                if (customer != null)
+                {
+                    if (DateTime.Now.Subtract(customer.CreatedOnUtc).TotalDays <= 7)
+                    {
+                        islogin = true;
+                    }
+                    var roleList = customer.CustomerCustomerRoleMappings.Select(x => x.CustomerRole).ToList();
+                    if (roleList.Count > 0)
+                    {
+                        if (roleList.Exists(x => !x.Name.Equals("Registered") && x.IsSystemRole))
+                        {
+                            islogin = true;
+                        }
+                    }
+                }
+            }
+            string platformtypepath = "windows";
+            switch (platformtype)
+            {
+                case "1":
+                    platformtypepath = "ios";
+                    break;
+                case "2":
+                    platformtypepath = "android";
+                    break;
+                case "3":
+                    platformtypepath = "windows";
+                    break;
+            }
+            var resultlist = _aiBookService.SearchAiBookModels("", 0, int.MaxValue, null, bookID, id).ToList();
+
+            if (resultlist != null && resultlist.Count > 0)
+            {
+                var resu = new List<BookNodeResult>();
+
+                foreach (var result in resultlist)
+                {
+                    if (result == null)
+                    {
+                        continue;
+                    }
+                    if (result != null && !string.IsNullOrEmpty(result.UniqueID))
+                    {
+                        result.ComplexLevel = 1;
+                    }
+
+                    if (result.Id == 1193)
+                    {
+                    }
+
+                    if (result == null || (result.ComplexLevel != 1 && string.IsNullOrEmpty(result.UnityStrJson)))
+                    {
+                        continue;
+                    }
+
+                    var resultnode = customer.CustomerBookNodes.Where(x => x.BookNodeId == result.Id).FirstOrDefault();
+                    if (resultnode != null)
+                    {
+                        resultnode.IsRead = true;
+                    }
+                    else
+                    {
+                        customer.CustomerBookNodes.Add(new CustomerBookNode
+                        {
+                            CustomerId = customer.Id,
+                            BookNodeId = result.Id,
+                            IsRead = true,
+                            CreateTime = DateTime.Now,
+                            UpdateTime = DateTime.Now,
+                            IsFocus = false,
+                            ReadTime = 0,
+                        });
+
+                        _customerService.UpdateCustomer(customer);
+                    }
+                    BookDir bookdir = null;
+                    if (result != null && result.BookDirID > 0)
+                    {
+                        bookdir = _bookDirService.GetBookDirById(result.BookDirID);
+
+                        if (bookdir != null && ("0" == bookdir.PriceRanges))
+                        {
+                            islogin = true;
+                        }
+                    }
+                    var ttbookdir = bookdir == null ? -1 : bookdir.BookID;
+                    var bookid = ttbookdir;
+                    var product = _productService.GetProductById(bookid);
+
+
+                    if (product != null && product.Price <= 0)
+                    {
+                        islogin = true;
+                    }
+
+                    var resutbook = customer.CustomerBooks.Where(x => x.ProductId == bookid).FirstOrDefault();
+
+                    if (customer != null && resutbook != null && resutbook.Expirationtime > DateTime.Now)
+                    {
+                        islogin = true;
+                    }
+                    BookNodeNewRoot jsonresult = new BookNodeNewRoot();
+                    try
+                    {
+                        jsonresult = JsonConvert.DeserializeObject<BookNodeNewRoot>(result.UnityStrJson);
+                        jsonresult.Base.buttoninfo = jsonresult.Base.buttoninfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+                        jsonresult.Base.textinfo = jsonresult.Base.textinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+                        jsonresult.Base.imageinfo = jsonresult.Base.imageinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+                        jsonresult.Base.videoinfo = jsonresult.Base.videoinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+                        jsonresult.Base.audioinfo = jsonresult.Base.audioinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+                        jsonresult.Base.camerainfo = jsonresult.Base.camerainfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+                        jsonresult.Base.clickinfo = jsonresult.Base.clickinfo.Where(x => !string.IsNullOrEmpty(x.eventid)).ToList();
+                        jsonresult.Base.modelinfo = jsonresult.Base.modelinfo.Where(x => !string.IsNullOrEmpty(x.id)).ToList();
+                        jsonresult.Base.openeventstate = jsonresult.Base.openeventstate.Where(x => !string.IsNullOrEmpty(x.enventid)).ToList();
+                        jsonresult.Base.closeeventstate = jsonresult.Base.closeeventstate.Where(x => !string.IsNullOrEmpty(x.enventid)).ToList();
+
+                    }
+                    catch (Exception ex)
+                    {
+                        jsonresult = null;
+                    }
+                    //var ttbookdir = bookdir == null ? -1 : bookdir.BookID;
+                    //var bookid = ttbookdir;
+                    //var product = _productService.GetProductById(bookid);
+                    result.WebModelUrl = (result.WebModelUrl ?? "").Replace("，", ",");
+                    var arr = result.WebModelUrl.Split(",").ToList().Where(x => !string.IsNullOrEmpty(x)).ToList();
+                    List<string> allList = new List<string>();
+                    arr.ForEach(x =>
+                    {
+                        if (!string.IsNullOrEmpty(x))
+                        {
+                            x = (_config.HostLuaResource ?? "") + platformtypepath + "/" + x + "?v=" + DateTime.Now.Ticks;
+
+                            allList.Add(x);
+                        }
+                    });
+                    var luaurl = _config.HostLuaResource ?? "" + platformtypepath + "/" + result.WebGltfUrl ?? "";
+
+
+                    string keyname = string.Empty;
+                    string head = string.Empty;
+                    string lua = string.Empty;
+                   List<string>  assetbundle =new List<string>();
+                    AppointStrJson specialObj = new AppointStrJson();
+                    if (!string.IsNullOrEmpty(result.UniqueID))
+                    {
+                        keyname = result.UniqueID ?? "";
+                        head = (_config.HostLuaResource ?? "") + (platformtypepath + "/");
+                        lua = (_config.HostLuaResource ?? "") + platformtypepath + "/" + (result.WebGltfUrl ?? "") + "?v=" + DateTime.Now.Ticks;
+                        assetbundle = allList.ToList();
+                        specialObj =  new AppointStrJson
+                        {
+                            keyname = keyname,
+                            head = head,
+                            lua = lua,
+                            assetbundle = assetbundle
+                        };
+                    }
+               
+                    resu.Add(new BookNodeResult
+                    {
+                        complexLevel = !string.IsNullOrEmpty(result.UniqueID) ? 1 : result.ComplexLevel,
+                        BookID = bookdir == null ? -1 : bookdir.BookID,
+                        BookNodeName = result.Name,
+                        BookName = product == null ? "" : product.Name,
+                        IsLock = !islogin,
+                        mapperid = bookdir == null ? -1 : bookdir.Id,
+                        realid = result.Id,
+                        appointStrJson = specialObj,
+                        strJson = jsonresult == null ?new object() : jsonresult
+                    });
+                }
+
+
+                return Json(new
+                {
+                    code = 0,
+                    msg = "已成功",
+                    data = resu
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "获取失败",
+                    data = new { }
+                });
+            }
+
+           
+            
+        }
+    }
+
+    public class BookNodeResult 
+    {
+
+        public BookNodeResult()
+        {
+            appointStrJson = new AppointStrJson();
+        }
+        public int complexLevel { get; set; }
+        public int BookID { get; set; }
+        public string BookNodeName { get; set; }
+        public string BookName { get; set; }
+        public bool IsLock { get; set; }
+        public int mapperid { get; set; }
+        public int realid { get; set; }
+        public AppointStrJson appointStrJson { get; set; }
+        public object strJson { get; set; }
     }
 }

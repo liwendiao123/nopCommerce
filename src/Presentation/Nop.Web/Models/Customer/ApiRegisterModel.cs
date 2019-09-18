@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Nop.Web.Framework.Mvc.ModelBinding;
 using Nop.Web.Models.Api;
 
@@ -20,12 +21,12 @@ namespace Nop.Web.Models.Customer
         public string Name { get; set; }
         [NopResourceDisplayName("Account.Fields.Username")]
         public string UserName { get; set; }
-        [DataType(DataType.Password)]
-        [NoTrim]
+        //[DataType(DataType.Password)]
+        //[NoTrim]
         [NopResourceDisplayName("Account.Fields.Password")]
         public string Password { get; set; }
-        [DataType(DataType.Password)]
-        [NoTrim]
+        //[DataType(DataType.Password)]
+        //[NoTrim]
         [NopResourceDisplayName("Account.Fields.ConfirmPassword")]
         public string ConfirmPassword { get; set; }
         public string SmsCode { get; set; }
@@ -33,10 +34,11 @@ namespace Nop.Web.Models.Customer
         public int DepartmentId { get; set; }
       //  [AllowHtml]
       // [DataType(DataType.ImageUrl)]
-        public string ImgUrl { get; set; }
+       // [JsonProperty("")]
+        public string Imgurl { get; set; }
         public string InviteCode { get; set; }
-        [DataType(DataType.EmailAddress)]
-        [NopResourceDisplayName("Account.Fields.Email")]
+        //[DataType(DataType.EmailAddress)]
+        //[NopResourceDisplayName("Account.Fields.Email")]
         public string Email { get; set; }
         public string CertImg { get; set; }
         public int PlatformType { get; set; }

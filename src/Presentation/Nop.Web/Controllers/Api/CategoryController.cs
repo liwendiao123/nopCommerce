@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Nop.Services.Catalog;
+using Nop.Web.Models.Api.WebApiModel.ApiCategory;
 
 namespace Nop.Web.Controllers.Api
 {
@@ -20,10 +22,31 @@ namespace Nop.Web.Controllers.Api
             return View();
         }
 
-        public IActionResult GetData(int id)
+        public IActionResult GetData(int id,string data)
         {
+            if (!string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    var jsonrequest = JsonConvert.DeserializeObject<JsonRequestGetData>(data);
+                    if (jsonrequest != null)
+                    {
+                        id = jsonrequest.id;
+                        //orderId = jsonrequest.orderId;
+                        //inviteCode = jsonrequest.inviteCode;
+                        //token = jsonrequest.token;
+                        //qs_clientId = jsonrequest.qs_clientId;
+                    }
+                }
+                catch (Exception ex)
+                {
 
-          var result =   _categoryService.GetAllCategoriesByParentCategoryId(14);
+                }
+
+            }
+
+
+            var result =   _categoryService.GetAllCategoriesByParentCategoryId(14);
             return Json(new
             {
                 code = 0,

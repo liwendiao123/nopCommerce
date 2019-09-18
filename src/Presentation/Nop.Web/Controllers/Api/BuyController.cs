@@ -20,6 +20,8 @@ using Nop.Web.Areas.Admin.Factories;
 using Nop.Core.Http.Extensions;
 using Nop.Services.Localization;
 using Nop.Services.Logging;
+using Newtonsoft.Json;
+using Nop.Web.Models.Api.WebApiModel.ApiBuyBook;
 
 namespace Nop.Web.Controllers.Api
 {
@@ -101,8 +103,31 @@ namespace Nop.Web.Controllers.Api
             return View();
         }
         [HttpPost]
-        public IActionResult Book(string token, string pid,string qs_clientid,int paymethod,string inviteCode)
+        public IActionResult Book(string token, string pid,string qs_clientid,int paymethod,string inviteCode,string data)
         {
+
+            
+                 if (!string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    var jsonrequest = JsonConvert.DeserializeObject<BuyBookJsonRequest>(data);
+                    if (jsonrequest != null)
+                    {
+                        pid = jsonrequest.pid;
+                        paymethod = jsonrequest.paymethod;
+                        inviteCode = jsonrequest.inviteCode;
+                        token = jsonrequest.token;
+                        qs_clientid = jsonrequest.qs_clientId;
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+            }
+
             var tokenresult = ValidateToken(token, qs_clientid, _customerService);
             if (tokenresult == 1)
             {
@@ -386,8 +411,71 @@ namespace Nop.Web.Controllers.Api
                 processPaymentRequest.OrderGuidGeneratedOnUtc = DateTime.UtcNow;
             }
         }
-        public IActionResult GetBarCode(int orderId = 0, string token = "", string qs_clientId = "")
+        public IActionResult GetBarCode(int orderId = 0, string inviteCode = "" ,string token = "", string qs_clientId = "",string data = "")
         {
+
+            if (!string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    var jsonrequest = JsonConvert.DeserializeObject<GetBarCodeJsonRequest>(data);
+                    if (jsonrequest != null)
+                    {
+                        orderId = jsonrequest.orderId;
+                        inviteCode = jsonrequest.inviteCode;
+                        token = jsonrequest.token;
+                        qs_clientId = jsonrequest.qs_clientId;
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+            }
+
+
+
+            if (!string.IsNullOrEmpty(inviteCode))
+            {
+                string inviteCodeOk = string.Empty;
+
+                var exitecode = _customerOrderCodeService.GetOrderCodeByCode(inviteCode);
+
+
+                var codeExpireDate = DateTime.Now;
+                if (exitecode != null && exitecode.CodeType == 1)
+                {
+                    codeExpireDate = exitecode.CreateTime.AddDays(1).Date.AddDays(exitecode.ValidDays);
+                }
+
+                if (codeExpireDate > DateTime.Now)
+                {
+                    inviteCodeOk = inviteCode;
+                }
+
+                if (!string.IsNullOrEmpty(inviteCode))
+                {
+                    try
+                    {
+                        var res = _orderService.GetOrderById(orderId);
+                        if (res != null)
+                        {
+                            res.InviteCode = inviteCodeOk;
+
+                            _orderService.UpdateOrder(res);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }             
+                }
+
+
+            }
+
+
             return Redirect(Request.Scheme + "://" + Request.Host + string.Format("/api/getbarcode?orderId={0}&token={1}&qs_clientId={2}",orderId,token,qs_clientId));
         }
     }
