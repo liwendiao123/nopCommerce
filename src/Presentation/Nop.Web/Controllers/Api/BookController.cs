@@ -71,6 +71,19 @@ namespace Nop.Web.Controllers.Api
 
             }
 
+            if (string.IsNullOrEmpty(token))
+            {
+                
+            
+                    return Json(new
+                    {
+                        code = -1,
+                        msg = "您未登录，请先登录",
+                        data = data
+                    });
+                
+            }
+
             var tokenresult =  ValidateToken(token, qs_clientid, _customerService);
 
             if (tokenresult == 1)
@@ -93,7 +106,16 @@ namespace Nop.Web.Controllers.Api
 
                 });
             }
+            if (tokenresult == 2)
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "您未登录，请先登录",
+                    data = data
 
+                });
+            }
             Customer customer = null;
 
             var isbuyList = new List<int>();
@@ -375,7 +397,15 @@ namespace Nop.Web.Controllers.Api
 
                 });
             }
-
+            if (tokenresult == 2)
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "您未登录，请先登录",
+                    obj = data
+                });
+            }
 
             Customer customer = null;
 

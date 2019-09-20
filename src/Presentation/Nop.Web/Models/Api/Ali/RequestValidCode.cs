@@ -15,5 +15,10 @@ namespace Nop.Web.Models.Api.Ali
         public int Type { get; set; }
 
 
+       public string token {get; set;
+        }
+        public string qs_clientid { get; set; }
+
+
     }
 }

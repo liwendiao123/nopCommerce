@@ -81,7 +81,7 @@ namespace Nop.Web.Controllers.Api
             Customer customer = null;
             var islogin = false;
             var isbuybook = false;
-            if (!string.IsNullOrEmpty(token) )
+            if (!string.IsNullOrEmpty(token))
             {
                 var tokenresult = ValidateToken(token, qs_clientid, _customerService);
                 if (tokenresult == 1)
@@ -100,16 +100,10 @@ namespace Nop.Web.Controllers.Api
                         code = -3,
                         msg = "该账号已被禁用！",
                         data = false
-
                     });
                 }
                 var apitetoken = new AccountToken();
                 apitetoken = AccountToken.Deserialize(token);
-
-
-
-
-              
                 if (apitetoken != null)
                 {
                     var cid = 0;
@@ -128,7 +122,7 @@ namespace Nop.Web.Controllers.Api
                         {
                             islogin = true;
                         }
-                        if (customer.CustomerBooks.Where(x => x.ProductId.Equals(bookid) && x.Expirationtime >DateTime.Now).Count() > 0)
+                        if (customer.CustomerBooks.Where(x => x.ProductId.Equals(bookid) && x.Expirationtime > DateTime.Now).Count() > 0)
                         {
                             islogin = true;
                             isbuybook = true;
@@ -139,6 +133,15 @@ namespace Nop.Web.Controllers.Api
                         islogin = false;
                     }
                 }
+            }
+            else
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "您未登录，请先登录",
+
+                });
             }
            
             ////临时测试方案-----------lwd

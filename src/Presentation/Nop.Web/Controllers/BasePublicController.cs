@@ -33,7 +33,7 @@ namespace Nop.Web.Controllers
             var tokenValue = token;
             var clientid = clientId;
 
-            if (!string.IsNullOrEmpty(tokenValue) || !string.IsNullOrEmpty(clientid))
+            if (!string.IsNullOrEmpty(tokenValue) && !string.IsNullOrEmpty(clientid))
             {
                 //validate request
                 try

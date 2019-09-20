@@ -143,7 +143,6 @@ namespace Nop.Web.Controllers.Api
 
                 });
             }
-
             if (tokenresult == 3)
             {
                 return Json(new
@@ -151,6 +150,15 @@ namespace Nop.Web.Controllers.Api
                     code = -3,
                     msg = "该账号已被禁用！",
                     data = false
+
+                });
+            }
+            if (tokenresult == 2)
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "您未登录，请先登录",
 
                 });
             }
@@ -371,7 +379,15 @@ namespace Nop.Web.Controllers.Api
 
                 });
             }
+            if (tokenresult == 2)
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "您未登录，请先登录",
 
+                });
+            }
             var result = _aiBookService.GetAiBookModelById(id);
             if (result!= null && !string.IsNullOrEmpty(result.UniqueID))
             {
@@ -495,8 +511,16 @@ namespace Nop.Web.Controllers.Api
                 });
             }
 
+            if (tokenresult == 2)
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "您未登录，请先登录",
 
-           
+                });
+            }
+
 
 
             if (string.IsNullOrEmpty(imgName))
@@ -649,7 +673,15 @@ namespace Nop.Web.Controllers.Api
                 });
             }
 
+            if (tokenresult == 2)
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "您未登录，请先登录",
 
+                });
+            }
             var result =  _aiBookService.GetAllAiBookModels().Where(x=>!x.Deleted).OrderBy(x=>x.DisplayOrder).ToList();
             return Json(new
             {
@@ -706,6 +738,15 @@ namespace Nop.Web.Controllers.Api
                     code = -3,
                     msg = "该账号已被禁用！",
                     data = false
+
+                });
+            }
+            if (tokenresult == 2)
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "您未登录，请先登录",
 
                 });
             }
@@ -828,7 +869,15 @@ namespace Nop.Web.Controllers.Api
 
                 });
             }
+            if (tokenresult == 2)
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "您未登录，请先登录",
 
+                });
+            }
 
             Customer customer = null;
             var apitetoken = new AccountToken();
@@ -942,7 +991,15 @@ namespace Nop.Web.Controllers.Api
 
                 });
             }
+            if (tokenresult == 2)
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "您未登录，请先登录",
 
+                });
+            }
             Customer customer = null;
             var apitetoken = new AccountToken();
             apitetoken = AccountToken.Deserialize(token);

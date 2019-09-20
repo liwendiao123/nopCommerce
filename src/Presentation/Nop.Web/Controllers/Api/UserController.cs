@@ -1290,7 +1290,15 @@ namespace Nop.Web.Controllers.Api
 
                 });
             }
+            if (tokenresult == 2)
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "您未登录，请先登录",
 
+                });
+            }
 
 
             AccountToken apitoken = AccountToken.Deserialize(token);
@@ -1567,7 +1575,7 @@ namespace Nop.Web.Controllers.Api
 
 
         }
-        public IActionResult CheckSmsCode(string phone, string  code,int type,string data)
+        public IActionResult CheckSmsCode(string phone, string  code,int type, string token, string qs_clientid, string data)
         {
             if (string.IsNullOrEmpty(phone) && !string.IsNullOrEmpty(data))
             {
@@ -1622,7 +1630,7 @@ namespace Nop.Web.Controllers.Api
         /// </summary>
         /// <param name="phone"></param>
         /// <returns></returns>
-        public async Task<IActionResult> ValidatePhoneAsync(string data, RequestValidCode request)
+        public async Task<IActionResult> ValidatePhoneAsync(string data, RequestValidCode request, string token, string qs_clientid)
         {
 
             if (!string.IsNullOrEmpty(data))
@@ -1630,6 +1638,7 @@ namespace Nop.Web.Controllers.Api
                 try
                 {
                     request = JsonConvert.DeserializeObject<RequestValidCode>(data);
+                 
                 }
                 catch (Exception ex)
                 {
@@ -1682,7 +1691,63 @@ namespace Nop.Web.Controllers.Api
                     break;
                 case 1:
                     title = "重置密码";
-                    resultem = AliSmsTemplateManager.GetAliSmsTemByType(1);           
+                    AccountToken apitoken = AccountToken.Deserialize(token);
+                    Customer _customer = null;
+
+                    if (apitoken != null && apitoken.ExpireTime < DateTime.Now.AddDays(30).Ticks && qs_clientid.Equals(apitoken.ClientId))
+                    {
+
+
+                        var loginresut = _customerService.GetCustomerByUsername(apitoken.UserName);
+
+                        if (loginresut != null)
+                        {
+                            _customer = loginresut;
+
+
+                            if (!loginresut.Active)
+                            {
+
+                                await Task.Delay(0);
+
+                                return Json(new
+                                {
+                                    code = -1,
+                                    msg = "该账号正在审核中... 暂时无法做任何操作",
+                                    data = new
+                                    {
+                                    }
+                                });
+                            }
+
+                            if (_customer.Username.Equals(request.Phone))
+                            {
+                                return Json(new
+                                {
+                                    code = -1,
+                                    msg = "请使用注册手机进行校验",
+                                    data = new
+                                    {
+                                    }
+                                });
+                            }
+                        }
+                    }
+                    else
+                    {
+                        await Task.Delay(0);
+
+                        return Json(new
+                        {
+                            code = -1,
+                            msg = "用户授权失败",
+                            data = new
+                            {
+                            }
+                        });
+                    }
+
+                        resultem = AliSmsTemplateManager.GetAliSmsTemByType(1);           
                     break;
                 case 2:
                     title = "登录";
@@ -1803,6 +1868,15 @@ namespace Nop.Web.Controllers.Api
                     code = -3,
                     msg = "该账号已被禁用！",
                     data = false
+                });
+            }
+            if (tokenresult == 2)
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "您未登录，请先登录",
+
                 });
             }
             var apitetoken = new AccountToken();
@@ -2040,7 +2114,15 @@ namespace Nop.Web.Controllers.Api
                     data = false
                 });
             }
+            if (tokenresult == 2)
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "您未登录，请先登录",
 
+                });
+            }
 
             ///1.0获取用户基本信息
             var customer = _customerService.GetCustomerById(ucim.Id);
@@ -2325,7 +2407,6 @@ namespace Nop.Web.Controllers.Api
                             OldPassword = jsonrequest.OldPassword,
                             Result = jsonrequest.Result
                         };
-
                         userName = jsonrequest.userName;
                         token = jsonrequest.token;
                         qs_clientid = jsonrequest.qs_clientId;
@@ -2349,9 +2430,17 @@ namespace Nop.Web.Controllers.Api
                     data = false
                 });
             }
+            if (tokenresult == 2)
+            {
+                return Json(new
+                {
+                    code = -1,
+                    msg = "您未登录，请先登录",
 
+                });
+            }
             var customer = _customerService.GetCustomerByUsername(userName);         
-            if (ModelState.IsValid)
+            if (ModelState.IsValid || !string.IsNullOrEmpty(data))
             {
                 if (customer == null)
                 {

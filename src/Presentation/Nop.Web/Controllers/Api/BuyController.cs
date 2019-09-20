@@ -179,7 +179,7 @@ namespace Nop.Web.Controllers.Api
                 return Json(new
                 {
                     code = -1,
-                    msg = "token 授权失败",
+                    msg = "token 授权失败:" + token,
                     data = false
                 });
             }
